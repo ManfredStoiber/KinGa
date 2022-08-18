@@ -4,6 +4,7 @@ import 'package:get_it/get_it.dart';
 import 'package:kinga/domain/StudentService.dart';
 import 'package:kinga/ui/ShowStudentScreen.dart';
 import 'package:kinga/constants/strings.dart';
+import 'package:kinga/constants/colors.dart';
 
 class AttendanceScreen extends StatefulWidget {
   const AttendanceScreen({Key? key}) : super(key: key);
@@ -171,11 +172,18 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
   }
 }
 
-class AttendanceItem extends StatelessWidget {
-  const AttendanceItem({Key? key, required this.studentId, required this.firstname}) : super(key: key);
+class AttendanceItem extends StatefulWidget {
+  AttendanceItem({Key? key, required this.studentId, required this.firstname}) : super(key: key);
 
   final String studentId;
   final String firstname;
+
+  @override
+  State<AttendanceItem> createState() => _AttendanceItemState();
+}
+
+class _AttendanceItemState extends State<AttendanceItem> {
+  bool active = false;
 
   @override
   Widget build(BuildContext context) {
@@ -183,11 +191,13 @@ class AttendanceItem extends StatelessWidget {
       margin: EdgeInsets.all(10),
       child: ElevatedButton(
         onPressed: () {
-          Navigator.push(context, MaterialPageRoute(builder: (context) => ShowStudentScreen(studentId: studentId,)));
+          Navigator.push(context, MaterialPageRoute(builder: (context) => ShowStudentScreen(studentId: widget.studentId,)));
         },
+          onLongPress: () => setState(() => active = !active),
           style: TextButton.styleFrom(shape: ContinuousRectangleBorder(
-          borderRadius: BorderRadius.circular(64.0)
-        )),
+          borderRadius: BorderRadius.circular(64.0),
+        ),
+          backgroundColor: active ? ColorSchemes.kingacolor : ColorSchemes.errorColor),
         child: Column(
             children: [
               Expanded(
@@ -197,7 +207,7 @@ class AttendanceItem extends StatelessWidget {
               ),
               Container(
                 padding: EdgeInsets.fromLTRB(0, 0, 0, 5),
-                child: Text(firstname),
+                child: Text(widget.firstname),
               )
             ]
         )
