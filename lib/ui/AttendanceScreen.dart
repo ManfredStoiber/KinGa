@@ -117,13 +117,14 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                 onTap: () {
                   Navigator.pop(context);
                 },
-                leading: Icon(Icons.add),
+                leading: Icon(Icons.add_circle_outline),
               ),
               ListTile(
                 title: const Text('Berechtigungen'),
                 onTap: () {
                   Navigator.pop(context);
                 },
+                leading: Icon(Icons.checklist),
               ),
               Divider(),
               ListTile(
@@ -131,18 +132,21 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                 onTap: () {
                   Navigator.pop(context);
                 },
+                leading: Icon(Icons.question_answer),
               ),
               ListTile(
                 title: const Text('Feedback'),
                 onTap: () {
                   Navigator.pop(context);
                 },
+                leading: Icon(Icons.chat_outlined),
               ),
               ListTile(
                 title: const Text('Impressum'),
                 onTap: () {
                   Navigator.pop(context);
                 },
+                leading: Icon(Icons.domain),
               ),
               Divider(),
               ListTile(
@@ -150,12 +154,14 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                 onTap: () {
                   Navigator.pop(context);
                 },
+                leading: Icon(Icons.settings),
               ),
               ListTile(
                 title: const Text('Ausloggen'),
                 onTap: () {
                   Navigator.pop(context);
                 },
+                leading: Icon(Icons.power_settings_new),
               ),
             ],
           ),
