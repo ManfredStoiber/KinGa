@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get_it/get_it.dart';
 import 'package:kinga/domain/StudentService.dart';
 import 'package:kinga/ui/ShowStudentScreen.dart';
+import 'package:kinga/constants/strings.dart';
 
 class AttendanceScreen extends StatefulWidget {
   const AttendanceScreen({Key? key}) : super(key: key);
@@ -22,7 +23,7 @@ class AttendanceScreen extends StatefulWidget {
 
 class _AttendanceScreenState extends State<AttendanceScreen> {
   StudentService studentService = GetIt.I<StudentService>();
-  String selected = 'Alle';
+  String selected = Strings.allGroups;
   bool activeSearch = false;
 
   @override
@@ -54,7 +55,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                                   color: Colors.black38,
                                 )
                             ),
-                            hintText: 'Suche',
+                            hintText: Strings.search,
                             suffixIcon: IconButton(
                               icon: Icon(Icons.clear),
                               onPressed: () {
@@ -73,7 +74,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                       underline: Container(height: 1, color: Colors.black38,),
                       isExpanded: true,
                       value: selected,
-                      items: [DropdownMenuItem(value: 'Alle', child: Text('Alle'))] + studentService.getAvailableGroups().map((e) =>
+                      items: [DropdownMenuItem(value: Strings.allGroups, child: Text(Strings.allGroups))] + studentService.getAvailableGroups().map((e) =>
                           DropdownMenuItem(value: e, child: Text(e))).toList(),
                       onChanged: (String? newValue) {
                         setState(() {
@@ -110,17 +111,17 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
             children: [
               DrawerHeader(
                 decoration: BoxDecoration(color: Theme.of(context).primaryColor),
-                child: Center(child: Text('KinGa'))
+                child: Center(child: Text(Strings.kinga))
               ),
               ListTile(
-                title: const Text('Neues Kind'),
+                title: const Text(Strings.newChild),
                 onTap: () {
                   Navigator.pop(context);
                 },
                 leading: Icon(Icons.add_circle_outline),
               ),
               ListTile(
-                title: const Text('Berechtigungen'),
+                title: const Text(Strings.permission),
                 onTap: () {
                   Navigator.pop(context);
                 },
@@ -128,7 +129,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
               ),
               Divider(),
               ListTile(
-                title: const Text('Support'),
+                title: const Text(Strings.support),
                 onTap: () {
                   Navigator.pop(context);
                 },
@@ -142,7 +143,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                 leading: Icon(Icons.chat_outlined),
               ),
               ListTile(
-                title: const Text('Impressum'),
+                title: const Text(Strings.impressum),
                 onTap: () {
                   Navigator.pop(context);
                 },
@@ -150,14 +151,14 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
               ),
               Divider(),
               ListTile(
-                title: const Text('Einstellungen'),
+                title: const Text(Strings.settings),
                 onTap: () {
                   Navigator.pop(context);
                 },
                 leading: Icon(Icons.settings),
               ),
               ListTile(
-                title: const Text('Ausloggen'),
+                title: const Text(Strings.logout),
                 onTap: () {
                   Navigator.pop(context);
                 },

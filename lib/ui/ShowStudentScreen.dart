@@ -10,6 +10,7 @@ import 'package:kinga/domain/StudentService.dart';
 import 'package:kinga/ui/AttendanceScreen.dart';
 import 'package:kinga/ui/widgets/ExpandableFab.dart';
 
+import 'package:kinga/constants/strings.dart';
 import '../domain/entity/Student.dart';
 
 class ShowStudentScreen extends StatefulWidget {
@@ -116,7 +117,7 @@ class _ShowStudentScreenState extends State<ShowStudentScreen> {
                 data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
                 child: ExpansionTile(
 
-                  title: Text("Allgemeines"),
+                  title: Text(Strings.infoGeneral),
                   children: [
                     buildReadOnlyTextField("Vorname", "Adam"),
                     buildReadOnlyTextField("Zweitname", " "),
@@ -128,15 +129,15 @@ class _ShowStudentScreenState extends State<ShowStudentScreen> {
             ),
             Card(
               margin: EdgeInsets.fromLTRB(10, 5, 10, 5),
-              child: ExpansionTile(title: Text("Abholberechtigte")),
+              child: ExpansionTile(title: Text(Strings.infoPickup)),
             ),
             Card(
               margin: EdgeInsets.fromLTRB(10, 5, 10, 5),
-              child: ExpansionTile(title: Text("Gesundheit")),
+              child: ExpansionTile(title: Text(Strings.infoHealth)),
             ),
             Card(
               margin: EdgeInsets.fromLTRB(10, 5, 10, 5),
-              child: ExpansionTile(title: Text("Berechtigungen")),
+              child: ExpansionTile(title: Text(Strings.permission)),
             ),
           ]
       ),
