@@ -1,12 +1,11 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:get_it/get_it.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:kinga/ui/AttendanceScreen.dart';
-import 'firebase_options.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kinga/data/FirebaseStudentRepository.dart';
-import 'package:kinga/domain/StudentService.dart';
+import 'package:kinga/ui/AttendanceScreen.dart';
+import 'domain/students_cubit.dart';
+import 'firebase_options.dart';
 import '../constants/colors.dart';
 
 void main() async {
@@ -14,8 +13,6 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-
-  GetIt.I.registerSingleton<StudentService>(StudentService(FirebaseStudentRepository()));
 
   runApp(const MyApp());
 }
@@ -26,7 +23,14 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => StudentsCubit(FirebaseStudentRepository())..getStudents(),
+          child: const AttendanceScreen(),
+        )
+      ],
+  child: MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
         // This is the theme of your application.
@@ -36,6 +40,7 @@ class MyApp extends StatelessWidget {
         errorColor: ColorSchemes.errorColor
       ),
       home: const AttendanceScreen(),
-    );
+    ),
+);
   }
 }

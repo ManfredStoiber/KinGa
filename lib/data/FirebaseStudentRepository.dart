@@ -1,14 +1,19 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:kinga/domain/StudentRepository.dart';
 import 'package:kinga/domain/entity/Student.dart';
 
 class FirebaseStudentRepository implements StudentRepository {
 
-  List<Student> students = [];
-  Set<String> availableGroups = {};
+  FirebaseFirestore db = FirebaseFirestore.instance;
 
-  FirebaseStudentRepository() {
-    db.collection('Institution').doc('f1x2NtOa90aJSlbOIX0fD4fOrns2').collection('Student').get().then((value) {
+  @override
+  Future<Set<Student>> getAllStudents() {
+    return Future (() async {
+      Set<Student> students = {};
+      QuerySnapshot<Map<String, dynamic>> value = await db.collection('Institution').doc('f1x2NtOa90aJSlbOIX0fD4fOrns2')
+          .collection('Student').get();
       for (var doc in value.docs) {
         students.add(Student(
           doc.data()['studentId'],
@@ -26,26 +31,9 @@ class FirebaseStudentRepository implements StudentRepository {
           [],
           [],
         ));
-        availableGroups.add(doc.data()['group']);
       }
-    });
-  }
-
-  FirebaseFirestore db = FirebaseFirestore.instance;
-
-  @override
-  List<Student> getAllStudents() {
-    return students;
-  }
-
-  @override
-  Set<String> getAvailableGroups() {
-    return availableGroups;
-  }
-
-  @override
-  Student getStudent(String studentId) {
-    return students.firstWhere((student) => student.studentId == studentId);
+      return students;
+    },);
   }
 
 }
