@@ -6,6 +6,9 @@ import 'package:kinga/ui/ShowStudentScreen.dart';
 import 'package:kinga/constants/strings.dart';
 import 'package:kinga/constants/colors.dart';
 
+import '../domain/entity/Attendance.dart';
+import '../domain/entity/Student.dart';
+
 class AttendanceScreen extends StatefulWidget {
   const AttendanceScreen({Key? key}) : super(key: key);
 
@@ -99,10 +102,13 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
         ),
         body: GridView(
           padding: EdgeInsets.all(10),
-          children: studentService.getAllStudents().map((e) => AttendanceItem(studentId: e.studentId, firstname: e.firstname)).toList(),
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 3,
           ),
+          children: studentService.getAllStudents()
+              .where((student) => student.group == selected || selected == Strings.allGroups)
+              .map((e) => AttendanceItem(studentId: e.studentId, firstname: e.firstname))
+              .toList(),
         ),
 
         drawer: Drawer(
@@ -137,7 +143,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                 leading: Icon(Icons.question_answer),
               ),
               ListTile(
-                title: const Text('Feedback'),
+                title: const Text(Strings.feedback),
                 onTap: () {
                   Navigator.pop(context);
                 },
@@ -187,13 +193,18 @@ class _AttendanceItemState extends State<AttendanceItem> {
 
   @override
   Widget build(BuildContext context) {
+    //Attendance? attendance = studentService.getStudent(widget.studentId).attendances.last;
+    Attendance attendance = Attendance("",DateTime.now().toIso8601String());
+
     return Container(
       margin: EdgeInsets.all(10),
       child: ElevatedButton(
         onPressed: () {
           Navigator.push(context, MaterialPageRoute(builder: (context) => ShowStudentScreen(studentId: widget.studentId,)));
         },
-          onLongPress: () => setState(() => active = !active),
+          onLongPress: () => setState(() {
+            active = !active;
+          }),
           style: TextButton.styleFrom(shape: ContinuousRectangleBorder(
           borderRadius: BorderRadius.circular(64.0),
         ),

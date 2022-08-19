@@ -1,3 +1,4 @@
+import 'Attendance.dart';
 import 'Person.dart';
 
 class Student extends Person {
@@ -12,7 +13,7 @@ class Student extends Person {
   //List<Kudo> kudos = new ArrayList<>();
   //List<Caregiver.dart> caregivers = new ArrayList<>();
   //List<Person> pickups = new ArrayList<>();
-  //List<Attendance> attendances = new ArrayList<>();
+  List<Attendance> attendances = List.empty(growable: true);
   //String profileImage;
   //List<SickNote> sickNotes = new ArrayList<>();
   List<String> allergies;

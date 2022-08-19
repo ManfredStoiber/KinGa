@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -57,90 +59,101 @@ class _ShowStudentScreenState extends State<ShowStudentScreen> {
       appBar: AppBar(
         title: Text(widget.student.firstname + " " + widget.student.lastname),
       ),
-      body: ListView(
-          children: [
-            Container(
-              height: 200,
-              margin: EdgeInsets.all(20),
-              child: Row(
-                children: [
-                  Container(
-                    margin: EdgeInsets.all(10),
-                    child: ElevatedButton(
-                      child: const Text("Press"),
-                      onPressed: () {
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => const AttendanceScreen()));
-                        pick();
-                      },
-                    ),
-                  ),
-                  Expanded(
-                    child: SvgPicture.asset('assets/images/hamster.svg',)
-                  ),
-                  Container(
-                    margin: EdgeInsets.all(10),
-                    child: ElevatedButton(
-                      child: const Text("Press"),
-                      onPressed: () {
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => const AttendanceScreen()));
-                        pick();
-                      },
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                FloatingActionButton(
-                  onPressed: () {
-
-                },),
-                Container(
-                  width: 50,
-                ),
-                FloatingActionButton(onPressed: () {
-
-                },),
-              ],
-            ),
-            Divider(
-              thickness: 2,
-              endIndent: 15,
-              indent: 15,
-              height: 50,
-            ),
-            Card(
-              margin: EdgeInsets.fromLTRB(10, 5, 10, 5),
-              child: Theme(
-                data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
-                child: ExpansionTile(
-
-                  title: Text(Strings.infoGeneral),
+      body: Stack(
+        children: [ ListView(
+            children: [
+              Container(
+                height: 200,
+                margin: EdgeInsets.all(20),
+                child: Row(
                   children: [
-                    buildReadOnlyTextField("Vorname", "Adam"),
-                    buildReadOnlyTextField("Zweitname", " "),
-                    buildReadOnlyTextField("Nachname", "Hoffmann"),
-                    buildReadOnlyTextField("Geburtsdatum", "05.12.2019"),
+                    Container(
+                      margin: EdgeInsets.all(10),
+                      child: ElevatedButton(
+                        child: const Text("Press"),
+                        onPressed: () {
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => const AttendanceScreen()));
+                          pick();
+                        },
+                      ),
+                    ),
+                    Expanded(
+                      child: SvgPicture.asset('assets/images/hamster.svg',)
+                    ),
+                    Container(
+                      margin: EdgeInsets.all(10),
+                      child: ElevatedButton(
+                        child: const Text("Press"),
+                        onPressed: () {
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => const AttendanceScreen()));
+                          pick();
+                        },
+                      ),
+                    ),
                   ],
                 ),
               ),
-            ),
-            Card(
-              margin: EdgeInsets.fromLTRB(10, 5, 10, 5),
-              child: ExpansionTile(title: Text(Strings.infoPickup)),
-            ),
-            Card(
-              margin: EdgeInsets.fromLTRB(10, 5, 10, 5),
-              child: ExpansionTile(title: Text(Strings.infoHealth)),
-            ),
-            Card(
-              margin: EdgeInsets.fromLTRB(10, 5, 10, 5),
-              child: ExpansionTile(title: Text(Strings.permission)),
-            ),
-          ]
-      ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  FloatingActionButton(
+                    onPressed: () {
+
+                  },),
+                  Container(
+                    width: 50,
+                  ),
+                  FloatingActionButton(onPressed: () {
+
+                  },),
+                ],
+              ),
+              Divider(
+                thickness: 2,
+                endIndent: 15,
+                indent: 15,
+                height: 50,
+              ),
+              Card(
+                margin: EdgeInsets.fromLTRB(10, 5, 10, 5),
+                child: Theme(
+                  data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+                  child: ExpansionTile(
+
+                    title: Text(Strings.infoGeneral),
+                    children: [
+                      buildReadOnlyTextField("Vorname", "Adam"),
+                      buildReadOnlyTextField("Zweitname", " "),
+                      buildReadOnlyTextField("Nachname", "Hoffmann"),
+                      buildReadOnlyTextField("Geburtsdatum", "05.12.2019"),
+                    ],
+                  ),
+                ),
+              ),
+              Card(
+                margin: EdgeInsets.fromLTRB(10, 5, 10, 5),
+                child: ExpansionTile(title: Text(Strings.infoPickup)),
+              ),
+              Card(
+                margin: EdgeInsets.fromLTRB(10, 5, 10, 5),
+                child: ExpansionTile(title: Text(Strings.infoHealth)),
+              ),
+              Card(
+                margin: EdgeInsets.fromLTRB(10, 5, 10, 5),
+                child: ExpansionTile(title: Text(Strings.permission)),
+              ),
+            ]
+        ),
+          Container(
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 1.0, sigmaY: 1.0),
+                child: Center(
+                ),
+              ),
+              color: Color.fromRGBO(5, 5, 5, 0.5),
+              height: MediaQuery.of(context).size.height
+          )
+      ]),
       floatingActionButton: ExpandableFab(
         distance: 150,
         icon: Icon(Icons.phone, color: Colors.white,),
