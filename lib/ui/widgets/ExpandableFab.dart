@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
@@ -64,16 +65,42 @@ class _ExpandableFabState extends State<ExpandableFab>
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox.expand(
-      child: Stack(
-        alignment: Alignment.bottomRight,
-        clipBehavior: Clip.none,
-        children: [
-          _buildTapToCloseFab(),
-          ..._buildExpandingActionButtons(),
-          _buildTapToOpenFab(),
-        ],
-      ),
+    /*
+
+     */
+    return Stack(
+      children: [
+        Visibility(
+          visible: _open,
+          child: GestureDetector(
+            onTap: () => setState(() {
+              _toggle();
+            }),
+            child: Container(
+                color: Color.fromRGBO(5, 5, 5, 0.5),
+                height: MediaQuery.of(context).size.height,
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 1.0, sigmaY: 1.0),
+                  child: const Center(),
+                )
+            ),
+          ),
+        ),
+        SizedBox.expand(
+          child: Transform.translate(
+            offset: Offset(-20, -20),
+            child: Stack(
+              alignment: Alignment.bottomRight,
+              clipBehavior: Clip.none,
+              children: [
+                _buildTapToCloseFab(),
+                ..._buildExpandingActionButtons(),
+                _buildTapToOpenFab(),
+              ],
+            ),
+          ),
+        ),
+      ]
     );
   }
 

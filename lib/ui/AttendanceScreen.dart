@@ -228,35 +228,49 @@ class _AttendanceItemState extends State<AttendanceItem> {
   Widget build(BuildContext context) {
     Attendance attendance = Attendance("",DateTime.now().toIso8601String());
 
-    return Container(
-      margin: EdgeInsets.all(10),
-      child: ElevatedButton(
-        onPressed: () {
-          Navigator.push(context, MaterialPageRoute(builder: (context) => ShowStudentScreen(studentId: widget.studentId,)));
-        },
-        onLongPress: () => setState(() {
-          active = !active;
-        }),
-        style: TextButton.styleFrom(
-          shape: ContinuousRectangleBorder(
-            borderRadius: BorderRadius.circular(64.0),
-          ),
-          backgroundColor: active ? ColorSchemes.kingacolor : ColorSchemes.errorColor
-        ),
-        child: Column(
-          children: [
-            Expanded(
-              child: Container(
-                child: SvgPicture.asset('assets/images/hamster.svg',),
-              ),
-            ),
-            Container(
-              padding: EdgeInsets.fromLTRB(0, 0, 0, 5),
-              child: Text(widget.firstname),
-            )
-          ]
-        )
-      )
+    return BlocBuilder<StudentsCubit, StudentsState>(
+      builder: (context, state) {
+        if (state is StudentsLoaded) {
+          return Container(
+              margin: EdgeInsets.all(10),
+              child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(context, MaterialPageRoute(
+                        builder: (context) =>
+                            ShowStudentScreen(studentId: widget.studentId,)));
+                  },
+                  onLongPress: () {
+                    BlocProvider.of<StudentsCubit>(context).toggleAttendance(
+                        widget.studentId);
+                  },
+                  style: TextButton.styleFrom(
+                      shape: ContinuousRectangleBorder(
+                        borderRadius: BorderRadius.circular(64.0),
+                      ),
+                      backgroundColor: state.getStudent(widget.studentId).attendances.length % 2 == 0
+                          ? ColorSchemes.kingacolor
+                          : ColorSchemes.errorColor
+                  ),
+                  child: Column(
+                      children: [
+                        Expanded(
+                          child: Container(
+                            child: SvgPicture.asset(
+                              'assets/images/hamster.svg',),
+                          ),
+                        ),
+                        Container(
+                          padding: EdgeInsets.fromLTRB(0, 0, 0, 5),
+                          child: Text(widget.firstname),
+                        )
+                      ]
+                  )
+              )
+          );
+        } else {
+          throw Exception('Invalid State');
+        }
+      },
     );
   }
 }

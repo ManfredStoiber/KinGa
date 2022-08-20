@@ -4,11 +4,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:get_it/get_it.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:kinga/data/FirebaseStudentRepository.dart';
-import 'package:kinga/domain/StudentRepository.dart';
 import 'package:kinga/domain/students_cubit.dart';
 import 'package:kinga/ui/AttendanceScreen.dart';
 import 'package:kinga/ui/widgets/ExpandableFab.dart';
@@ -152,16 +149,8 @@ class _ShowStudentScreenState extends State<ShowStudentScreen> {
                 ),
               ]
           ),
-            Container(
-                child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 1.0, sigmaY: 1.0),
-                  child: Center(
-                  ),
-                ),
-                color: Color.fromRGBO(5, 5, 5, 0.5),
-                height: MediaQuery.of(context).size.height
-            )
     ]),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
         floatingActionButton: ExpandableFab(
           distance: 150,
           icon: Icon(Icons.phone, color: Colors.white,),
