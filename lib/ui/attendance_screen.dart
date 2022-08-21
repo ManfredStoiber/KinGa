@@ -29,6 +29,7 @@ class AttendanceScreen extends StatefulWidget {
 class _AttendanceScreenState extends State<AttendanceScreen> {
   String selected = Strings.allGroups;
   bool activeSearch = false;
+  String search = "";
 
   void debugConvertFirebaseFromKingaLegacy() {
     FirebaseFirestore.instance.collection('Institution').doc('debug').delete().onError((error, stackTrace) => null);
@@ -79,6 +80,11 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                       children: [
                         if (activeSearch) Expanded(
                             child: TextField(
+                              onChanged: (value) {
+                                setState(() {
+                                  search = value;
+                                });
+                              },
                               autofocus: true,
                               cursorColor: Colors.black38,
                               decoration: InputDecoration(
@@ -102,7 +108,6 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                                     color: Colors.black38,
                                   )
                               ),
-
                             )
                         )
                         else Expanded(
@@ -158,7 +163,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
               return GridView(
                 padding: EdgeInsets.all(10),
                 children: state.students
-                    .where((student) => student.group == selected || selected == Strings.allGroups)
+                    .where((student) => (selected == Strings.allGroups || student.group == selected) && (!activeSearch || "${student.firstname} ${student.lastname}".toLowerCase().contains(search.toLowerCase())))
                     .map((e) => AttendanceItem(
                     studentId: e.studentId, firstname: e.firstname))
                     .toList()..sort((a, b) => a.firstname.compareTo(b.firstname)), // TODO: maybe move sorting to state or repository for better performance; include lastname for sorting
