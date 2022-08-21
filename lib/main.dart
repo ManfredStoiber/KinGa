@@ -1,12 +1,11 @@
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:kinga/data/FirebaseStudentRepository.dart';
-import 'package:kinga/ui/AttendanceScreen.dart';
+import 'package:kinga/constants/colors.dart';
+import 'package:kinga/data/firebase_student_repository.dart';
+import 'package:kinga/ui/attendance_screen.dart';
 import 'domain/students_cubit.dart';
 import 'firebase_options.dart';
-import '../constants/colors.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

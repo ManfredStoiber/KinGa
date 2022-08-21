@@ -1,17 +1,16 @@
 import 'dart:ui';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:kinga/domain/entity/student.dart';
 import 'package:kinga/domain/students_cubit.dart';
-import 'package:kinga/ui/AttendanceScreen.dart';
-import 'package:kinga/ui/widgets/ExpandableFab.dart';
+import 'package:kinga/ui/attendance_screen.dart';
+import 'package:kinga/ui/widgets/expandable_fab.dart';
 
 import 'package:kinga/constants/strings.dart';
-import '../domain/entity/Student.dart';
 
 class ShowStudentScreen extends StatefulWidget {
   // TODO: make constructor const again
@@ -81,7 +80,10 @@ class _ShowStudentScreenState extends State<ShowStudentScreen> {
                         ),
                       ),
                       Expanded(
-                          child: SvgPicture.asset('assets/images/hamster.svg',)
+                          child: Hero(
+                            tag: "hero${student.studentId}",
+                            child: SvgPicture.asset('assets/images/hamster.svg',)
+                          )
                       ),
                       Container(
                         margin: EdgeInsets.all(10),
@@ -101,13 +103,16 @@ class _ShowStudentScreenState extends State<ShowStudentScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     FloatingActionButton(
+                      heroTag: "tmp1",
                       onPressed: () {
 
                       },),
                     Container(
                       width: 50,
                     ),
-                    FloatingActionButton(onPressed: () {
+                    FloatingActionButton(
+                      heroTag: "tmp2",
+                      onPressed: () {
 
                     },),
                   ],
@@ -127,10 +132,10 @@ class _ShowStudentScreenState extends State<ShowStudentScreen> {
 
                       title: Text(Strings.infoGeneral),
                       children: [
-                        buildReadOnlyTextField("Vorname", student.firstname),
-                        buildReadOnlyTextField("Zweitname", student.middlename),
-                        buildReadOnlyTextField("Nachname", student.lastname),
-                        buildReadOnlyTextField("Geburtsdatum", "05.12.2019"), // TODO
+                        buildReadOnlyTextField(Strings.firstname, student.firstname),
+                        buildReadOnlyTextField(Strings.middlename, student.middlename),
+                        buildReadOnlyTextField(Strings.lastname, student.lastname),
+                        buildReadOnlyTextField(Strings.birthday, "05.12.2019"), // TODO
                       ],
                     ),
                   ),
@@ -172,8 +177,8 @@ class _ShowStudentScreenState extends State<ShowStudentScreen> {
   }
 
   Container buildReadOnlyTextField(String label, String text) {
-    TextEditingController _controller = TextEditingController();
-    _controller.text = text;
+    TextEditingController controller = TextEditingController();
+    controller.text = text;
     return Container(
                   margin: EdgeInsets.all(10),
                   child: TextField(
@@ -183,7 +188,7 @@ class _ShowStudentScreenState extends State<ShowStudentScreen> {
                       border: OutlineInputBorder(),
                       labelText: label
                     ),
-                    controller: _controller,
+                    controller: controller,
                   ),
                 );
   }

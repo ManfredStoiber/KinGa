@@ -1,13 +1,14 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:kinga/ui/ShowStudentScreen.dart';
+import 'package:kinga/domain/entity/caregiver.dart';
+import 'package:kinga/ui/show_student_screen.dart';
 import 'package:kinga/constants/strings.dart';
 import 'package:kinga/constants/colors.dart';
 
 import '../domain/students_cubit.dart';
-import '../domain/entity/Attendance.dart';
-import '../domain/entity/Student.dart';
+import '../domain/entity/attendance.dart';
 
 class AttendanceScreen extends StatefulWidget {
   const AttendanceScreen({Key? key}) : super(key: key);
@@ -28,6 +29,33 @@ class AttendanceScreen extends StatefulWidget {
 class _AttendanceScreenState extends State<AttendanceScreen> {
   String selected = Strings.allGroups;
   bool activeSearch = false;
+
+  void debugConvertFirebaseFromKingaLegacy() {
+    FirebaseFirestore.instance.collection('Institution').doc('debug').delete().onError((error, stackTrace) => null);
+    FirebaseFirestore.instance.collection('Institution').doc('f1x2NtOa90aJSlbOIX0fD4fOrns2').get().then((value) {
+      FirebaseFirestore.instance.collection('Institution').doc('debug').set(value.data()!);
+      FirebaseFirestore.instance.collection('Institution').doc('f1x2NtOa90aJSlbOIX0fD4fOrns2').collection('Student').get().then((value2) {
+        for (var v in value2.docs) {
+          var data = v.data();
+          data['birthday'] = DateTime.fromMillisecondsSinceEpoch(data['birthday']).toIso8601String().substring(0, 10);
+          data['attendances'] = [];
+          data['incidents'] = [];
+          data['kudos'] = [];
+          var caregiversNew = [];
+          for (var caregiver in data['caregivers']) {
+            Map<String, String> phonenumbersNew = <String, String>{};
+            for (var phonenumber in caregiver['phoneNumbers']) {
+              phonenumbersNew[phonenumber['label']] = phonenumber['number'];
+            }
+            var tmp = Caregiver(caregiver['firstname'], caregiver['lastname'], caregiver['label'] ?? "", phonenumbersNew, caregiver['email']).toMap();
+            caregiversNew.add(tmp);
+          }
+          data['caregivers'] = caregiversNew;
+          FirebaseFirestore.instance.collection('Institution').doc('debug').collection('Student').add(data);
+        }
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -133,7 +161,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                     .where((student) => student.group == selected || selected == Strings.allGroups)
                     .map((e) => AttendanceItem(
                     studentId: e.studentId, firstname: e.firstname))
-                    .toList(),
+                    .toList()..sort((a, b) => a.firstname.compareTo(b.firstname)), // TODO: maybe move sorting to state or repository for better performance; include lastname for sorting
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 3,
                 ),
@@ -223,7 +251,7 @@ class AttendanceItem extends StatefulWidget {
 
 class _AttendanceItemState extends State<AttendanceItem> {
   bool active = false;
-
+  
   @override
   Widget build(BuildContext context) {
     Attendance attendance = Attendance("",DateTime.now().toIso8601String());
@@ -255,8 +283,11 @@ class _AttendanceItemState extends State<AttendanceItem> {
                       children: [
                         Expanded(
                           child: Container(
-                            child: SvgPicture.asset(
-                              'assets/images/hamster.svg',),
+                            child: Hero(
+                              tag: "hero${widget.studentId}",
+                              child: SvgPicture.asset(
+                                'assets/images/hamster.svg',),
+                            ),
                           ),
                         ),
                         Container(

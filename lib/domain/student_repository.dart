@@ -1,4 +1,4 @@
-import 'package:kinga/domain/entity/Student.dart';
+import 'package:kinga/domain/entity/student.dart';
 
 abstract class StudentRepository {
   Future<Set<Student>> getAllStudents();

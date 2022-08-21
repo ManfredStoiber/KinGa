@@ -1,9 +1,8 @@
 import 'package:bloc/bloc.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:kinga/domain/StudentRepository.dart';
-import 'package:kinga/domain/entity/Attendance.dart';
-
-import 'entity/Student.dart';
+import 'package:kinga/domain/student_repository.dart';
+import 'package:kinga/domain/entity/attendance.dart';
+import 'package:kinga/domain/entity/student.dart';
 
 part '../domain/students_state.dart';
 
