@@ -1,6 +1,10 @@
+import 'dart:developer';
+import 'dart:typed_data';
+
 import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:encrypt/encrypt.dart';
 import 'package:get_it/get_it.dart';
 import 'package:kinga/constants/keys.dart';
@@ -15,6 +19,7 @@ import 'package:streaming_shared_preferences/streaming_shared_preferences.dart';
 class FirebaseStudentRepository implements StudentRepository {
 
   FirebaseFirestore db = FirebaseFirestore.instance;
+  FirebaseStorage storage = FirebaseStorage.instance;
   late StreamingSharedPreferences prefs;
 
   FirebaseStudentRepository() {
@@ -30,6 +35,16 @@ class FirebaseStudentRepository implements StudentRepository {
       await for (final value in db.collection('Institution').doc(prefs.getString(Keys.institutionId, defaultValue: "").getValue()).collection('Student').snapshots()) {
         Set<Student> students = {};
         for (var doc in value.docs) {
+          Uint8List profileImage;
+          try {
+            profileImage = await storage.ref().child(
+                'debug/${doc.data()['studentId']}').getData() ?? Uint8List(0);
+            doc.data()['profileImage'] = profileImage;
+          } on Exception {
+            profileImage = Uint8List(0);
+            doc.data()['profileImage'] = profileImage;
+          }
+
           Student student = mapToStudent(doc.data());
           students.add(student);
         }
@@ -125,7 +140,7 @@ class FirebaseStudentRepository implements StudentRepository {
       map['address'],
       map['city'],
       map['group'],
-      //map['profileImage'],
+      map['profileImage'],
       caregivers.toList(),
       attendances.toList(),
       [],
@@ -172,7 +187,7 @@ class FirebaseStudentRepository implements StudentRepository {
       map['address'],
       map['city'],
       map['group'],
-      //map['profileImage'],
+      map['profileImage'],
       caregivers.toList(),
       attendances.toList(),
       [],
