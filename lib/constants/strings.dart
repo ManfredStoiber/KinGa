@@ -1,10 +1,15 @@
 
 class Strings {
+  static const String absence = 'Abwesenheit';
   static const String allGroups = 'Alle';
   static const String alreadyRegistered = 'Ich habe bereits ein Benutzerkonto';
   static const String back = 'Zurück';
   static const String birthday = 'Geburtsdatum';
+  static const String cancel = 'Abbrechen';
+  static const String date_format = 'mm.dd.yyyy';
   static const String email = 'E-Mail-Adresse';
+  static const String end = 'Ende';
+  static const String enter = 'Eintragen';
   static const String feedback = 'Feedback';
   static const String firstname = 'Vorname';
   static const String greeting = 'Herzlich wilkommen bei KinGa!';
@@ -26,6 +31,7 @@ class Strings {
   static const String settings = 'Einstellungen';
   static const String signIn = 'Anmelden';
   static const String signUp = 'Registrieren';
+  static const String start = 'Anfang';
   static const String support = 'Support';
   static const String errorEmailAlreadyInUse = 'Es besteht bereits ein Benutzerkonto mit der angegebenen E-Mail-Adresse';
   static const String errorEmailEmpty = 'E-Mail-Adresse darf nicht leer sein';

@@ -287,9 +287,18 @@ class _AttendanceItemState extends State<AttendanceItem> {
                       shape: ContinuousRectangleBorder(
                         borderRadius: BorderRadius.circular(64.0),
                       ),
-                      backgroundColor: BlocProvider.of<StudentsCubit>(context).isAttendant(widget.studentId)
-                          ? ColorSchemes.errorColor
-                          : ColorSchemes.kingacolor
+                      backgroundColor: (){
+                        StudentsCubit cubit = BlocProvider.of<StudentsCubit>(context);
+                        if (cubit.isAbsent(widget.studentId)) {
+                          return ColorSchemes.absentColor;
+                        } else {
+                          if (cubit.isAttendant(widget.studentId)) {
+                            return ColorSchemes.attendantColor;
+                          } else {
+                            return ColorSchemes.notAttendantColor;
+                          }
+                        }
+                      }()
                   ),
                   child: Column(
                       children: [

@@ -1,3 +1,4 @@
+import 'package:kinga/domain/entity/absence.dart';
 import 'package:kinga/domain/entity/caregiver.dart';
 
 import 'attendance.dart';
@@ -17,7 +18,7 @@ class Student extends Person {
   //List<Person> pickups = new ArrayList<>();
   List<Attendance> attendances = List.empty(growable: true);
   //String profileImage;
-  //List<SickNote> sickNotes = new ArrayList<>();
+  List<Absence> absences = List.empty(growable: true);
   List<String> allergies;
   List<String> diseases;
   List<String> medicines;
@@ -38,6 +39,7 @@ class Student extends Person {
       this.caregivers,
       this.attendances,
       //this.profileImage,
+      this.absences,
       this.allergies,
       this.diseases,
       this.medicines,

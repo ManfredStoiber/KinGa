@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:kinga/domain/entity/absence.dart';
 import 'package:kinga/domain/student_repository.dart';
 import 'package:kinga/domain/entity/attendance.dart';
 import 'package:kinga/domain/entity/student.dart';
@@ -20,6 +21,10 @@ class StudentsCubit extends Cubit<StudentsState> {
 
   Future<void> toggleAttendance(String studentId) async {
     if (state is StudentsLoaded) {
+      if (isAbsent(studentId)) {
+        // if absent, do nothing
+        return;
+      }
       String now = DateTime.now().toIso8601String();
       String currentDate = IsoDateUtils.getIsoDateFromIsoDateTime(now);
       String currentTime = IsoDateUtils.getIsoTimeFromIsoDateTime(now);
@@ -62,6 +67,21 @@ class StudentsCubit extends Cubit<StudentsState> {
     return null;
   }
 
+  Set<Absence> getAbsencesOfToday(List<Absence> absences) {
+    Set<Absence> absencesOfToday = {};
+    for (var absence in absences) {
+      DateTime from = DateTime.parse(absence.from);
+      DateTime until = DateTime.parse(absence.until);
+      DateTime now = DateTime.now();
+
+      if (now.isAfter(from) && now.isBefore(until.add(Duration(days: 1)))) {
+        absencesOfToday.add(absence);
+      }
+    }
+    return absencesOfToday;
+  }
+
+
   bool isAttendant(String studentId) {
     if (state is StudentsLoaded) {
       Attendance? attendance = getAttendanceOfToday((state as StudentsLoaded).getStudent(studentId).attendances);
@@ -72,6 +92,17 @@ class StudentsCubit extends Cubit<StudentsState> {
       }
     }
     return false;
+  }
+
+  bool isAbsent(String studentId) {
+    if (state is StudentsLoaded) {
+      return getAbsencesOfToday((state as StudentsLoaded).getStudent(studentId).absences).isNotEmpty;
+    }
+    return false;
+  }
+
+  Future<void> createAbsence(String studentId, Absence absence) async {
+    studentRepository.createAbsence(studentId, absence);
   }
 
 }

@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:kinga/constants/colors.dart';
 import 'package:kinga/data/firebase_student_repository.dart';
 import 'package:kinga/ui/attendance_screen.dart';
@@ -39,17 +40,24 @@ class MyApp extends StatelessWidget {
               ],
               child: MaterialApp(
                 title: 'Flutter Demo',
-                theme: ThemeData(
-                  // This is the theme of your application.
-                    primarySwatch: ColorSchemes.kingacolor,
-                    scaffoldBackgroundColor: ColorSchemes.backgroundColor,
-                    backgroundColor: ColorSchemes.backgroundColor,
-                    errorColor: ColorSchemes.errorColor
-                ),
-                home: const AttendanceScreen(),
-              ),
-            );
-        } else {
+                localizationsDelegates: [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [
+        Locale('de', 'DE'),
+      ],
+      theme: ThemeData(
+        // This is the theme of your application.
+        primarySwatch: ColorSchemes.kingacolor,
+        scaffoldBackgroundColor: ColorSchemes.backgroundColor,
+        backgroundColor: ColorSchemes.backgroundColor,
+        errorColor: ColorSchemes.errorColor
+      ),
+      home: const AttendanceScreen(),
+    ),
+);} else {
           // if not logged in
           return MultiBlocProvider(
             providers: [
