@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:bloc/bloc.dart';
+import 'package:kinga/domain/entity/absence.dart';
 import 'package:kinga/domain/student_service.dart';
 import 'package:kinga/domain/entity/student.dart';
 import 'package:kinga/domain/entity/attendance.dart';
@@ -53,5 +54,12 @@ class StudentsCubit extends Cubit<StudentsState> {
     _studentService.setProfileImage(studentId, image);
   }
 
+  bool isAbsent(String studentId) {
+    return _studentService.getAbsencesOfToday(_studentService.getStudent(studentId).absences).isNotEmpty;
+  }
+
+  Future<void> createAbsence(String studentId, Absence absence) async {
+    _studentService.createAbsence(studentId, absence);
+  }
 
 }

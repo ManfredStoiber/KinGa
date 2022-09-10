@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
+import 'package:kinga/domain/entity/absence.dart';
 import 'package:kinga/domain/entity/attendance.dart';
 import 'package:kinga/domain/entity/student.dart';
 import 'package:kinga/domain/student_repository.dart';
@@ -53,6 +54,12 @@ class StudentService {
   }
 
   Future<void> toggleAttendance(String studentId) async {
+
+    if (isAbsent(studentId)) {
+      // if absent, do nothing
+      return;
+    }
+
     String now = DateTime.now().toIso8601String();
     String currentDate = IsoDateUtils.getIsoDateFromIsoDateTime(now);
     String currentTime = IsoDateUtils.getIsoTimeFromIsoDateTime(now);
@@ -84,6 +91,20 @@ class StudentService {
     updateStudent(getStudent(studentId));
   }
 
+  Set<Absence> getAbsencesOfToday(List<Absence> absences) {
+    Set<Absence> absencesOfToday = {};
+    for (var absence in absences) {
+      DateTime from = DateTime.parse(absence.from);
+      DateTime until = DateTime.parse(absence.until);
+      DateTime now = DateTime.now();
+
+      if (now.isAfter(from) && now.isBefore(until.add(Duration(days: 1)))) {
+        absencesOfToday.add(absence);
+      }
+    }
+    return absencesOfToday;
+  }
+
   Attendance? getAttendanceOfToday(List<Attendance> attendances) {
     for (var attendance in attendances) {
       if (attendance.date == IsoDateUtils.getIsoDateFromIsoDateTime(DateTime.now().toIso8601String())) {
@@ -111,4 +132,13 @@ class StudentService {
   void setProfileImage(String studentId, Uint8List image) {
     _studentRepository.setProfileImage(studentId, image);
   }
+
+  bool isAbsent(String studentId) {
+    return getAbsencesOfToday(getStudent(studentId).absences).isNotEmpty;
+  }
+
+  Future<void> createAbsence(String studentId, Absence absence) async {
+    _studentRepository.createAbsence(studentId, absence);
+  }
+
 }

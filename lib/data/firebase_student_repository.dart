@@ -11,6 +11,7 @@ import 'package:get_it/get_it.dart';
 import 'package:kinga/constants/keys.dart';
 import 'package:kinga/data/firebase_utils.dart';
 import 'package:flutter/services.dart';
+import 'package:kinga/domain/entity/absence.dart';
 import 'package:kinga/domain/entity/attendance.dart';
 import 'package:kinga/domain/student_repository.dart';
 import 'package:kinga/domain/entity/caregiver.dart';
@@ -138,6 +139,16 @@ class FirebaseStudentRepository implements StudentRepository {
       'group': student.group,
     };
 
+    List<Map<String, dynamic>> absences = [];
+    for (final Absence absence in student.absences) {
+      absences.add({
+        'from': absence.from,
+        'until': absence.until,
+        'sickness': absence.sickness
+      });
+    }
+    map['absences'] = absences;
+
     List<Map<String, dynamic>> attendances = [];
     for (final Attendance attendance in student.attendances) {
       attendances.add({
@@ -207,6 +218,7 @@ class FirebaseStudentRepository implements StudentRepository {
       [],
       [],
       [],
+      [],
     );
   }
 
@@ -249,6 +261,7 @@ class FirebaseStudentRepository implements StudentRepository {
         [],
         [],
         [],
+        [],
         []);
 
     db.collection('Institution').doc(currentInstitutionId).collection('Student')
@@ -271,6 +284,12 @@ class FirebaseStudentRepository implements StudentRepository {
     studentService.updateStudent(studentService.getStudent(studentId)..profileImage = image);
   }
 
+  @override
+  Future<void> createAbsence(String studentId, Absence absence) async {
+    Student s = GetIt.I<StudentService>().getStudent(studentId);
+    s.absences.add(absence);
+    updateStudent(s);
+  }
 
 }
 
@@ -287,6 +306,16 @@ Map<String, dynamic> studentToMap(Student student) {
     'group': student.group,
   };
 
+  List<Map<String, dynamic>> absences = [];
+  for (final Absence absence in student.absences) {
+    absences.add({
+      'from': absence.from,
+      'until': absence.until,
+      'sickness': absence.sickness
+    });
+  }
+
+  map['absences'] = absences;
   List<Map<String, dynamic>> attendances = [];
   for (final Attendance attendance in student.attendances) {
     attendances.add({

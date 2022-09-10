@@ -1,5 +1,6 @@
 
 class Strings {
+  static const String absence = 'Abwesenheit';
   static const String allGroups = 'Alle';
   static const String alreadyRegistered = 'Ich habe bereits ein Benutzerkonto';
   static const String alternative = 'oder';
@@ -9,7 +10,10 @@ class Strings {
   static const String city = 'Ort';
   static const String createInstitution = 'Eine neue Einrichtung anlegen';
   static const String createNewStudent = 'Neues Kind anlegen';
+  static const String date_format = 'mm.dd.yyyy';
   static const String email = 'E-Mail-Adresse';
+  static const String end = 'Ende';
+  static const String enter = 'Eintragen';
   static const String feedback = 'Feedback';
   static const String firstname = 'Vorname';
   static const String housenumber = 'Hausnummer';
@@ -43,6 +47,7 @@ class Strings {
   static const String street = 'Straße';
   static const String signIn = 'Anmelden';
   static const String signUp = 'Registrieren';
+  static const String start = 'Anfang';
   static const String support = 'Support';
   static const String errorEmailAlreadyInUse = 'Es besteht bereits ein Benutzerkonto mit der angegebenen E-Mail-Adresse';
   static const String errorEmailEmpty = 'E-Mail-Adresse darf nicht leer sein';

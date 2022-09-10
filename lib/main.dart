@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart' as firebase;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:kinga/constants/colors.dart';
 import 'package:kinga/constants/keys.dart';
 import 'package:kinga/data/firebase_authentication_repository.dart';
@@ -66,6 +67,14 @@ class MyApp extends StatelessWidget {
                     ],
                     child: MaterialApp(
                       title: 'Flutter Demo',
+                      localizationsDelegates: [
+                        GlobalMaterialLocalizations.delegate,
+                        GlobalWidgetsLocalizations.delegate,
+                        GlobalCupertinoLocalizations.delegate,
+                      ],
+                      supportedLocales: const [
+                        Locale('de', 'DE'),
+                      ],
                       theme: ThemeData(
                         // This is the theme of your application.
                           primarySwatch: ColorSchemes.kingacolor,

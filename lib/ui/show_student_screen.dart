@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:kinga/domain/entity/caregiver.dart';
 import 'package:kinga/domain/entity/student.dart';
+import 'package:kinga/ui/absence_dialog.dart';
 import 'package:kinga/ui/attendance_screen.dart';
 import 'package:kinga/ui/bloc/students_cubit.dart';
 import 'package:kinga/ui/widgets/expandable_fab.dart';
@@ -94,8 +96,12 @@ class _ShowStudentScreenState extends State<ShowStudentScreen> {
                       FloatingActionButton(
                         heroTag: "tmp1",
                         onPressed: () {
-
-                        },),
+                          showDialog(context: context, builder: (context) => AbsenceDialog(
+                              widget.studentId
+                          ),);
+                        },
+                        child: Icon(Icons.event_busy),
+                      ),
                       Container(
                         width: 50,
                       ),
@@ -172,10 +178,8 @@ class _ShowStudentScreenState extends State<ShowStudentScreen> {
       child: TextField(
         enabled: false,
         readOnly: true,
-        decoration: InputDecoration(
-            border: OutlineInputBorder(),
-            labelText: label
-        ),
+        decoration:
+            InputDecoration(border: OutlineInputBorder(), labelText: label),
         controller: controller,
       ),
     );
@@ -240,4 +244,3 @@ class _ShowStudentScreenState extends State<ShowStudentScreen> {
     return contacts;
   }
 }
-
