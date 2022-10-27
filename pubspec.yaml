@@ -42,6 +42,8 @@ dependencies:
   image_cropper: ^3.0.0
   bloc: ^8.1.0
   flutter_bloc: ^8.1.1
+  flutter_launcher_icons: ^0.10.0
+  firebase_auth: ^3.11.2
 
 dev_dependencies:
   flutter_test:

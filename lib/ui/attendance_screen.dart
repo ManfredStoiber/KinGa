@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -234,6 +235,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                 title: const Text(Strings.logout),
                 onTap: () {
                   Navigator.pop(context);
+                  FirebaseAuth.instance.signOut();
                 },
                 leading: Icon(Icons.power_settings_new),
               ),
