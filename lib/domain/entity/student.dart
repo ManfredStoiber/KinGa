@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:kinga/domain/entity/absence.dart';
 import 'package:kinga/domain/entity/caregiver.dart';
+import 'package:kinga/domain/entity/incidence.dart';
 
 import 'attendance.dart';
 import 'person.dart';
@@ -16,7 +17,7 @@ class Student extends Person implements Comparable<Student> {
   String address = "";
   String city = "";
   String group = "";
-  //List<Incident> incidents = new ArrayList<>();
+  List<Incidence> incidences = [];
   //List<Kudo> kudos = new ArrayList<>();
   List<Caregiver> caregivers;
   //List<Person> pickups = new ArrayList<>();
@@ -48,6 +49,7 @@ class Student extends Person implements Comparable<Student> {
       this.diseases,
       this.medicines,
       this.healthNotes,
+      this.incidences,
       this.permissions,
   );
 

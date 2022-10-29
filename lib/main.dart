@@ -68,10 +68,10 @@ class MyApp extends StatelessWidget {
                       ],
                       theme: ThemeData(
                         // This is the theme of your application.
-                          primarySwatch: ColorSchemes.kingacolor,
-                          scaffoldBackgroundColor: ColorSchemes.backgroundColor,
-                          backgroundColor: ColorSchemes.backgroundColor,
-                          errorColor: ColorSchemes.errorColor
+                        primarySwatch: ColorSchemes.kingacolor,
+                        scaffoldBackgroundColor: ColorSchemes.backgroundColor,
+                        backgroundColor: ColorSchemes.backgroundColor,
+                        errorColor: ColorSchemes.errorColor,
                       ),
                       home: const AttendanceScreen(),
                     ),

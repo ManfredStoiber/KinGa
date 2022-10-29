@@ -21,14 +21,16 @@ class ExpandableFab extends StatefulWidget {
   final List<Widget> children;
 
   @override
-  State<ExpandableFab> createState() => _ExpandableFabState();
+  State<ExpandableFab> createState() => ExpandableFabState();
 }
 
-class _ExpandableFabState extends State<ExpandableFab>
+class ExpandableFabState extends State<ExpandableFab>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
   late final Animation<double> _expandAnimation;
   bool _open = false;
+
+  bool get open => _open;
 
   @override
   void initState() {
@@ -52,7 +54,7 @@ class _ExpandableFabState extends State<ExpandableFab>
     super.dispose();
   }
 
-  void _toggle() {
+  void toggle() {
     setState(() {
       _open = !_open;
       if (_open) {
@@ -74,7 +76,7 @@ class _ExpandableFabState extends State<ExpandableFab>
           visible: _open,
           child: GestureDetector(
             onTap: () => setState(() {
-              _toggle();
+              toggle();
             }),
             child: Container(
                 color: Color.fromRGBO(5, 5, 5, 0.5),
@@ -114,7 +116,7 @@ class _ExpandableFabState extends State<ExpandableFab>
           clipBehavior: Clip.antiAlias,
           elevation: 4.0,
           child: InkWell(
-            onTap: _toggle,
+            onTap: toggle,
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: Icon(
@@ -166,7 +168,7 @@ class _ExpandableFabState extends State<ExpandableFab>
           curve: const Interval(0.25, 1.0, curve: Curves.easeInOut),
           duration: const Duration(milliseconds: 250),
           child: FloatingActionButton(
-            onPressed: _toggle,
+            onPressed: toggle,
             //foregroundColor: Theme.of(context).,
             backgroundColor: Theme.of(context).errorColor,
             child: widget.icon,

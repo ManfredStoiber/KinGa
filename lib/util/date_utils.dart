@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class IsoDateUtils {
@@ -29,4 +30,11 @@ class IsoDateUtils {
     return DateFormat('dd.MM.yyyy').format(DateTime.parse(isoDate));
   }
 
+  static String getTimeFromTimeOfDay(TimeOfDay dateTime) {
+    return "${_getFormattedTime(dateTime.hour)}:${_getFormattedTime(dateTime.minute)}";
+  }
+
+  static String _getFormattedTime(int time) {
+    return time < 10 ? "0$time" : "$time";
+  }
 }

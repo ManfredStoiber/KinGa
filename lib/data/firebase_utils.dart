@@ -1,17 +1,19 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:kinga/constants/strings.dart';
 import 'package:kinga/domain/entity/absence.dart';
 import 'package:kinga/domain/entity/attendance.dart';
 import 'package:kinga/domain/entity/caregiver.dart';
+import 'package:kinga/domain/entity/incidence.dart';
 import 'package:kinga/domain/entity/student.dart';
 import 'package:kinga/util/crypto_utils.dart';
 
 class FirebaseUtils {
 
-  static List decryptStudent(String decrypted) {
+  static List decryptStudent(String encrypted) {
 
-    Map map = json.decode(CryptoUtils.decrypt(decrypted));
+    Map map = json.decode(CryptoUtils.decrypt(encrypted));
 
     // absences
     List<Absence> absences = [];
@@ -44,6 +46,16 @@ class FirebaseUtils {
       ));
     }
 
+    // incidences
+    List<Incidence> incidences = [];
+    for (var incidence in map['incidences'] ?? {}) {
+      incidences.add(Incidence(
+        incidence['dateTime'],
+        incidence['description'],
+        incidence['category'] ?? Strings.other
+      ));
+    }
+
     // decrypt and return student
     return [Student(
       map['studentId'],
@@ -52,10 +64,9 @@ class FirebaseUtils {
       map['lastname'],
       map['birthday'],
       map['address'],
-      map['city'],
+      map['city'] ?? "",
       map['group'],
       Uint8List(0),
-      //map['profileImage'],
       caregivers.toList(),
       attendances.toList(),
       absences,
@@ -63,6 +74,7 @@ class FirebaseUtils {
       [],
       [],
       [],
+      incidences,
       Set<String>.from(map['permissions'] ?? [])
     ), map['profileImage']];
   }
@@ -114,6 +126,16 @@ class FirebaseUtils {
     map['profileImage'] = base64.encode(student.profileImage).hashCode.toString();
     //map['profileImage'] = student.profileImage.toString().hashCode.toString();
     //map['profileImage'] = sha1.convert(student.profileImage).toString();
+
+    List<Map<String, dynamic>> incidences = [];
+    for (final Incidence incidence in student.incidences) {
+      incidences.add({
+        'dateTime': incidence.dateTime,
+        'description': incidence.description,
+        'category': incidence.category,
+      });
+    }
+    map['incidences'] = incidences;
 
     // permissions
     map['permissions'] = student.permissions.toList();

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -7,7 +9,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get_it/get_it.dart';
 import 'package:kinga/domain/entity/caregiver.dart';
 import 'package:kinga/features/permissions/ui/list_permissions_screen.dart';
-import 'package:kinga/shared/loading_indicator.dart';
 import 'package:kinga/ui/new_student_screen.dart';
 import 'package:kinga/domain/institution_repository.dart';
 import 'package:kinga/ui/show_student_screen.dart';
@@ -27,7 +28,7 @@ class AttendanceScreen extends StatefulWidget {
 
 class _AttendanceScreenState extends State<AttendanceScreen> {
 
-  String selected = Strings.allGroups;
+  String selected = Strings.all;
   bool activeSearch = false;
   String search = "";
 
@@ -65,17 +66,8 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
         appBar: AppBar(
-          // Here we take the value from the MyHomePage object that was created by
-          // the App.build method, and use it to set our appbar title.
-          //title: Text(widget.title),
             title: BlocBuilder<StudentsCubit, StudentsState>(
               builder: (context, state) {
                 if (state is StudentsInitial || state is StudentsLoading) {
@@ -120,7 +112,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                             underline: Container(height: 1, color: Colors.black38,),
                             isExpanded: true,
                             value: selected,
-                            items: [const DropdownMenuItem(value: Strings.allGroups, child: Text(Strings.allGroups))] + state.groups.map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
+                            items: [const DropdownMenuItem(value: Strings.all, child: Text(Strings.all))] + state.groups.map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
                             onChanged: (String? newValue) {
                               setState(() {
                                 selected = newValue!;
@@ -140,7 +132,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                       ]
                   );
                 } else {
-                  return const Text("Exception");
+                  return const Text("Exception"); // TODO
                 }
   },
 )
@@ -153,13 +145,13 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
             } else if (state is StudentsLoaded) {
               return GridView(
                 padding: const EdgeInsets.all(10),
-                // TODO: maybe move sorting to state or repository for better performance; include lastname for sorting
+                // TODO: maybe move sorting to state or repository for better performance;
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 3,
                 ),
                 children: state.students
                     .where((student) =>
-                (selected == Strings.allGroups ||
+                (selected == Strings.all ||
                     student.group == selected) && (!activeSearch ||
                     "${student.firstname} ${student.lastname}"
                         .toLowerCase()
@@ -181,9 +173,17 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
             padding: EdgeInsets.zero,
             children: [
               DrawerHeader(
+                padding: EdgeInsets.zero,
                 decoration: BoxDecoration(color: Theme.of(context).primaryColor),
-                child: const Center(child: Text(Strings.kinga))
-              ),
+                //child: const Center(child: Text(Strings.kinga))
+                child: Row(
+                  children: [
+                    Align(alignment: Alignment.centerLeft, child: Opacity(opacity: 0.7, child: Image.asset(fit: BoxFit.fitHeight, "assets${Platform.pathSeparator}images${Platform.pathSeparator}building_blocks.png", height: 200))),
+                    const Spacer(),
+                    Text(Strings.kinga, style: Theme.of(context).textTheme.headlineMedium,),
+                    const Spacer(),
+                  ],
+                )),
               ListTile(
                 title: const Text(Strings.newChild),
                 onTap: () {
@@ -302,7 +302,7 @@ class _AttendanceItemState extends State<AttendanceItem> {
                             child: () {
                               if (state.getStudent(widget.studentId).profileImage.isEmpty) {
                                 return SvgPicture.asset(
-                                  'assets/images/hamster.svg',);
+                                  'assets${Platform.pathSeparator}images${Platform.pathSeparator}hamster.svg',);
                               } else {
                                 return Container(margin: const EdgeInsets.only(top: 5), clipBehavior: Clip.antiAlias, decoration: ShapeDecoration(shape: ContinuousRectangleBorder(borderRadius: BorderRadius.circular(44))), child: Image.memory(fit: BoxFit.fitHeight, state.getStudent(widget.studentId).profileImage));
                               }
@@ -319,8 +319,14 @@ class _AttendanceItemState extends State<AttendanceItem> {
               ),
               Visibility(
                 visible: BlocProvider.of<StudentsCubit>(context).hasBirthday(widget.studentId),
-                child: Drop(image: Image.asset('assets/images/cupcake.png'), width: 35.0, height: 35.0, reversed: false,)
-        ),
+                child: Drop(image: Image.asset('assets${Platform.pathSeparator}images${Platform.pathSeparator}cupcake.png'), width: 35.0, height: 35.0, reversed: false,)
+              ),
+              Align(
+                alignment: Alignment.topRight,
+                child: Visibility(
+                    visible: BlocProvider.of<StudentsCubit>(context).hasIncidences(widget.studentId),
+                    child: Drop(image: Image.asset('assets${Platform.pathSeparator}images${Platform.pathSeparator}notification.png'), width: 35.0, height: 35.0, reversed: true,)
+              ))
             ]
           );
         } else {
