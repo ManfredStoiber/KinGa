@@ -9,8 +9,10 @@ import 'package:kinga/domain/entity/student.dart';
 import 'package:kinga/domain/students_cubit.dart';
 import 'package:kinga/ui/attendance_screen.dart';
 import 'package:kinga/ui/widgets/expandable_fab.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'package:kinga/constants/strings.dart';
+import '../domain/entity/caregiver.dart';
 
 class ShowStudentScreen extends StatefulWidget {
   // TODO: make constructor const again
@@ -166,15 +168,12 @@ class _ShowStudentScreenState extends State<ShowStudentScreen> {
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
         floatingActionButton: ExpandableFab(
           distance: 150,
-          icon: Icon(Icons.phone, color: Colors.white,),
+          icon: Icon(Icons.quick_contacts_dialer, color: Colors.white,),
           color: Theme
               .of(context)
               .errorColor,
-          children: [
-            ActionButton(icon: Icon(Icons.email, color: Colors.white,)),
-            ActionButton(icon: Icon(Icons.phone, color: Colors.white,)),
-            ActionButton(icon: Icon(Icons.message, color: Colors.white,)),
-          ],
+          children: buildContact(student.caregivers)
+          ,
         ),
       );
     } else {
@@ -187,6 +186,8 @@ class _ShowStudentScreenState extends State<ShowStudentScreen> {
   Container buildReadOnlyTextField(String label, String text) {
     TextEditingController controller = TextEditingController();
     controller.text = text;
+    if (text.isEmpty) return Container();
+
     return Container(
       margin: EdgeInsets.all(10),
       child: TextField(
@@ -199,6 +200,23 @@ class _ShowStudentScreenState extends State<ShowStudentScreen> {
         controller: controller,
       ),
     );
+  }
+
+  List<ActionButton> buildContact(List<Caregiver> caregivers) {
+    List<ActionButton> contacts = List.empty(growable: true);
+    for (var caregiver in caregivers) {
+      caregiver.phoneNumbers.forEach((label, phoneNumber) {
+        contacts.add(ActionButton(
+            icon: Icon(Icons.phone, color: Colors.white),
+            text: "${caregiver.firstname} ${caregiver.lastname} ($label)",
+            onPressed: () async{
+              Uri number = Uri.parse('tel:$phoneNumber');
+              await launchUrl(number);
+            },
+        ));
+      });
+    }
+    return contacts;
   }
 }
 
