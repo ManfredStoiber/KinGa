@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:kinga/domain/entity/caregiver.dart';
+import 'package:kinga/domain/entity/student.dart';
 import 'package:kinga/ui/show_student_screen.dart';
 import 'package:kinga/constants/strings.dart';
 import 'package:kinga/constants/colors.dart';
@@ -164,10 +165,17 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
               return GridView(
                 padding: EdgeInsets.all(10),
                 children: state.students
-                    .where((student) => (selected == Strings.allGroups || student.group == selected) && (!activeSearch || "${student.firstname} ${student.lastname}".toLowerCase().contains(search.toLowerCase())))
-                    .map((e) => AttendanceItem(
-                    studentId: e.studentId, firstname: e.firstname))
-                    .toList()..sort((a, b) => a.firstname.compareTo(b.firstname)), // TODO: maybe move sorting to state or repository for better performance; include lastname for sorting
+                    .where((student) =>
+                (selected == Strings.allGroups ||
+                    student.group == selected) && (!activeSearch ||
+                    "${student.firstname} ${student.lastname}"
+                        .toLowerCase()
+                        .contains(search.toLowerCase())))
+                    .map((e) =>
+                    AttendanceItem(studentId: e.studentId))
+                    .toList()
+                  ..sort((a, b) => state.getStudent(a.studentId).firstname.compareTo(state.getStudent(b.studentId).firstname)),
+                // TODO: maybe move sorting to state or repository for better performance; include lastname for sorting
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 3,
                 ),
@@ -247,10 +255,9 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
 }
 
 class AttendanceItem extends StatefulWidget {
-  AttendanceItem({Key? key, required this.studentId, required this.firstname}) : super(key: key);
+  AttendanceItem({Key? key, required this.studentId}) : super(key: key);
 
   final String studentId;
-  final String firstname;
 
   @override
   State<AttendanceItem> createState() => _AttendanceItemState();
@@ -282,9 +289,9 @@ class _AttendanceItemState extends State<AttendanceItem> {
                       shape: ContinuousRectangleBorder(
                         borderRadius: BorderRadius.circular(64.0),
                       ),
-                      backgroundColor: state.getStudent(widget.studentId).attendances.length % 2 == 0
-                          ? ColorSchemes.kingacolor
-                          : ColorSchemes.errorColor
+                      backgroundColor: BlocProvider.of<StudentsCubit>(context).isAttendant(widget.studentId)
+                          ? ColorSchemes.errorColor
+                          : ColorSchemes.kingacolor
                   ),
                   child: Column(
                       children: [
@@ -299,7 +306,7 @@ class _AttendanceItemState extends State<AttendanceItem> {
                         ),
                         Container(
                           padding: EdgeInsets.fromLTRB(0, 0, 0, 5),
-                          child: Text(widget.firstname),
+                          child: Text(state.getStudent(widget.studentId).firstname),
                         )
                       ]
                   )

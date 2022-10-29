@@ -61,100 +61,100 @@ class _ShowStudentScreenState extends State<ShowStudentScreen> {
           title: Text("${student.firstname} ${student.lastname}"),
         ),
         body: Stack(
-          children: [ ListView(
-              children: [
-                Container(
-                  height: 200,
-                  margin: EdgeInsets.all(20),
-                  child: Row(
-                    children: [
-                      Container(
-                        margin: EdgeInsets.all(10),
-                        child: ElevatedButton(
-                          child: const Text("Press"),
-                          onPressed: () {
-                            Navigator.push(context, MaterialPageRoute(
-                                builder: (context) => const AttendanceScreen()));
-                            pick();
-                          },
-                        ),
-                      ),
-                      Expanded(
-                          child: Hero(
-                            tag: "hero${student.studentId}",
-                            child: SvgPicture.asset('assets/images/hamster.svg',)
-                          )
-                      ),
-                      Container(
-                        margin: EdgeInsets.all(10),
-                        child: ElevatedButton(
-                          child: const Text("Press"),
-                          onPressed: () {
-                            Navigator.push(context, MaterialPageRoute(
-                                builder: (context) => const AttendanceScreen()));
-                            pick();
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    FloatingActionButton(
-                      heroTag: "tmp1",
-                      onPressed: () {
-
-                      },),
-                    Container(
-                      width: 50,
-                    ),
-                    FloatingActionButton(
-                      heroTag: "tmp2",
-                      onPressed: () {
-
-                    },),
-                  ],
-                ),
-                Divider(
-                  thickness: 2,
-                  endIndent: 15,
-                  indent: 15,
-                  height: 50,
-                ),
-                Card(
-                  margin: EdgeInsets.fromLTRB(10, 5, 10, 5),
-                  child: Theme(
-                    data: Theme.of(context).copyWith(
-                        dividerColor: Colors.transparent),
-                    child: ExpansionTile(
-
-                      title: Text(Strings.infoGeneral),
+            children: [ ListView(
+                children: [
+                  Container(
+                    height: 200,
+                    margin: EdgeInsets.all(20),
+                    child: Row(
                       children: [
-                        buildReadOnlyTextField(Strings.firstname, student.firstname),
-                        buildReadOnlyTextField(Strings.middlename, student.middlename),
-                        buildReadOnlyTextField(Strings.lastname, student.lastname),
-                        buildReadOnlyTextField(Strings.birthday, "05.12.2019"), // TODO
+                        Container(
+                          margin: EdgeInsets.all(10),
+                          child: ElevatedButton(
+                            child: const Text("Press"),
+                            onPressed: () {
+                              Navigator.push(context, MaterialPageRoute(
+                                  builder: (context) => const AttendanceScreen()));
+                              pick();
+                            },
+                          ),
+                        ),
+                        Expanded(
+                            child: Hero(
+                                tag: "hero${student.studentId}",
+                                child: SvgPicture.asset('assets/images/hamster.svg',)
+                            )
+                        ),
+                        Container(
+                          margin: EdgeInsets.all(10),
+                          child: ElevatedButton(
+                            child: const Text("Press"),
+                            onPressed: () {
+                              Navigator.push(context, MaterialPageRoute(
+                                  builder: (context) => const AttendanceScreen()));
+                              pick();
+                            },
+                          ),
+                        ),
                       ],
                     ),
                   ),
-                ),
-                Card(
-                  margin: EdgeInsets.fromLTRB(10, 5, 10, 5),
-                  child: ExpansionTile(title: Text(Strings.infoPickup)),
-                ),
-                Card(
-                  margin: EdgeInsets.fromLTRB(10, 5, 10, 5),
-                  child: ExpansionTile(title: Text(Strings.infoHealth)),
-                ),
-                Card(
-                  margin: EdgeInsets.fromLTRB(10, 5, 10, 5),
-                  child: ExpansionTile(title: Text(Strings.permission)),
-                ),
-              ]
-          ),
-    ]),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      FloatingActionButton(
+                        heroTag: "tmp1",
+                        onPressed: () {
+
+                        },),
+                      Container(
+                        width: 50,
+                      ),
+                      FloatingActionButton(
+                        heroTag: "tmp2",
+                        onPressed: () {
+
+                        },),
+                    ],
+                  ),
+                  Divider(
+                    thickness: 2,
+                    endIndent: 15,
+                    indent: 15,
+                    height: 50,
+                  ),
+                  Card(
+                    margin: EdgeInsets.fromLTRB(10, 5, 10, 5),
+                    child: Theme(
+                      data: Theme.of(context).copyWith(
+                          dividerColor: Colors.transparent),
+                      child: ExpansionTile(
+
+                        title: Text(Strings.infoGeneral),
+                        children: [
+                          buildReadOnlyTextField(Strings.firstname, student.firstname),
+                          buildReadOnlyTextField(Strings.middlename, student.middlename),
+                          buildReadOnlyTextField(Strings.lastname, student.lastname),
+                          buildReadOnlyTextField(Strings.birthday, "05.12.2019"), // TODO
+                        ],
+                      ),
+                    ),
+                  ),
+                  Card(
+                    margin: EdgeInsets.fromLTRB(10, 5, 10, 5),
+                    child: ExpansionTile(title: Text(Strings.infoPickup)),
+                  ),
+                  Card(
+                    margin: EdgeInsets.fromLTRB(10, 5, 10, 5),
+                    child: ExpansionTile(title: Text(Strings.infoHealth)),
+                  ),
+                  Card(
+                    margin: EdgeInsets.fromLTRB(10, 5, 10, 5),
+                    child: ExpansionTile(title: Text(Strings.permission)),
+                  ),
+                ]
+            ),
+            ]),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
         floatingActionButton: ExpandableFab(
           distance: 150,
@@ -173,24 +173,24 @@ class _ShowStudentScreenState extends State<ShowStudentScreen> {
       return Text('Not loaded yet'); // TODO
     }
   },
-);
+    );
   }
 
   Container buildReadOnlyTextField(String label, String text) {
     TextEditingController controller = TextEditingController();
     controller.text = text;
     return Container(
-                  margin: EdgeInsets.all(10),
-                  child: TextField(
-                    enabled: false,
-                    readOnly: true,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: label
-                    ),
-                    controller: controller,
-                  ),
-                );
+      margin: EdgeInsets.all(10),
+      child: TextField(
+        enabled: false,
+        readOnly: true,
+        decoration: InputDecoration(
+            border: OutlineInputBorder(),
+            labelText: label
+        ),
+        controller: controller,
+      ),
+    );
   }
 }
 
