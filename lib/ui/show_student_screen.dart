@@ -80,9 +80,17 @@ class _ShowStudentScreenState extends State<ShowStudentScreen> {
                           ),
                         ),
                         Expanded(
-                            child: Hero(
-                                tag: "hero${student.studentId}",
-                                child: SvgPicture.asset('assets/images/hamster.svg',)
+                            child: Stack(
+                              children: [
+                                Hero(
+                                    tag: "hero${student.studentId}",
+                                    child: SvgPicture.asset('assets/images/hamster.svg',)
+                                ),
+                                Visibility(
+                                    visible: BlocProvider.of<StudentsCubit>(context).hasBirthday(widget.studentId),
+                                    child: const Icon(Icons.cake)
+                                ),
+                              ]
                             )
                         ),
                         Container(

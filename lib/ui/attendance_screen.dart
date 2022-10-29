@@ -271,44 +271,52 @@ class _AttendanceItemState extends State<AttendanceItem> {
     return BlocBuilder<StudentsCubit, StudentsState>(
       builder: (context, state) {
         if (state is StudentsLoaded) {
-          return Container(
-              margin: EdgeInsets.all(10),
-              child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(context, MaterialPageRoute(
-                        builder: (context) =>
-                            ShowStudentScreen(studentId: widget.studentId,)));
-                  },
-                  onLongPress: () {
-                    BlocProvider.of<StudentsCubit>(context).toggleAttendance(
-                        widget.studentId);
-                  },
-                  style: TextButton.styleFrom(
-                      shape: ContinuousRectangleBorder(
-                        borderRadius: BorderRadius.circular(64.0),
-                      ),
-                      backgroundColor: BlocProvider.of<StudentsCubit>(context).isAttendant(widget.studentId)
-                          ? ColorSchemes.errorColor
-                          : ColorSchemes.kingacolor
-                  ),
-                  child: Column(
-                      children: [
-                        Expanded(
-                          child: Container(
-                            child: Hero(
-                              tag: "hero${widget.studentId}",
-                              child: SvgPicture.asset(
-                                'assets/images/hamster.svg',),
+          return Stack(
+            children: [
+              Container(
+                margin: EdgeInsets.all(10),
+                child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(context, MaterialPageRoute(
+                          builder: (context) =>
+                              ShowStudentScreen(studentId: widget.studentId,)));
+                    },
+                    onLongPress: () {
+                      BlocProvider.of<StudentsCubit>(context).toggleAttendance(
+                          widget.studentId);
+                    },
+                    style: TextButton.styleFrom(
+                        shape: ContinuousRectangleBorder(
+                          borderRadius: BorderRadius.circular(64.0),
+                        ),
+                        backgroundColor: BlocProvider.of<StudentsCubit>(context).isAttendant(widget.studentId)
+                            ? ColorSchemes.errorColor
+                            : ColorSchemes.kingacolor
+                    ),
+                    child: Column(
+                        children: [
+                          Expanded(
+                            child: Container(
+                              child: Hero(
+                                tag: "hero${widget.studentId}",
+                                child: SvgPicture.asset(
+                                  'assets/images/hamster.svg',),
+                              ),
                             ),
                           ),
-                        ),
-                        Container(
-                          padding: EdgeInsets.fromLTRB(0, 0, 0, 5),
-                          child: Text(state.getStudent(widget.studentId).firstname),
-                        )
-                      ]
-                  )
-              )
+                          Container(
+                            padding: EdgeInsets.fromLTRB(0, 0, 0, 5),
+                            child: Text(state.getStudent(widget.studentId).firstname),
+                          )
+                        ]
+                    )
+                )
+              ),
+              Visibility(
+                visible: BlocProvider.of<StudentsCubit>(context).hasBirthday(widget.studentId),
+                child: const Icon(Icons.cake)
+              ),
+            ]
           );
         } else {
           throw Exception('Invalid State');

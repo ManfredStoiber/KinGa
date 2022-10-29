@@ -10,4 +10,5 @@ class IsoDateUtils {
   static DateTime getDateTimeFromIsoStrings(String date, String time) {
     return DateTime.parse('${date}T${time}');
   }
+
 }

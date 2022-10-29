@@ -74,4 +74,15 @@ class StudentsCubit extends Cubit<StudentsState> {
     return false;
   }
 
+  bool hasBirthday(String studentId) {
+    if (state is StudentsLoaded) {
+      return IsoDateUtils.getIsoDateFromIsoDateTime(
+          DateTime.now().toIso8601String()).substring(5) == (state as StudentsLoaded)
+          .getStudent(studentId)
+          .birthday.substring(5);
+    } else {
+      return false;
+    }
+  }
+
 }
