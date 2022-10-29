@@ -36,6 +36,7 @@ class Student extends Person {
       this.city,
       this.group,
       this.caregivers,
+      this.attendances,
       //this.profileImage,
       this.allergies,
       this.diseases,

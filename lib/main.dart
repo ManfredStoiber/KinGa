@@ -33,7 +33,7 @@ class MyApp extends StatelessWidget {
           return MultiBlocProvider(
               providers: [
                 BlocProvider(
-                  create: (context) => StudentsCubit(FirebaseStudentRepository())..getStudents(),
+                  create: (context) => StudentsCubit(FirebaseStudentRepository()),
                   child: const AttendanceScreen(),
                 )
               ],
@@ -54,7 +54,7 @@ class MyApp extends StatelessWidget {
           return MultiBlocProvider(
             providers: [
               BlocProvider(
-                create: (context) => StudentsCubit(FirebaseStudentRepository())..getStudents(),
+                create: (context) => StudentsCubit(FirebaseStudentRepository()),
                 child: const AttendanceScreen(),
               )
             ],
