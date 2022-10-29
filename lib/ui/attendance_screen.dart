@@ -268,8 +268,6 @@ class _AttendanceItemState extends State<AttendanceItem> {
   
   @override
   Widget build(BuildContext context) {
-    Attendance attendance = Attendance("",DateTime.now().toIso8601String());
-
     return BlocBuilder<StudentsCubit, StudentsState>(
       builder: (context, state) {
         if (state is StudentsLoaded) {
