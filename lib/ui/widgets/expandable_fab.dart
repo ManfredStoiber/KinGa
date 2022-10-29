@@ -220,10 +220,12 @@ class ActionButton extends StatelessWidget {
   super.key,
   this.onPressed,
   required this.icon,
+  required this.text,
   });
 
   final VoidCallback? onPressed;
   final Icon icon;
+  final String text;
 
   @override
   Widget build(BuildContext context) {
@@ -235,7 +237,7 @@ class ActionButton extends StatelessWidget {
           margin: EdgeInsets.fromLTRB(0, 0, 15, 0),
           decoration: ShapeDecoration(color: Color.fromARGB(150, 0, 0, 0), shape: ContinuousRectangleBorder(borderRadius: BorderRadius.circular(10))),
           //color: Color.fromARGB(50, 0, 0, 0),
-          child: Text("Testname", style: TextStyle(color: Colors.white),)
+          child: Text(text, style: TextStyle(color: Colors.white),)
         ),
         Material(
           shape: CircleBorder(),
