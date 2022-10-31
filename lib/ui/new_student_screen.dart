@@ -1,14 +1,17 @@
-import 'dart:developer';
 import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:kinga/constants/colors.dart';
 import 'package:kinga/constants/strings.dart';
 import 'package:kinga/domain/entity/caregiver.dart';
+import 'package:kinga/ui/bloc/students_cubit.dart';
+
+import 'attendance_screen.dart';
 
 class NewStudentScreen extends StatefulWidget {
   const NewStudentScreen({Key? key}) : super(key: key);
@@ -21,6 +24,8 @@ class _NewStudentScreenState extends State<NewStudentScreen>
     with SingleTickerProviderStateMixin {
   int _tabIndex = 0;
   late TabController _tabController;
+
+  Map<String, dynamic> student = {};
 
   Uint8List _profileImage = Uint8List(0);
 
@@ -85,7 +90,14 @@ class _NewStudentScreenState extends State<NewStudentScreen>
               child: FloatingActionButton(
                   heroTag: 'fab1',
                   onPressed: () {
-                    _tabController.animateTo(_tabIndex + 1);
+                    if (_tabIndex == 3) {
+                      student['caregivers'] = caregivers;
+                      BlocProvider.of<StudentsCubit>(context).createStudent(student, _profileImage);
+                      Navigator.push(context, MaterialPageRoute(
+                          builder: (context) => const AttendanceScreen()));
+                    } else {
+                      _tabController.animateTo(_tabIndex + 1);
+                    }
                   },
                   child: (() {
                     if (_tabIndex == 3) {
@@ -140,9 +152,9 @@ class _NewStudentScreenState extends State<NewStudentScreen>
                     )
                   ],
                 ) as Widget,
-                buildTextField('Bezeichnung'),
-                buildTextField('Vorname'),
-                buildTextField('Nachname')
+                buildTextField('Bezeichnung', null),
+                buildTextField('Vorname', null),
+                buildTextField('Nachname', null)
               ] +
                   caregiver.value.phoneNumbers.entries
                       .map((phoneNumber) =>
@@ -151,10 +163,10 @@ class _NewStudentScreenState extends State<NewStudentScreen>
                         children: [
                           Expanded(
                               child: buildTextField(
-                                  phoneNumber.key)),
+                                  phoneNumber.key, null)),
                           Expanded(
                               child: buildTextField(
-                                  phoneNumber.value)),
+                                  phoneNumber.value, null)),
                           IconButton(
                               onPressed: () {},
                               icon: Icon(
@@ -169,8 +181,8 @@ class _NewStudentScreenState extends State<NewStudentScreen>
 
                     },
                       child: Text('Nummer hinzufügen'),),
-                    buildTextField('E-Mail'),
-                    buildTextField('Postleitzahl'),
+                    buildTextField('E-Mail', null),
+                    buildTextField('Postleitzahl', null),
                   ],
             ),
           ) as Widget)
@@ -283,20 +295,20 @@ class _NewStudentScreenState extends State<NewStudentScreen>
 
                     });
                   },),
-                buildTextField(Strings.firstname),
-                buildTextField(Strings.middlename),
-                buildTextField(Strings.lastname),
-                buildTextField(Strings.birthday),
+                buildTextField(Strings.firstname, 'firstname'),
+                buildTextField(Strings.middlename, 'middlename'),
+                buildTextField(Strings.lastname, 'lastname'),
+                buildTextField(Strings.birthday, 'birthday'),
                 Row(
                   children: [
-                    Expanded(child: buildTextField(Strings.street)),
-                    Expanded(child: buildTextField(Strings.housenumber)),
+                    Expanded(child: buildTextField(Strings.street, 'street')),
+                    Expanded(child: buildTextField(Strings.housenumber, 'housenumber')),
                   ],
                 ),
                 Row(
                   children: [
-                    Expanded(child: buildTextField(Strings.postcode)),
-                    Expanded(child: buildTextField(Strings.city)),
+                    Expanded(child: buildTextField(Strings.postcode, 'postcode')),
+                    Expanded(child: buildTextField(Strings.city, 'city')),
                   ],
                 )
               ],
@@ -307,11 +319,14 @@ class _NewStudentScreenState extends State<NewStudentScreen>
     ]);
   }
 
-  Widget buildTextField(String label) {
+  Widget buildTextField(String label, String? property) {
     return Container(
       margin: EdgeInsets.all(10),
       child: TextFormField(
         textInputAction: TextInputAction.next,
+        onChanged: (String? value) {
+          if (property != null) student[property] = value;
+        },
         scrollPadding: EdgeInsets.all(40),
         decoration:
         InputDecoration(border: OutlineInputBorder(), labelText: label),

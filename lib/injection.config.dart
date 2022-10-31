@@ -15,8 +15,7 @@ import 'domain/authentication_repository.dart' as _i3;
 import 'domain/authentication_service.dart' as _i4;
 import 'domain/institution_repository.dart' as _i7;
 import 'domain/student_repository.dart' as _i9;
-import 'domain/student_service.dart' as _i10;
-import 'service/app_module.dart' as _i11;
+import 'service/app_module.dart' as _i10;
 import 'service/firebase_service.dart'
     as _i6; // ignore_for_file: unnecessary_lambdas
 
@@ -47,8 +46,7 @@ Future<_i1.GetIt> $initGetIt(
     preResolve: true,
   );
   gh.factory<_i9.StudentRepository>(() => appModule.studentRepository);
-  gh.factory<_i10.StudentService>(() => appModule.studentService);
   return get;
 }
 
-class _$AppModule extends _i11.AppModule {}
+class _$AppModule extends _i10.AppModule {}

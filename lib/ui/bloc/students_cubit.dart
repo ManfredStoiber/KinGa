@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:bloc/bloc.dart';
 import 'package:kinga/domain/student_service.dart';
 import 'package:kinga/domain/entity/student.dart';
@@ -33,5 +35,14 @@ class StudentsCubit extends Cubit<StudentsState> {
   bool hasBirthday(String studentId) {
     return _studentService.hasBirthday(studentId);
   }
+
+  void createStudent(Map<String, dynamic> student, Uint8List profileImage) {
+    _studentService.createStudent(student, profileImage);
+  }
+
+  void setProfileImage(String studentId, Uint8List image) {
+    _studentService.setProfileImage(studentId, image);
+  }
+
 
 }

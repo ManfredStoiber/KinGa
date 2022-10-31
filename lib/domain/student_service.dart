@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:kinga/domain/entity/attendance.dart';
 import 'package:kinga/domain/entity/student.dart';
 import 'package:kinga/domain/student_repository.dart';
@@ -5,13 +7,13 @@ import 'package:kinga/util/date_utils.dart';
 
 class StudentService {
 
-  StudentRepository studentRepository;
+  StudentRepository _studentRepository;
   late Stream<Set<Student>> studentStream;
   late Set<Student> students;
   late Set<String> groups;
 
-  StudentService(this.studentRepository) {
-    studentStream = studentRepository.watchStudents().map((students) {
+  StudentService(this._studentRepository) {
+    studentStream = _studentRepository.watchStudents().map((students) {
       this.students = students;
       Set<String> tmp = {};
       for (var student in students) {
@@ -31,7 +33,21 @@ class StudentService {
   }
 
   Future<void> updateStudent(Student student) async {
-    studentRepository.updateStudent(student);
+    _studentRepository.updateStudent(student);
+  }
+
+  void createStudent(Map<String, dynamic> student, Uint8List profileImage) {
+    _studentRepository.createStudent(
+        student['firstname'],
+        student['middlename'],
+        student['lastname'],
+        student['birthday'],
+        student['street'],
+        student['housenumber'],
+        student['postcode'],
+        student['city'],
+        profileImage,
+        student['caregivers']);
   }
 
   Future<void> toggleAttendance(String studentId) async {
@@ -88,5 +104,9 @@ class StudentService {
     return IsoDateUtils.getIsoDateFromIsoDateTime(
         DateTime.now().toIso8601String()).substring(5) == getStudent(studentId)
         .birthday.substring(5);
+  }
+
+  void setProfileImage(String studentId, Uint8List image) {
+    _studentRepository.setProfileImage(studentId, image);
   }
 }
