@@ -6,15 +6,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:kinga/constants/strings.dart';
 
-class SetupScreen extends StatefulWidget {
-  const SetupScreen({Key? key}) : super(key: key);
+class SetupAccountScreen extends StatefulWidget {
+  const SetupAccountScreen({Key? key}) : super(key: key);
 
   @override
-  State<SetupScreen> createState() => _SetupScreenState();
+  State<SetupAccountScreen> createState() => _SetupAccountScreenState();
 
 }
 
-class _SetupScreenState extends State<SetupScreen> with TickerProviderStateMixin {
+class _SetupAccountScreenState extends State<SetupAccountScreen> with TickerProviderStateMixin {
   final _registerFormKey = GlobalKey<FormState>();
   final _loginFormKey = GlobalKey<FormState>();
   bool _alreadyRegistered = false;
@@ -102,7 +102,7 @@ class _SetupScreenState extends State<SetupScreen> with TickerProviderStateMixin
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Expanded(flex: 2,child: Container(),),
-        Center(child: Text(style: TextStyle(fontSize: 25), Strings.greeting)),
+        Center(child: Text(textAlign: TextAlign.center, style: TextStyle(fontSize: 25), Strings.greeting)),
         Expanded(child: Container(),),
         RadioListTile(
             title: const Text(Strings.notRegistered),

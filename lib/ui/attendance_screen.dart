@@ -3,11 +3,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get_it/get_it.dart';
 import 'package:kinga/domain/entity/caregiver.dart';
 import 'package:kinga/domain/entity/student.dart';
+import 'package:kinga/domain/institution_repository.dart';
 import 'package:kinga/ui/show_student_screen.dart';
 import 'package:kinga/constants/strings.dart';
 import 'package:kinga/constants/colors.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../domain/students_cubit.dart';
 import '../domain/entity/attendance.dart';
@@ -29,9 +32,15 @@ class AttendanceScreen extends StatefulWidget {
 }
 
 class _AttendanceScreenState extends State<AttendanceScreen> {
+
   String selected = Strings.allGroups;
   bool activeSearch = false;
   String search = "";
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   void debugConvertFirebaseFromKingaLegacy() {
     FirebaseFirestore.instance.collection('Institution').doc('debug').delete().onError((error, stackTrace) => null);
@@ -243,6 +252,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                 title: const Text(Strings.logout),
                 onTap: () {
                   Navigator.pop(context);
+                  GetIt.instance.get<InstitutionRepository>().leaveInstitution();
                   FirebaseAuth.instance.signOut();
                 },
                 leading: Icon(Icons.power_settings_new),
