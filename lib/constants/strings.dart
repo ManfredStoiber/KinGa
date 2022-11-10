@@ -2,8 +2,11 @@
 class Strings {
   static const String allGroups = 'Alle';
   static const String alreadyRegistered = 'Ich habe bereits ein Benutzerkonto';
+  static const String alternative = 'oder';
   static const String back = 'Zurück';
   static const String birthday = 'Geburtsdatum';
+  static const String cancel = 'Abbrechen';
+  static const String createInstitution = 'Eine neue Einrichtung anlegen';
   static const String email = 'E-Mail-Adresse';
   static const String feedback = 'Feedback';
   static const String firstname = 'Vorname';
@@ -12,6 +15,12 @@ class Strings {
   static const String infoGeneral = 'Allgemeines';
   static const String infoPickup = 'Abholberechtigte';
   static const String infoHealth = 'Gesundheit';
+  static const String institutionCredentialsConfirm = "Haben Sie Id und Passwort und/oder QR-Code an einem sicheren Ort verwahrt? Ohne diese Informationen sind Ihre Daten aufgrund der sicheren Verschlüsselung unwiderruflich verloren!";
+  static const String institutionCredentialsHint = "Bitte verwahren Sie die ID und das Passwort an einem sicheren Ort. Alternativ können Sie auch diesen QR Code speichern oder ausdrucken.";
+  static const String institutionCredentialsWarning = "Warnung: Da diese Zugangsdaten zur sicheren Verschlüsselung aller Ihrer Daten verwendet werden, führt ein Verlust der Zugangsdaten unwiderruflich zu einem Verlust aller Ihrer Daten!";
+  static const String institutionId = 'Id';
+  static const String institutionName = 'Name der Einrichtung';
+  static const String joinInstitution = 'Einer bestehenden Einrichtung beitreten';
   static const String kinga = 'KinGa';
   static const String lastname = 'Nachname';
   static const String logout = 'Ausloggen';
@@ -19,9 +28,11 @@ class Strings {
   static const String newChild = 'Neues Kind';
   static const String next = 'Weiter';
   static const String notRegistered = 'Ich benutze KinGa das erste Mal';
+  static const String notInInstitutionYet = "Sie sind noch keiner Einrichtung beigetreten";
   static const String password = 'Passwort';
   static const String passwordRepeat = 'Passwort wiederholen';
   static const String permission = 'Berechtigungen';
+  static const String scanQr = 'QR Code scannen';
   static const String search = 'Suche';
   static const String settings = 'Einstellungen';
   static const String signIn = 'Anmelden';
