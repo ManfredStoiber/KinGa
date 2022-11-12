@@ -23,6 +23,7 @@ class Strings {
   static const String joinInstitution = 'Einer bestehenden Einrichtung beitreten';
   static const String kinga = 'KinGa';
   static const String lastname = 'Nachname';
+  static const String loading = 'Wird geladen..';
   static const String logout = 'Ausloggen';
   static const String middlename = 'Zweitname(n)';
   static const String newChild = 'Neues Kind';

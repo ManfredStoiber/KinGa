@@ -1,6 +1,6 @@
-part of '../domain/students_cubit.dart';
+part of '../bloc/students_cubit.dart';
 
-@immutable
+
 abstract class StudentsState {
   const StudentsState();
 }

@@ -5,15 +5,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get_it/get_it.dart';
 import 'package:kinga/domain/entity/caregiver.dart';
-import 'package:kinga/domain/entity/student.dart';
 import 'package:kinga/domain/institution_repository.dart';
 import 'package:kinga/ui/show_student_screen.dart';
 import 'package:kinga/constants/strings.dart';
 import 'package:kinga/constants/colors.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
-import '../domain/students_cubit.dart';
-import '../domain/entity/attendance.dart';
+import 'bloc/students_cubit.dart';
 
 class AttendanceScreen extends StatefulWidget {
   const AttendanceScreen({Key? key}) : super(key: key);
@@ -84,8 +81,8 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
           //title: Text(widget.title),
             title: BlocBuilder<StudentsCubit, StudentsState>(
               builder: (context, state) {
-                if (state is StudentsLoading) {
-                  return Text("loading..");
+                if (state is StudentsInitial || state is StudentsLoading) {
+                  return Text(Strings.loading);
                 } else if (state is StudentsLoaded) {
                   return Row(
                       children: [
@@ -154,9 +151,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
         ),
         body: BlocBuilder<StudentsCubit, StudentsState>(
           builder: (context, state) {
-            if (state is StudentsInitial) {
-              return Text("Init");
-            } else if (state is StudentsLoading) {
+            if (state is StudentsInitial || state is StudentsLoading) {
               return Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -190,7 +185,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                 ),
               );
             } else {
-              return Text("Else"); // TODO
+              return Text("Exception"); // TODO
             }
           }
         ),
