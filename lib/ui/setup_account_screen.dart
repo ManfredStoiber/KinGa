@@ -1,10 +1,10 @@
-import 'dart:developer';
 
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get_it/get_it.dart';
 import 'package:kinga/constants/strings.dart';
+import 'package:kinga/domain/authentication_service.dart';
 
 class SetupAccountScreen extends StatefulWidget {
   const SetupAccountScreen({Key? key}) : super(key: key);
@@ -15,6 +15,7 @@ class SetupAccountScreen extends StatefulWidget {
 }
 
 class _SetupAccountScreenState extends State<SetupAccountScreen> with TickerProviderStateMixin {
+  final _authenticationService = GetIt.instance.get<AuthenticationService>();
   final _registerFormKey = GlobalKey<FormState>();
   final _loginFormKey = GlobalKey<FormState>();
   bool _alreadyRegistered = false;
@@ -223,70 +224,20 @@ class _SetupAccountScreenState extends State<SetupAccountScreen> with TickerProv
 
   void submitLoginForm() async {
     if (_loginFormKey.currentState!.validate()) {
-      try {
-        await FirebaseAuth.instance.signInWithEmailAndPassword(email: loginEmailInputController.text, password: loginPasswordInputController.text);
-      } on FirebaseAuthException catch(e) {
-        switch(e.code) {
-          case Strings.firebaseErrorInvalidEmail:
-          case Strings.firebaseErrorWrongPassword:
-            ScaffoldMessenger.of(context)
-                .showSnackBar(const SnackBar(content: Text(Strings.errorInvalidEmailOrPassword)));
-            break;
-          case Strings.firebaseErrorUserDisabled:
-            ScaffoldMessenger.of(context)
-                .showSnackBar(const SnackBar(content: Text(Strings.errorUserDisabled)));
-            break;
-          case Strings.firebaseErrorUserNotFound:
-            ScaffoldMessenger.of(context)
-                .showSnackBar(const SnackBar(content: Text(Strings.errorUserNotFound)));
-            break;
-          case Strings.firebaseErrorNetworkRequestFailed:
-            ScaffoldMessenger.of(context)
-                .showSnackBar(const SnackBar(content: Text(Strings.errorNetwork)));
-            break;
-          default:
-            ScaffoldMessenger.of(context)
-                .showSnackBar(SnackBar(content: Text("${Strings.errorUnexpected}. Fehlercode: ${e.code}")));
-            break;
-        }
-      } catch(e) {
+      String? error = await _authenticationService.signInWithEmailAndPassword(loginEmailInputController.text, loginPasswordInputController.text);
+      if (error != null) {
         ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text("${Strings.errorUnexpected}. Fehler: ${e.toString()}")));
+            .showSnackBar(SnackBar(content: Text(error)));
       }
     }
   }
 
   void submitRegistrationForm() async {
     if (_registerFormKey.currentState!.validate()) {
-      try {
-        await FirebaseAuth.instance.createUserWithEmailAndPassword(email: registrationEmailInputController.text, password: registrationPasswordInputController.text);
-      } on FirebaseAuthException catch(e) {
-        switch (e.code) {
-          case Strings.firebaseErrorEmailAlreadyInUse:
-            ScaffoldMessenger.of(context)
-                .showSnackBar(const SnackBar(content: Text(Strings.errorEmailAlreadyInUse)));
-            break;
-          case Strings.firebaseErrorInvalidEmail:
-            ScaffoldMessenger.of(context)
-                .showSnackBar(const SnackBar(content: Text(Strings.errorInvalidEmail)));
-            break;
-          case Strings.firebaseErrorWeakPassword:
-            ScaffoldMessenger.of(context)
-                .showSnackBar(const SnackBar(content: Text(Strings.errorWeakPassword)));
-            break;
-          case Strings.firebaseErrorNetworkRequestFailed:
-            ScaffoldMessenger.of(context)
-                .showSnackBar(const SnackBar(content: Text(Strings.errorNetwork)));
-            break;
-          case Strings.firebaseErrorOperationNotAllowed:
-          default:
-          ScaffoldMessenger.of(context)
-              .showSnackBar(SnackBar(content: Text("${Strings.errorUnexpected}. Fehlercode: ${e.code}")));
-          break;
-        }
-      } catch(e) {
+      String? error = await _authenticationService.createUserWithEmailAndPassword(registrationEmailInputController.text, registrationPasswordInputController.text);
+      if (error != null) {
         ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text("${Strings.errorUnexpected}. Fehler: ${e.toString()}")));
+            .showSnackBar(SnackBar(content: Text(error)));
       }
     }
   }
