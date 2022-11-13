@@ -28,9 +28,6 @@ abstract class AppModule {
   @injectable
   StudentRepository get studentRepository => FirebaseStudentRepository();
 
-  @injectable
-  StudentService get studentService => StudentService(studentRepository);
-
   AuthenticationRepository get authenticationRepository => FirebaseAuthenticationRepository(auth);
 
   @injectable

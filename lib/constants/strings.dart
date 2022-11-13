@@ -6,11 +6,14 @@ class Strings {
   static const String back = 'Zurück';
   static const String birthday = 'Geburtsdatum';
   static const String cancel = 'Abbrechen';
+  static const String city = 'Ort';
   static const String createInstitution = 'Eine neue Einrichtung anlegen';
+  static const String createNewStudent = 'Neues Kind anlegen';
   static const String email = 'E-Mail-Adresse';
   static const String feedback = 'Feedback';
   static const String firstname = 'Vorname';
-  static const String greeting = 'Herzlich wilkommen bei KinGa!';
+  static const String housenumber = 'Hausnummer';
+  static const String greeting = 'Herzlich willkommen bei KinGa!';
   static const String impressum = 'Impressum';
   static const String infoGeneral = 'Allgemeines';
   static const String infoPickup = 'Abholberechtigte';
@@ -33,9 +36,11 @@ class Strings {
   static const String password = 'Passwort';
   static const String passwordRepeat = 'Passwort wiederholen';
   static const String permission = 'Berechtigungen';
+  static const String postcode = 'Postleitzahl';
   static const String scanQr = 'QR Code scannen';
   static const String search = 'Suche';
   static const String settings = 'Einstellungen';
+  static const String street = 'Straße';
   static const String signIn = 'Anmelden';
   static const String signUp = 'Registrieren';
   static const String support = 'Support';

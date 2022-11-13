@@ -1,10 +1,17 @@
+import 'dart:typed_data';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+
+import 'package:image_cropper/image_cropper.dart';import 'package:image_picker/image_picker.dart';
 import 'package:get_it/get_it.dart';
 import 'package:kinga/domain/entity/caregiver.dart';
+import 'package:kinga/domain/entity/student.dart';
+import 'package:kinga/ui/new_student_screen.dart';
 import 'package:kinga/domain/institution_repository.dart';
 import 'package:kinga/ui/show_student_screen.dart';
 import 'package:kinga/constants/strings.dart';
@@ -202,7 +209,9 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
               ListTile(
                 title: const Text(Strings.newChild),
                 onTap: () {
-                  Navigator.pop(context);
+                  Navigator.push(context, MaterialPageRoute(
+                      builder: (context) =>
+                          NewStudentScreen()));
                 },
                 leading: Icon(Icons.add_circle_outline),
               ),
@@ -301,12 +310,16 @@ class _AttendanceItemState extends State<AttendanceItem> {
                     child: Column(
                         children: [
                           Expanded(
-                            child: Container(
-                              child: Hero(
-                                tag: "hero${widget.studentId}",
-                                child: SvgPicture.asset(
-                                  'assets/images/hamster.svg',),
-                              ),
+                            child: Hero(
+                            tag: "hero${widget.studentId}",
+                            child: () {
+                              if (state.getStudent(widget.studentId).profileImage.isEmpty) {
+                                return SvgPicture.asset(
+                                  'assets/images/hamster.svg',);
+                              } else {
+                                return Container(margin: EdgeInsets.only(top: 5), clipBehavior: Clip.antiAlias, decoration: ShapeDecoration(shape: ContinuousRectangleBorder(borderRadius: BorderRadius.circular(44))), child: Image.memory(fit: BoxFit.fitHeight, state.getStudent(widget.studentId).profileImage));
+                              }
+                              } ()
                             ),
                           ),
                           Container(

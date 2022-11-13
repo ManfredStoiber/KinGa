@@ -5,6 +5,7 @@ import 'package:kinga/constants/colors.dart';
 import 'package:kinga/constants/keys.dart';
 import 'package:kinga/domain/authentication_service.dart';
 import 'package:kinga/domain/entity/user.dart';
+import 'package:kinga/domain/student_repository.dart';
 import 'package:kinga/domain/student_service.dart';
 import 'package:kinga/injection.dart';
 import 'package:kinga/ui/attendance_screen.dart';
@@ -16,9 +17,10 @@ import 'ui/bloc/students_cubit.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await configureDependencies();
-  final StudentService studentService = GetIt.instance.get<StudentService>();
   final StreamingSharedPreferences sharedPreferences = GetIt.instance.get<StreamingSharedPreferences>();
   final AuthenticationService authenticationService = GetIt.instance.get<AuthenticationService>();
+  final StudentService studentService = StudentService(GetIt.I<StudentRepository>());
+  GetIt.I.registerSingleton(studentService);
   runApp(MyApp(studentService, sharedPreferences, authenticationService));
 }
 

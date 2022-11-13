@@ -1,6 +1,10 @@
+import 'dart:typed_data';
+
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get_it/get_it.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:kinga/domain/entity/caregiver.dart';
@@ -8,6 +12,7 @@ import 'package:kinga/domain/entity/student.dart';
 import 'package:kinga/ui/attendance_screen.dart';
 import 'package:kinga/ui/bloc/students_cubit.dart';
 import 'package:kinga/ui/widgets/expandable_fab.dart';
+import 'package:streaming_shared_preferences/streaming_shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'package:kinga/constants/strings.dart';
@@ -26,30 +31,6 @@ class ShowStudentScreen extends StatefulWidget {
 
 class _ShowStudentScreenState extends State<ShowStudentScreen> {
 
-  pick() async {
-    final ImagePicker _picker = ImagePicker();
-    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
-    CroppedFile? croppedFile = await ImageCropper().cropImage(sourcePath: image!.path,
-      aspectRatioPresets: [CropAspectRatioPreset.square],
-      uiSettings: [
-        AndroidUiSettings(
-          lockAspectRatio: true,
-          initAspectRatio: CropAspectRatioPreset.square,
-          hideBottomControls: true,
-          //statusBarColor: Theme.of(context).primaryColor,
-          toolbarColor: Theme.of(context).primaryColor,
-          backgroundColor: Theme.of(context).backgroundColor,
-        ),
-        IOSUiSettings(
-          aspectRatioLockEnabled: true,
-          aspectRatioPickerButtonHidden: true,
-          rectWidth: 1,
-          rectHeight: 1,
-        )
-      ]
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<StudentsCubit, StudentsState>(
@@ -61,46 +42,54 @@ class _ShowStudentScreenState extends State<ShowStudentScreen> {
           title: Text("${student.firstname} ${student.lastname}"),
         ),
         body: Stack(
-            children: [ ListView(
-                children: [
-                  Container(
-                    height: 200,
-                    margin: EdgeInsets.all(20),
-                    child: Row(
-                      children: [
-                        Container(
-                          margin: EdgeInsets.all(10),
-                          child: ElevatedButton(
-                            child: const Text("Press"),
-                            onPressed: () {
-                              Navigator.push(context, MaterialPageRoute(
-                                  builder: (context) => const AttendanceScreen()));
-                              pick();
-                            },
-                          ),
+          children: [ ListView(
+              children: [
+                Container(
+                  height: 200,
+                  margin: EdgeInsets.all(20),
+                  child: Row(
+                    children: [
+                      Container(
+                        margin: EdgeInsets.all(10),
+                        child: ElevatedButton(
+                          child: const Text("Press"),
+                          onPressed: () {
+                            Navigator.push(context, MaterialPageRoute(
+                                builder: (context) => const AttendanceScreen()));
+                          },
                         ),
-                        Expanded(
-                            child: Stack(
-                              children: [
-                                Hero(
-                                    tag: "hero${student.studentId}",
-                                    child: SvgPicture.asset('assets/images/hamster.svg',)
-                                ),
-                                Visibility(
-                                    visible: BlocProvider.of<StudentsCubit>(context).hasBirthday(widget.studentId),
-                                    child: const Icon(Icons.cake)
-                                ),
-                              ]
-                            )
+                      ),
+                      Expanded(
+                        child: Stack(
+                          children: [
+                            InkWell(
+                              onTap: () => debugPickImage(context, true, student.studentId), // TOOD: remove
+                              child: Hero(
+                                  tag: "hero${student.studentId}",
+                                  child: () {
+                                    if (state.getStudent(widget.studentId).profileImage.isEmpty) {
+                                      return SvgPicture.asset(
+                                        'assets/images/hamster.svg',);
+                                    } else {
+                                      return Image.memory(state.getStudent(widget.studentId).profileImage);
+                                    }
+                                  } ()
+                              ),
+                            ),
+                            Visibility(
+                                visible: BlocProvider.of<StudentsCubit>(context).hasBirthday(widget.studentId),
+                                child: const Icon(Icons.cake)
+                            ),
+                          ],
                         ),
-                        Container(
-                          margin: EdgeInsets.all(10),
-                          child: ElevatedButton(
-                            child: const Text("Press"),
-                            onPressed: () {
-                              Navigator.push(context, MaterialPageRoute(
-                                  builder: (context) => const AttendanceScreen()));
-                              pick();
+                      ),
+                      Container(
+                        margin: EdgeInsets.all(10),
+                        child: ElevatedButton(
+                          child: const Text("Press"),
+                          onPressed: () {
+                            Navigator.push(context, MaterialPageRoute(
+                                builder: (context) => const AttendanceScreen()));
                             },
                           ),
                         ),
@@ -199,6 +188,54 @@ class _ShowStudentScreenState extends State<ShowStudentScreen> {
       ),
     );
   }
+  /*
+  void debugUploadProfileImage(String studentId, Uint8List image) {
+    FirebaseStorage.instance.ref().child('${GetIt.I<StreamingSharedPreferences>().getString('institutionId', defaultValue: "")}/${studentId}').putData(image);
+  }
+
+   */
+
+  Future<bool> debugPickImage(BuildContext context, bool camera, String studentId) async {
+    final ImagePicker _picker = ImagePicker();
+    final XFile? image = await _picker.pickImage(
+        source: camera ? ImageSource.camera : ImageSource.gallery);
+    if (image != null) {
+      CroppedFile? croppedFile = await ImageCropper().cropImage(
+          sourcePath: image.path,
+          aspectRatioPresets: [CropAspectRatioPreset.square],
+          cropStyle: CropStyle.circle,
+          uiSettings: [
+            AndroidUiSettings(
+              lockAspectRatio: true,
+              initAspectRatio: CropAspectRatioPreset.square,
+              hideBottomControls: true,
+              //statusBarColor: Theme.of(context).primaryColor,
+              toolbarColor: Theme
+                  .of(context)
+                  .primaryColor,
+              backgroundColor: Theme
+                  .of(context)
+                  .backgroundColor,
+            ),
+            IOSUiSettings(
+              aspectRatioLockEnabled: true,
+              aspectRatioPickerButtonHidden: true,
+              rectWidth: 1,
+              rectHeight: 1,
+            )
+          ]);
+      if (croppedFile != null) {
+        croppedFile.readAsBytes().then((value) {
+          setState(() {
+            BlocProvider.of<StudentsCubit>(context).setProfileImage(studentId, value);
+          });
+        });
+        return Future(() => true);
+      }
+    }
+    return Future(() => false);
+  }
+
 
   List<ActionButton> buildContact(List<Caregiver> caregivers) {
     List<ActionButton> contacts = List.empty(growable: true);

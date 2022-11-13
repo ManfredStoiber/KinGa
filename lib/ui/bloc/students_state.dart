@@ -1,4 +1,4 @@
-part of '../bloc/students_cubit.dart';
+part of 'students_cubit.dart';
 
 
 abstract class StudentsState {

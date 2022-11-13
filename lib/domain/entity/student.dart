@@ -1,3 +1,7 @@
+import 'dart:io';
+import 'dart:typed_data';
+
+import 'package:flutter/material.dart';
 import 'package:kinga/domain/entity/caregiver.dart';
 
 import 'attendance.dart';
@@ -16,7 +20,7 @@ class Student extends Person {
   List<Caregiver> caregivers;
   //List<Person> pickups = new ArrayList<>();
   List<Attendance> attendances = List.empty(growable: true);
-  //String profileImage;
+  Uint8List profileImage = Uint8List(0);
   //List<SickNote> sickNotes = new ArrayList<>();
   List<String> allergies;
   List<String> diseases;
@@ -35,9 +39,9 @@ class Student extends Person {
       this.address,
       this.city,
       this.group,
+      this.profileImage,
       this.caregivers,
       this.attendances,
-      //this.profileImage,
       this.allergies,
       this.diseases,
       this.medicines,
