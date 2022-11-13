@@ -6,6 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cryptography/cryptography.dart';
 import 'package:encrypt/encrypt.dart';
 import 'package:get_it/get_it.dart';
+import 'package:injectable/injectable.dart';
 import 'package:kinga/constants/keys.dart';
 import 'package:kinga/domain/institution_repository.dart';
 import 'package:kinga/util/crypto_utils.dart';
@@ -16,8 +17,9 @@ class FirebaseInstitutionRepository implements InstitutionRepository {
   FirebaseFirestore db = FirebaseFirestore.instance;
 
   @override
-  Future<bool> createInstitution(String institutionId, String institutionName, String institutionPassword) async {
+  Future<String?> createInstitution(String institutionName, String institutionPassword) async {
 
+    String? institutionId = await generateInstitutionId(institutionName);
     bool success = false;
 
     final kdf = CryptoUtils.getKdf();
@@ -40,7 +42,11 @@ class FirebaseInstitutionRepository implements InstitutionRepository {
     institution[Keys.verificationKey] = base64.encode(verificationKey);
     await db.collection('Institution').doc(institutionId).set(institution).then((value) => success = true);
 
-    return success;
+    if (success) {
+      return institutionId;
+    } else {
+      return null;
+    }
   }
 
   @override
@@ -51,6 +57,7 @@ class FirebaseInstitutionRepository implements InstitutionRepository {
     late final Uint8List passwordKeyNonce;
     late final Uint8List verificationKey;
 
+    // TODO: implement error-handling
     await db.collection('Institution').doc(institutionId).get().then((value) {
       encryptedInstitutionKey = base64.decode(value[Keys.encryptedInstitutionKey]);
       institutionKeyIv = base64.decode(value[Keys.institutionKeyIv]);
@@ -81,8 +88,8 @@ class FirebaseInstitutionRepository implements InstitutionRepository {
     }
   }
 
-  @override
-  Future<String> generateInstitutionId() async {
+  Future<String> generateInstitutionId(String institutionName) async {
+    // TODO: generate Id based on institutionName
     const letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
     const numbers = '0123456789';
 
@@ -108,6 +115,7 @@ class FirebaseInstitutionRepository implements InstitutionRepository {
   @override
   void leaveInstitution() {
     GetIt.instance.get<StreamingSharedPreferences>().remove(Keys.institutionId);
+    //GetIt.I<Preference<String>>(instanceName: Keys.institutionId).setValue("");
   }
 
 }

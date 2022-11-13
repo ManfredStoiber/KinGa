@@ -37,7 +37,7 @@ packages:
     source: hosted
     version: "1.2.2"
   async:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: async
       url: "https://pub.dartlang.org"
@@ -402,7 +402,7 @@ packages:
     source: hosted
     version: "2.2.0"
   http:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: http
       url: "https://pub.dartlang.org"
@@ -486,7 +486,7 @@ packages:
     source: hosted
     version: "2.6.1"
   injectable:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: injectable
       url: "https://pub.dartlang.org"

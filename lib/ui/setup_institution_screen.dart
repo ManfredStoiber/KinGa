@@ -31,7 +31,6 @@ class _SetupInstitutionScreenState extends State<SetupInstitutionScreen> with Ti
   TextEditingController registrationPasswordInputController = TextEditingController();
   TextEditingController registrationPasswordRepeatInputController = TextEditingController();
   String _createInstitutionPassword = "";
-  String _createInstitutionInstitutionId = "";
 
   TextEditingController _loginInstitutionIdInputController = TextEditingController();
   TextEditingController _loginInstitutionPasswordInputController = TextEditingController();
@@ -49,14 +48,8 @@ class _SetupInstitutionScreenState extends State<SetupInstitutionScreen> with Ti
         _tabIndex = _tabController.index;
       });
     });
-    _institutionRepository = GetIt.instance.get<InstitutionRepository>();
+    _institutionRepository = GetIt.I<InstitutionRepository>();
     _createInstitutionPassword = generatePassword();
-    _institutionRepository.generateInstitutionId().then((value) {
-      setState(() {
-        _createInstitutionInstitutionId = value;
-        // TODO: add loading screen as long as _createInstitutionInstitutionId is not available
-      });
-    });
     super.initState();
   }
 
@@ -267,14 +260,14 @@ class _SetupInstitutionScreenState extends State<SetupInstitutionScreen> with Ti
 
   void submitCreateInstitutionForm() async {
     if (_createInstitutionFormKey.currentState!.validate()) {
-      bool success = await _institutionRepository.createInstitution(_createInstitutionInstitutionId, createInstitutionNameInputController.text, _createInstitutionPassword);
-      if (success) {
-        showDialog(context: context, builder: (context) => ShowInstitutionQrCodeScreen(_createInstitutionInstitutionId, _createInstitutionPassword),)
-            .then((value) => _institutionRepository.joinInstitution(_createInstitutionInstitutionId, _createInstitutionPassword));
+      String? institutionId = await _institutionRepository.createInstitution(createInstitutionNameInputController.text, _createInstitutionPassword);
+      if (institutionId != null) {
+        showDialog(context: context, builder: (context) => ShowInstitutionQrCodeScreen(institutionId, _createInstitutionPassword),)
+            .then((value) => _institutionRepository.joinInstitution(institutionId, _createInstitutionPassword));
       } else {
         // TODO: error handling
         ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text("${Strings.errorUnexpected}")));
+            .showSnackBar(const SnackBar(content: Text(Strings.errorUnexpected)));
       }
     }
   }

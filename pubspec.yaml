@@ -49,10 +49,11 @@ dependencies:
   qr_flutter: ^4.0.0
   uuid: ^3.0.6
   streaming_shared_preferences: ^2.0.0
-  injectable: ^1.5.4
   cryptography: ^2.0.5
   encrypt: ^5.0.1
   mobile_scanner: ^2.0.0
+  http: ^0.13.5
+  async: ^2.8.2
 
 dev_dependencies:
   flutter_test:

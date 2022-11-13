@@ -2,12 +2,12 @@ import 'dart:typed_data';
 
 import 'dart:convert';
 
+import 'package:async/async.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:encrypt/encrypt.dart';
 import 'package:get_it/get_it.dart';
 import 'package:kinga/constants/keys.dart';
-import 'package:kinga/constants/strings.dart';
+import 'package:kinga/data/firebase_utils.dart';
 import 'package:flutter/services.dart';
 import 'package:kinga/domain/entity/attendance.dart';
 import 'package:kinga/domain/student_repository.dart';
@@ -22,50 +22,80 @@ class FirebaseStudentRepository implements StudentRepository {
 
   FirebaseFirestore db = FirebaseFirestore.instance;
   FirebaseStorage storage = FirebaseStorage.instance;
-  StreamingSharedPreferences prefs = GetIt.instance.get<StreamingSharedPreferences>();
 
-  late String institutionId;
+  late String currentInstitutionId;
+  Set<Student>? currentStudents;
 
   Map<String, Uint8List> studentProfileImages = {};
 
   FirebaseStudentRepository() {
-    //GetIt.instance.get<StreamingSharedPreferences>().setString(Strings.institutionId, 'debug');
-    // TODO: maybe listen to instituationId?
-    institutionId = prefs.getString(Keys.institutionId, defaultValue: "").getValue();
+    currentInstitutionId = GetIt.I<StreamingSharedPreferences>().getString(Keys.institutionId, defaultValue: "").getValue();
   }
 
   @override
-  Stream<Set<Student>> watchStudents() async* {
-    if (institutionId != "") {
-      await for (final value in db.collection('Institution')
-          .doc(prefs.getString(Keys.institutionId, defaultValue: "").getValue())
-          .collection('Student')
-          .snapshots()) {
-        Set<Student> students = {};
-        for (var doc in value.docs) {
-          Student student = await mapToStudent(doc.data());
-          students.add(student);
+  Stream<Set<Student>> watchStudents() {
+    return () async* { // anonymous async* function for returning as broadcastStream
+      while (true) {
+        var streamGroup = StreamGroup.merge(<Stream<dynamic>>[
+          GetIt.I<StreamingSharedPreferences>().getString(Keys.institutionId, defaultValue: ""),
+          if (currentInstitutionId != "") db.collection('Institution').doc(currentInstitutionId).collection('Student').snapshots()
+        ]);
+        await for (var event in streamGroup) {
+          if (event is String && event != currentInstitutionId) {
+            currentInstitutionId = event;
+            studentProfileImages = {}; // empty cache
+            break; // break await for to create new streamGroup in next while(true) loop
+          } else if (event is QuerySnapshot<Map<String, dynamic>>) {
+            if (currentInstitutionId != "") {
+              Set<Student> students = {};
+              for (var doc in event.docs) {
+                List tmp = FirebaseUtils.decryptStudent(doc.data()['value']);
+                Student student = tmp[0];
+
+                late Uint8List profileImage;
+                String? profileImageHash = tmp[1];
+                if (profileImageHash != null) {
+                  // get profileImage from cache if exists
+                  Uint8List? profileImageCache = (studentProfileImages[student.studentId]);
+                  if (profileImageCache != null) {
+                    profileImage = profileImageCache;
+                  } else {
+                    Uint8List? profileImageDownload = await storage.ref().child('$currentInstitutionId/${student.studentId}').getData().catchError((e) => null);
+                    if (profileImageDownload != null) {
+                      profileImage = profileImageDownload;
+                      studentProfileImages[student.studentId] = profileImageDownload; // store image in cache
+                    } else {
+                      profileImage = await randomImage(student.studentId);
+                      setProfileImage(student.studentId, profileImage);
+                    }
+                  }
+                } else {
+                  profileImage = await randomImage(student.studentId);
+                  setProfileImage(student.studentId, profileImage);
+                }
+                student.profileImage = profileImage;
+                students.add(student);
+              }
+              if (event.docs.length == 0) {
+                // create test students
+                createTestStudents();
+              }
+              yield students;
+            } else {
+              // TODO: error-handling
+            }
+          }
         }
-        if (value.docs.length == 0) {
-          // create test students
-          createTestStudents();
-        }
-        yield students;
       }
-    } else {
-      // TODO: error-handling
-    }
+    }().asBroadcastStream();
   }
 
   @override
   Future<void> updateStudent(Student student) async {
-    // TODO: maybe listen to instituationId? And error handling like above
-    String institutionId = prefs.getString(Keys.institutionId, defaultValue: "")
-        .getValue();
-    db.collection('Institution').doc(institutionId).collection('Student').doc(
+    db.collection('Institution').doc(currentInstitutionId).collection('Student').doc(
         student.studentId).set(studentToMap(student)).onError((error,
         stackTrace) {
-      print(stackTrace);
+      print(stackTrace); // TODO
     });
   }
 
@@ -152,80 +182,16 @@ class FirebaseStudentRepository implements StudentRepository {
     );
   }
 
-  Future<Student> mapToStudent(Map<String, dynamic> map) async {
-    map = json.decode(CryptoUtils.decrypt(map['value']));
-
-    // absences
-    // attendances
-    Set<Attendance> attendances = {};
-    for (var attendance in map['attendances'] ?? {}) {
-      attendances.add(Attendance(
-        attendance['date'],
-        attendance['coming'],
-        leaving: attendance['leaving'],
-      ));
-    }
-    // caregivers
-    Set<Caregiver> caregivers = {};
-    for (var caregiver in map['caregivers'] ?? {}) {
-      caregivers.add(Caregiver(
-          caregiver['firstname'],
-          caregiver['lastname'],
-          caregiver['label'],
-          Map<String, String>.from(caregiver['phoneNumbers']),
-          caregiver['email']
-      ));
-    }
-
-    late Uint8List profileImage;
-    String? profileImageHash = map['profileImage'];
-    if (profileImageHash != null) {
-      // get profileImage from cache if exists
-      Uint8List? profileImageCache = (studentProfileImages[map['studentId']]);
-      if (profileImageCache != null) {
-        profileImage = profileImageCache;
-      } else {
-        Uint8List? profileImageDownload = await storage.ref().child('$institutionId/${map['studentId']}').getData();
-        if (profileImageDownload != null) {
-          profileImage = profileImageDownload;
-          studentProfileImages[map['studentId']] = profileImageDownload; // store image in cache
-        } else {
-          profileImage = Uint8List(0); // TODO: load placeholder image
-        }
-      }
-    } else {
-      profileImage = Uint8List(0); // TODO: load placeholder image
-    }
-
-    // decrypt and return student
-    return Student(
-      map['studentId'],
-      map['firstname'],
-      map['middlename'],
-      map['lastname'],
-      map['birthday'],
-      map['address'],
-      map['city'],
-      map['group'],
-      profileImage,
-      caregivers.toList(),
-      attendances.toList(),
-      [],
-      [],
-      [],
-      [],
-      [],
-    );
-  }
-
   void createTestStudents() async {
+    // TODO: create students instead from copying from debug
     QuerySnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore
-        .instance.collection('Institution').doc(institutionId)
+        .instance.collection('Institution').doc('debug')
         .collection('Student')
         .get();
     for (var doc in snapshot.docs) {
       Student student = mapToStudentLegacy(doc.data());
-      Map<String, dynamic> modernMap = studentToMap(student);
+      // Map<String, dynamic> modernMap = studentToMap(student);
+      student.profileImage = await randomImage(student.studentId);
       updateStudent(student);
     }
   }
@@ -257,7 +223,7 @@ class FirebaseStudentRepository implements StudentRepository {
         [],
         []);
 
-    db.collection('Institution').doc(institutionId).collection('Student')
+    db.collection('Institution').doc(currentInstitutionId).collection('Student')
         .doc(studentId)
         .set(studentToMap(student))
         .onError((error, stackTrace) {
@@ -271,7 +237,7 @@ class FirebaseStudentRepository implements StudentRepository {
     // store in cache
     studentProfileImages[studentId] = image;
     // store in firebase storage
-    FirebaseStorage.instance.ref().child('$institutionId/$studentId').putData(image);
+    FirebaseStorage.instance.ref().child('$currentInstitutionId/$studentId').putData(image);
     // update student
     StudentService studentService = GetIt.I<StudentService>();
     studentService.updateStudent(studentService.getStudent(studentId)..profileImage = image);

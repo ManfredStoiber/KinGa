@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:bloc/bloc.dart';
@@ -10,13 +11,21 @@ part 'students_state.dart';
 class StudentsCubit extends Cubit<StudentsState> {
 
   final StudentService _studentService;
+  StreamSubscription<Set<Student>>? _streamSubscription;
 
   StudentsCubit(this._studentService) : super(StudentsInitial()) {
     emit(StudentsLoading());
-    _studentService.watchStudents().listen((students) {
+    _streamSubscription = _studentService.watchStudents().listen((students) {
       emit(StudentsLoaded(students, null));
     });
   }
+
+  @override
+  Future<void> close() async {
+    await _streamSubscription?.cancel();
+    super.close();
+  }
+
 
   Future<void> toggleAttendance(String studentId) async {
     if (state is StudentsLoaded) {

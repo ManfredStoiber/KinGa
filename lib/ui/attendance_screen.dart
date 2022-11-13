@@ -256,7 +256,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                 title: const Text(Strings.logout),
                 onTap: () {
                   Navigator.pop(context);
-                  GetIt.instance.get<InstitutionRepository>().leaveInstitution();
+                  GetIt.I<InstitutionRepository>().leaveInstitution();
                   FirebaseAuth.instance.signOut();
                 },
                 leading: Icon(Icons.power_settings_new),

@@ -15,7 +15,7 @@ class SetupAccountScreen extends StatefulWidget {
 }
 
 class _SetupAccountScreenState extends State<SetupAccountScreen> with TickerProviderStateMixin {
-  final _authenticationService = GetIt.instance.get<AuthenticationService>();
+  final _authenticationService = GetIt.I<AuthenticationService>();
   final _registerFormKey = GlobalKey<FormState>();
   final _loginFormKey = GlobalKey<FormState>();
   bool _alreadyRegistered = false;
