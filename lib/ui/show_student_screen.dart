@@ -1,10 +1,6 @@
-import 'dart:typed_data';
-
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:get_it/get_it.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:kinga/domain/entity/caregiver.dart';
@@ -12,18 +8,14 @@ import 'package:kinga/domain/entity/student.dart';
 import 'package:kinga/ui/attendance_screen.dart';
 import 'package:kinga/ui/bloc/students_cubit.dart';
 import 'package:kinga/ui/widgets/expandable_fab.dart';
-import 'package:streaming_shared_preferences/streaming_shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'package:kinga/constants/strings.dart';
 
 class ShowStudentScreen extends StatefulWidget {
-  // TODO: make constructor const again
-  //ShowStudentScreen({Key? key, required this.studentId,}) : student = GetIt.I<StudentService>().getStudent(studentId), super(key: key);
-  ShowStudentScreen({Key? key, required this.studentId,}) : super(key: key);
+  const ShowStudentScreen({Key? key, required this.studentId,}) : super(key: key);
 
   final String studentId;
-
 
   @override
   State<ShowStudentScreen> createState() => _ShowStudentScreenState();
@@ -188,12 +180,6 @@ class _ShowStudentScreenState extends State<ShowStudentScreen> {
       ),
     );
   }
-  /*
-  void debugUploadProfileImage(String studentId, Uint8List image) {
-    FirebaseStorage.instance.ref().child('${GetIt.I<StreamingSharedPreferences>().getString('institutionId', defaultValue: "")}/${studentId}').putData(image);
-  }
-
-   */
 
   Future<bool> debugPickImage(BuildContext context, bool camera, String studentId) async {
     final ImagePicker _picker = ImagePicker();

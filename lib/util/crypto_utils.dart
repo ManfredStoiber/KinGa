@@ -12,7 +12,7 @@ class CryptoUtils {
   static final lengthOfBase64EncodedIv = IV(createIv()).base64.length;
 
   static String encrypt(String data) {
-    final institutionKey = base64.decode(GetIt.instance.get<StreamingSharedPreferences>().getString(Keys.institutionKey, defaultValue: "").getValue());
+    final institutionKey = base64.decode(GetIt.I<StreamingSharedPreferences>().getString(Keys.institutionKey, defaultValue: "").getValue());
     final Encrypter encrypter = Encrypter(AES(Key(institutionKey)));
     final iv = createIv();
     final cipher = encrypter.encrypt(data, iv: IV(iv)).base64;
@@ -21,7 +21,7 @@ class CryptoUtils {
   }
 
   static String decrypt(String ivPlusCipher) {
-    final institutionKey = base64.decode(GetIt.instance.get<StreamingSharedPreferences>().getString(Keys.institutionKey, defaultValue: "").getValue());
+    final institutionKey = base64.decode(GetIt.I<StreamingSharedPreferences>().getString(Keys.institutionKey, defaultValue: "").getValue());
     final Encrypter encrypter = Encrypter(AES(Key(institutionKey)));
     final iv = ivPlusCipher.substring(0, lengthOfBase64EncodedIv);
     final cipher = ivPlusCipher.substring(lengthOfBase64EncodedIv);

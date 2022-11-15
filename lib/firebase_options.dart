@@ -33,10 +33,7 @@ class DefaultFirebaseOptions {
           'you can reconfigure this by running the FlutterFire CLI again.',
         );
       case TargetPlatform.windows:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for windows - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return web;
       case TargetPlatform.linux:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for linux - '
@@ -68,4 +65,15 @@ class DefaultFirebaseOptions {
     iosClientId: '957533569200-gnbp4dj9bla7q1aor36aps1vocjerg18.apps.googleusercontent.com',
     iosBundleId: 'com.stoibersoftware.kinga',
   );
+
+  static const FirebaseOptions web = FirebaseOptions(
+    apiKey: 'AIzaSyD1bsq7scBz7iyyTLJm-qnS1qap9N9JrUk',
+    appId: '1:957533569200:web:f0a5f0d230601f00b07b75',
+    messagingSenderId: '957533569200',
+    projectId: 'kinga-a6510',
+    authDomain: 'kinga-a6510.firebaseapp.com',
+    databaseURL: 'https://kinga-a6510.firebaseio.com',
+    storageBucket: 'kinga-a6510.appspot.com',
+  );
+
 }

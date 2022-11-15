@@ -1,8 +1,16 @@
+import 'dart:io';
+
+import 'package:firebase_auth/firebase_auth.dart' as firebase;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:kinga/constants/colors.dart';
 import 'package:kinga/constants/keys.dart';
+import 'package:kinga/data/firebase_authentication_repository.dart';
+import 'package:kinga/data/firebase_rest_authentication_repository.dart';
+import 'package:kinga/data/firebase_rest_student_repository.dart';
+import 'package:kinga/data/firebase_student_repository.dart';
+import 'package:kinga/domain/authentication_repository.dart';
 import 'package:kinga/domain/authentication_service.dart';
 import 'package:kinga/domain/entity/user.dart';
 import 'package:kinga/domain/student_repository.dart';
@@ -16,11 +24,13 @@ import 'ui/bloc/students_cubit.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // configure dependencies
   await configureDependencies();
-  final StreamingSharedPreferences sharedPreferences = GetIt.instance.get<StreamingSharedPreferences>();
-  final AuthenticationService authenticationService = GetIt.instance.get<AuthenticationService>();
-  final StudentService studentService = StudentService(GetIt.I<StudentRepository>());
-  GetIt.I.registerSingleton(studentService);
+
+  final StudentService studentService = GetIt.I<StudentService>();
+  final StreamingSharedPreferences sharedPreferences = GetIt.I<StreamingSharedPreferences>();
+  final AuthenticationService authenticationService = GetIt.I<AuthenticationService>();
   runApp(MyApp(studentService, sharedPreferences, authenticationService));
 }
 
@@ -40,8 +50,10 @@ class MyApp extends StatelessWidget {
       builder: (BuildContext context, AsyncSnapshot<User?> snapshot) {
         if (snapshot.hasData) {
           // if logged in
-          return PreferenceBuilder(preference: _sharedPreferences.getString(Keys.institutionId, defaultValue: ""),
+          return PreferenceBuilder(preference: GetIt.I<StreamingSharedPreferences>().getString(Keys.institutionId, defaultValue: ""),
               builder: (BuildContext context, String institutionId) {
+                // reconfigure dependencies
+                //reconfigureDependencies();
                 // check if user is already in an institution
                 if (institutionId != "") {
                   // if in institution

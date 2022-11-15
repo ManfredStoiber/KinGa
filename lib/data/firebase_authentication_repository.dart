@@ -1,13 +1,14 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:get_it/get_it.dart';
 import 'package:kinga/constants/strings.dart';
 import 'package:kinga/domain/authentication_repository.dart';
 import 'package:kinga/domain/entity/user.dart' as kinga;
 
 class FirebaseAuthenticationRepository implements AuthenticationRepository {
 
-  final FirebaseAuth _auth;
+  final FirebaseAuth _auth = GetIt.I<FirebaseAuth>();
 
-  FirebaseAuthenticationRepository(this._auth);
+  FirebaseAuthenticationRepository();
 
   @override
   Future<String?> createUserWithEmailAndPassword(email, password) async {

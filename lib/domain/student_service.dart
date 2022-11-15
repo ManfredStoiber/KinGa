@@ -1,5 +1,7 @@
 import 'dart:typed_data';
 
+import 'package:get_it/get_it.dart';
+import 'package:injectable/injectable.dart';
 import 'package:kinga/domain/entity/attendance.dart';
 import 'package:kinga/domain/entity/student.dart';
 import 'package:kinga/domain/student_repository.dart';
@@ -7,12 +9,12 @@ import 'package:kinga/util/date_utils.dart';
 
 class StudentService {
 
-  StudentRepository _studentRepository;
+  final StudentRepository _studentRepository = GetIt.I<StudentRepository>();
   late Stream<Set<Student>> studentStream;
   late Set<Student> students;
   late Set<String> groups;
 
-  StudentService(this._studentRepository) {
+  StudentService() {
     studentStream = _studentRepository.watchStudents().map((students) {
       this.students = students;
       Set<String> tmp = {};
