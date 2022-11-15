@@ -1,9 +1,11 @@
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'dart:convert';
 
 import 'package:async/async.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:crypto/crypto.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:get_it/get_it.dart';
 import 'package:kinga/constants/keys.dart';
@@ -26,10 +28,31 @@ class FirebaseStudentRepository implements StudentRepository {
   late String currentInstitutionId;
   Set<Student>? currentStudents;
 
-  Map<String, Uint8List> studentProfileImages = {};
+  final Directory _applicationDocumentsDirectory = GetIt.I<Directory>(instanceName: Keys.applicationDocumentsDirectory);
+
+  final Map<String, Uint8List> _profileImagesCache = GetIt.I<Map<String, Uint8List>>(instanceName: Keys.profileImagesCache);
 
   FirebaseStudentRepository() {
     currentInstitutionId = GetIt.I<StreamingSharedPreferences>().getString(Keys.institutionId, defaultValue: "").getValue();
+  }
+
+  cacheProfileImage(String studentId, Uint8List profileImage) {
+    // cache profileImage
+    _profileImagesCache[studentId] = profileImage;
+
+    // store locally
+    var file = File('${_applicationDocumentsDirectory.path}/profileImages/$studentId');
+    file.create(recursive: true);
+    file.writeAsBytes(profileImage);
+  }
+
+  Uint8List? getProfileImageFromCache(String studentId) {
+    return _profileImagesCache[studentId];
+  }
+
+  clearProfileImageCache() {
+    _profileImagesCache.clear();
+    Directory('${_applicationDocumentsDirectory.path}/profileImages').delete(recursive: true);
   }
 
   @override
@@ -42,8 +65,10 @@ class FirebaseStudentRepository implements StudentRepository {
         ]);
         await for (var event in streamGroup) {
           if (event is String && event != currentInstitutionId) {
+            if (currentInstitutionId != "") { // if user changed institution or logged out
+              clearProfileImageCache();
+            }
             currentInstitutionId = event;
-            studentProfileImages = {}; // empty cache
             break; // break await for to create new streamGroup in next while(true) loop
           } else if (event is QuerySnapshot<Map<String, dynamic>>) {
             if (currentInstitutionId != "") {
@@ -51,19 +76,20 @@ class FirebaseStudentRepository implements StudentRepository {
               for (var doc in event.docs) {
                 List tmp = FirebaseUtils.decryptStudent(doc.data()['value']);
                 Student student = tmp[0];
-
                 late Uint8List profileImage;
                 String? profileImageHash = tmp[1];
                 if (profileImageHash != null) {
                   // get profileImage from cache if exists
-                  Uint8List? profileImageCache = (studentProfileImages[student.studentId]);
-                  if (profileImageCache != null) {
+                  Uint8List? profileImageCache = (getProfileImageFromCache(student.studentId));
+                  if (profileImageCache != null && base64.encode(profileImageCache).hashCode.toString() == profileImageHash) { // TODO: why is base64 faster than the alternatives below
+                  //if (profileImageCache != null && profileImageCache.toString().hashCode.toString() == profileImageHash) {
+                  //if (profileImageCache != null && sha1.convert(profileImageCache).toString() == profileImageHash) {
                     profileImage = profileImageCache;
                   } else {
                     Uint8List? profileImageDownload = await storage.ref().child('$currentInstitutionId/${student.studentId}').getData().catchError((e) => null);
                     if (profileImageDownload != null) {
                       profileImage = profileImageDownload;
-                      studentProfileImages[student.studentId] = profileImageDownload; // store image in cache
+                      cacheProfileImage(student.studentId, profileImageDownload); // store image in cache
                     } else {
                       profileImage = await randomImage(student.studentId);
                       setProfileImage(student.studentId, profileImage);
@@ -133,7 +159,9 @@ class FirebaseStudentRepository implements StudentRepository {
       });
     }
     map['caregivers'] = caregivers;
-    map['profileImage'] = student.profileImage.hashCode.toString();
+    map['profileImage'] = base64.encode(student.profileImage).hashCode.toString();
+    //map['profileImage'] = student.profileImage.toString().hashCode.toString();
+    //map['profileImage'] = sha1.convert(student.profileImage).toString();
 
     return {'value': CryptoUtils.encrypt(json.encode(map))};
   }
@@ -235,7 +263,7 @@ class FirebaseStudentRepository implements StudentRepository {
   @override
   Future<void> setProfileImage(String studentId, Uint8List image) async {
     // store in cache
-    studentProfileImages[studentId] = image;
+    cacheProfileImage(studentId, image);
     // store in firebase storage
     FirebaseStorage.instance.ref().child('$currentInstitutionId/$studentId').putData(image);
     // update student
