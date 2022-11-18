@@ -68,6 +68,8 @@ dependencies:
   extended_nested_scroll_view: ^6.0.0
   connectivity_plus: ^3.0.3
   image: ^3.3.0
+  grpc: ^3.1.0
+  protobuf: ^2.1.0
 
 dev_dependencies:
   flutter_test:
