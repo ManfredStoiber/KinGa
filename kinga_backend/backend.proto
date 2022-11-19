@@ -35,4 +35,8 @@ message ProfileImage {
   // image stuff = 2;
 }
 
+message Id {
+  string requestId = 1;
+}
+
 message Empty {}

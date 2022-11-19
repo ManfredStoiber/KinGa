@@ -17,5 +17,5 @@ class Institution(models.Model):
 
 
 class ProfileImage(models.Model):
-    studentId = models.CharField(max_length=100)
+    studentId = models.OneToOneField(Student, on_delete=models.CASCADE)
 
