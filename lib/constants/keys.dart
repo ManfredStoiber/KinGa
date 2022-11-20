@@ -1,6 +1,8 @@
 
 class Keys {
   // Keys
+  static const String locale = 'de_DE';
+
   static const String applicationDocumentsDirectory = 'applicationDocumentsDirectory';
   static const String institutionId = 'institutionId';
   static const String encryptedInstitutionKey = "encryptedInstitutionKey";

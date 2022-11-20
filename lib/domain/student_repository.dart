@@ -13,4 +13,5 @@ abstract class StudentRepository {
       String city, Uint8List profileImage, List<Caregiver> caregivers);
   Future<void> setProfileImage(String studentId, Uint8List image);
   Future<void> createAbsence(String studentId, Absence absence);
+  Future<void> removeAbsence(String studentId, Absence absence);
 }

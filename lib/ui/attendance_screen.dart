@@ -1,16 +1,12 @@
-import 'dart:typed_data';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-import 'package:image_cropper/image_cropper.dart';import 'package:image_picker/image_picker.dart';
 import 'package:get_it/get_it.dart';
 import 'package:kinga/domain/entity/caregiver.dart';
-import 'package:kinga/domain/entity/student.dart';
+import 'package:kinga/shared/loading_indicator.dart';
 import 'package:kinga/ui/new_student_screen.dart';
 import 'package:kinga/domain/institution_repository.dart';
 import 'package:kinga/ui/show_student_screen.dart';
@@ -21,15 +17,6 @@ import 'bloc/students_cubit.dart';
 
 class AttendanceScreen extends StatefulWidget {
   const AttendanceScreen({Key? key}) : super(key: key);
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
 
   @override
   State<AttendanceScreen> createState() => _AttendanceScreenState();
@@ -89,7 +76,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
             title: BlocBuilder<StudentsCubit, StudentsState>(
               builder: (context, state) {
                 if (state is StudentsInitial || state is StudentsLoading) {
-                  return Text(Strings.loading);
+                  return const Text(Strings.loading);
                 } else if (state is StudentsLoaded) {
                   return Row(
                       children: [
@@ -103,18 +90,18 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                               autofocus: true,
                               cursorColor: Colors.black38,
                               decoration: InputDecoration(
-                                  prefixIcon: Icon(
+                                  prefixIcon: const Icon(
                                     Icons.search,
                                     color: Colors.black38,
                                   ),
-                                  focusedBorder: UnderlineInputBorder(
+                                  focusedBorder: const UnderlineInputBorder(
                                       borderSide: BorderSide(
                                         color: Colors.black38,
                                       )
                                   ),
                                   hintText: Strings.search,
                                   suffixIcon: IconButton(
-                                    icon: Icon(Icons.clear),
+                                    icon: const Icon(Icons.clear),
                                     onPressed: () {
                                       setState(() {
                                         activeSearch = false;
@@ -130,7 +117,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                             underline: Container(height: 1, color: Colors.black38,),
                             isExpanded: true,
                             value: selected,
-                            items: [DropdownMenuItem(value: Strings.allGroups, child: Text(Strings.allGroups))] + state.groups.map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
+                            items: [const DropdownMenuItem(value: Strings.allGroups, child: Text(Strings.allGroups))] + state.groups.map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
                             onChanged: (String? newValue) {
                               setState(() {
                                 selected = newValue!;
@@ -145,12 +132,12 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                                 activeSearch = true;
                               });
                             },
-                            icon: Icon(Icons.search)
+                            icon: const Icon(Icons.search)
                         ),
                       ]
                   );
                 } else {
-                  return Text("Exception");
+                  return const Text("Exception");
                 }
   },
 )
@@ -159,22 +146,14 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
         body: BlocBuilder<StudentsCubit, StudentsState>(
           builder: (context, state) {
             if (state is StudentsInitial || state is StudentsLoading) {
-              return Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Center(
-                    child: Transform.scale(
-                      scale: 2,
-                      child: CircularProgressIndicator(
-                        value: null,
-                      ),
-                    ),
-                  )
-                ]
-              );
+              return const LoadingIndicator();
             } else if (state is StudentsLoaded) {
               return GridView(
-                padding: EdgeInsets.all(10),
+                padding: const EdgeInsets.all(10),
+                // TODO: maybe move sorting to state or repository for better performance; include lastname for sorting
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 3,
+                ),
                 children: state.students
                     .where((student) =>
                 (selected == Strings.allGroups ||
@@ -186,13 +165,9 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                     AttendanceItem(studentId: e.studentId))
                     .toList()
                   ..sort((a, b) => state.getStudent(a.studentId).firstname.compareTo(state.getStudent(b.studentId).firstname)),
-                // TODO: maybe move sorting to state or repository for better performance; include lastname for sorting
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 3,
-                ),
               );
             } else {
-              return Text("Exception"); // TODO
+              return const Text("Exception"); // TODO
             }
           }
         ),
@@ -204,53 +179,53 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
             children: [
               DrawerHeader(
                 decoration: BoxDecoration(color: Theme.of(context).primaryColor),
-                child: Center(child: Text(Strings.kinga))
+                child: const Center(child: Text(Strings.kinga))
               ),
               ListTile(
                 title: const Text(Strings.newChild),
                 onTap: () {
                   Navigator.push(context, MaterialPageRoute(
                       builder: (context) =>
-                          NewStudentScreen()));
+                          const NewStudentScreen()));
                 },
-                leading: Icon(Icons.add_circle_outline),
+                leading: const Icon(Icons.add_circle_outline),
               ),
               ListTile(
                 title: const Text(Strings.permission),
                 onTap: () {
                   Navigator.pop(context);
                 },
-                leading: Icon(Icons.checklist),
+                leading: const Icon(Icons.checklist),
               ),
-              Divider(),
+              const Divider(),
               ListTile(
                 title: const Text(Strings.support),
                 onTap: () {
                   Navigator.pop(context);
                 },
-                leading: Icon(Icons.question_answer),
+                leading: const Icon(Icons.question_answer),
               ),
               ListTile(
                 title: const Text(Strings.feedback),
                 onTap: () {
                   Navigator.pop(context);
                 },
-                leading: Icon(Icons.chat_outlined),
+                leading: const Icon(Icons.chat_outlined),
               ),
               ListTile(
                 title: const Text(Strings.impressum),
                 onTap: () {
                   Navigator.pop(context);
                 },
-                leading: Icon(Icons.domain),
+                leading: const Icon(Icons.domain),
               ),
-              Divider(),
+              const Divider(),
               ListTile(
                 title: const Text(Strings.settings),
                 onTap: () {
                   Navigator.pop(context);
                 },
-                leading: Icon(Icons.settings),
+                leading: const Icon(Icons.settings),
               ),
               ListTile(
                 title: const Text(Strings.logout),
@@ -259,7 +234,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                   GetIt.I<InstitutionRepository>().leaveInstitution();
                   FirebaseAuth.instance.signOut();
                 },
-                leading: Icon(Icons.power_settings_new),
+                leading: const Icon(Icons.power_settings_new),
               ),
             ],
           ),
@@ -269,7 +244,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
 }
 
 class AttendanceItem extends StatefulWidget {
-  AttendanceItem({Key? key, required this.studentId}) : super(key: key);
+  const AttendanceItem({Key? key, required this.studentId}) : super(key: key);
 
   final String studentId;
 
@@ -288,7 +263,7 @@ class _AttendanceItemState extends State<AttendanceItem> {
           return Stack(
             children: [
               Container(
-                margin: EdgeInsets.all(10),
+                margin: const EdgeInsets.all(10),
                 child: ElevatedButton(
                     onPressed: () {
                       Navigator.push(context, MaterialPageRoute(
@@ -326,13 +301,13 @@ class _AttendanceItemState extends State<AttendanceItem> {
                                 return SvgPicture.asset(
                                   'assets/images/hamster.svg',);
                               } else {
-                                return Container(margin: EdgeInsets.only(top: 5), clipBehavior: Clip.antiAlias, decoration: ShapeDecoration(shape: ContinuousRectangleBorder(borderRadius: BorderRadius.circular(44))), child: Image.memory(fit: BoxFit.fitHeight, state.getStudent(widget.studentId).profileImage));
+                                return Container(margin: const EdgeInsets.only(top: 5), clipBehavior: Clip.antiAlias, decoration: ShapeDecoration(shape: ContinuousRectangleBorder(borderRadius: BorderRadius.circular(44))), child: Image.memory(fit: BoxFit.fitHeight, state.getStudent(widget.studentId).profileImage));
                               }
                               } ()
                             ),
                           ),
                           Container(
-                            padding: EdgeInsets.fromLTRB(0, 0, 0, 5),
+                            padding: const EdgeInsets.fromLTRB(0, 0, 0, 5),
                             child: Text(state.getStudent(widget.studentId).firstname),
                           )
                         ]

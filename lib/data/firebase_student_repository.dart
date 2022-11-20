@@ -7,6 +7,7 @@ import 'package:async/async.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:crypto/crypto.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:kinga/constants/keys.dart';
 import 'package:kinga/data/firebase_utils.dart';
@@ -103,7 +104,7 @@ class FirebaseStudentRepository implements StudentRepository {
                 student.profileImage = profileImage;
                 students.add(student);
               }
-              if (event.docs.length == 0) {
+              if (event.docs.isEmpty) {
                 // create test students
                 createTestStudents();
               }
@@ -122,7 +123,9 @@ class FirebaseStudentRepository implements StudentRepository {
     db.collection('Institution').doc(currentInstitutionId).collection('Student').doc(
         student.studentId).set(studentToMap(student)).onError((error,
         stackTrace) {
-      print(stackTrace); // TODO
+      if (kDebugMode) {
+        print(stackTrace);
+      } // TODO
     });
   }
 
@@ -241,7 +244,7 @@ class FirebaseStudentRepository implements StudentRepository {
       String birthday, String street, String housenumber, String postcode,
       String city, Uint8List profileImage, List<Caregiver> caregivers) async {
     String address = '$street $housenumber, $postcode';
-    String studentId = Uuid().v1();
+    String studentId = const Uuid().v1();
 
     if (profileImage.isEmpty) profileImage = await randomImage(studentId);
 
@@ -268,7 +271,9 @@ class FirebaseStudentRepository implements StudentRepository {
         .doc(studentId)
         .set(studentToMap(student))
         .onError((error, stackTrace) {
-      print(stackTrace);
+      if (kDebugMode) {
+        print(stackTrace);
+      }
     });
     setProfileImage(studentId, profileImage);
   }
@@ -288,6 +293,13 @@ class FirebaseStudentRepository implements StudentRepository {
   Future<void> createAbsence(String studentId, Absence absence) async {
     Student s = GetIt.I<StudentService>().getStudent(studentId);
     s.absences.add(absence);
+    updateStudent(s);
+  }
+
+  @override
+  Future<void> removeAbsence(String studentId, Absence absence) async {
+    Student s = GetIt.I<StudentService>().getStudent(studentId);
+    s.absences.remove(absence);
     updateStudent(s);
   }
 

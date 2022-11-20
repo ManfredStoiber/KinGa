@@ -1,7 +1,6 @@
 import 'dart:typed_data';
 
 import 'package:get_it/get_it.dart';
-import 'package:injectable/injectable.dart';
 import 'package:kinga/domain/entity/absence.dart';
 import 'package:kinga/domain/entity/attendance.dart';
 import 'package:kinga/domain/entity/student.dart';
@@ -76,7 +75,7 @@ class StudentService {
       } else {
         // else check if student came within the last 5 minutes
         DateTime coming = DateTime.parse('${attendanceOfToday.date}T${attendanceOfToday.coming}');
-        if (coming.add(Duration(minutes: 5)).isAfter(DateTime.now())) {
+        if (coming.add(const Duration(minutes: 5)).isAfter(DateTime.now())) {
           // within last 5 minutes --> undo coming
           attendances.remove(attendanceOfToday);
         } else {
@@ -91,18 +90,21 @@ class StudentService {
     updateStudent(getStudent(studentId));
   }
 
-  Set<Absence> getAbsencesOfToday(List<Absence> absences) {
-    Set<Absence> absencesOfToday = {};
+  List<Absence> getAbsencesOfToday(List<Absence> absences) {
+    return getAbsencesOfDay(absences, DateTime.now());
+  }
+
+  List<Absence> getAbsencesOfDay(List<Absence> absences, DateTime date) {
+    List<Absence> absencesOfDay = [];
     for (var absence in absences) {
       DateTime from = DateTime.parse(absence.from);
       DateTime until = DateTime.parse(absence.until);
-      DateTime now = DateTime.now();
 
-      if (now.isAfter(from) && now.isBefore(until.add(Duration(days: 1)))) {
-        absencesOfToday.add(absence);
+      if (date.isAfter(from) && date.isBefore(until.add(const Duration(days: 1)))) {
+        absencesOfDay.add(absence);
       }
     }
-    return absencesOfToday;
+    return absencesOfDay;
   }
 
   Attendance? getAttendanceOfToday(List<Attendance> attendances) {
@@ -139,6 +141,10 @@ class StudentService {
 
   Future<void> createAbsence(String studentId, Absence absence) async {
     _studentRepository.createAbsence(studentId, absence);
+  }
+
+  Future<void> removeAbsence(String studentId, Absence absence) async {
+    _studentRepository.removeAbsence(studentId, absence);
   }
 
 }
