@@ -1,19 +1,11 @@
-import 'dart:io';
-
-import 'package:firebase_auth/firebase_auth.dart' as firebase;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:kinga/constants/colors.dart';
 import 'package:kinga/constants/keys.dart';
-import 'package:kinga/data/firebase_authentication_repository.dart';
-import 'package:kinga/data/firebase_rest_authentication_repository.dart';
-import 'package:kinga/data/firebase_rest_student_repository.dart';
-import 'package:kinga/data/firebase_student_repository.dart';
-import 'package:kinga/domain/authentication_repository.dart';
 import 'package:kinga/domain/authentication_service.dart';
 import 'package:kinga/domain/entity/user.dart';
-import 'package:kinga/domain/student_repository.dart';
 import 'package:kinga/domain/student_service.dart';
 import 'package:kinga/injection.dart';
 import 'package:kinga/ui/attendance_screen.dart';
@@ -29,18 +21,16 @@ void main() async {
   await configureDependencies();
 
   final StudentService studentService = GetIt.I<StudentService>();
-  final StreamingSharedPreferences sharedPreferences = GetIt.I<StreamingSharedPreferences>();
   final AuthenticationService authenticationService = GetIt.I<AuthenticationService>();
-  runApp(MyApp(studentService, sharedPreferences, authenticationService));
+  runApp(MyApp(studentService, authenticationService));
 }
 
 class MyApp extends StatelessWidget {
 
   final StudentService _studentService;
-  final StreamingSharedPreferences _sharedPreferences;
   final AuthenticationService _authenticationService;
 
-  const MyApp(this._studentService, this._sharedPreferences, this._authenticationService, {Key? key}) : super(key: key);
+  const MyApp(this._studentService, this._authenticationService, {Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -62,10 +52,18 @@ class MyApp extends StatelessWidget {
                       BlocProvider(
                         create: (context) => StudentsCubit(_studentService),
                         child: const AttendanceScreen(),
-                      )
+                      ),
                     ],
                     child: MaterialApp(
                       title: 'Flutter Demo',
+                      localizationsDelegates: const [
+                        GlobalMaterialLocalizations.delegate,
+                        GlobalWidgetsLocalizations.delegate,
+                        GlobalCupertinoLocalizations.delegate,
+                      ],
+                      supportedLocales: const [
+                        Locale('de', 'DE'),
+                      ],
                       theme: ThemeData(
                         // This is the theme of your application.
                           primarySwatch: ColorSchemes.kingacolor,

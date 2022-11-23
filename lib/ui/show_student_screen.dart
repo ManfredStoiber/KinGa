@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:kinga/constants/colors.dart';
 import 'package:kinga/domain/entity/caregiver.dart';
 import 'package:kinga/domain/entity/student.dart';
+import 'package:kinga/features/absences/ui/absence_screen.dart';
 import 'package:kinga/ui/attendance_screen.dart';
 import 'package:kinga/ui/bloc/students_cubit.dart';
 import 'package:kinga/ui/widgets/expandable_fab.dart';
@@ -38,11 +41,11 @@ class _ShowStudentScreenState extends State<ShowStudentScreen> {
               children: [
                 Container(
                   height: 200,
-                  margin: EdgeInsets.all(20),
+                  margin: const EdgeInsets.all(20),
                   child: Row(
                     children: [
                       Container(
-                        margin: EdgeInsets.all(10),
+                        margin: const EdgeInsets.all(10),
                         child: ElevatedButton(
                           child: const Text("Press"),
                           onPressed: () {
@@ -76,7 +79,7 @@ class _ShowStudentScreenState extends State<ShowStudentScreen> {
                         ),
                       ),
                       Container(
-                        margin: EdgeInsets.all(10),
+                        margin: const EdgeInsets.all(10),
                         child: ElevatedButton(
                           child: const Text("Press"),
                           onPressed: () {
@@ -91,11 +94,21 @@ class _ShowStudentScreenState extends State<ShowStudentScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      FloatingActionButton(
-                        heroTag: "tmp1",
-                        onPressed: () {
+                      ElevatedButton(
+                        style: ButtonStyle(
+                          fixedSize: MaterialStateProperty.all(Size.fromRadius(30)),
+                          backgroundColor: MaterialStateProperty.resolveWith((states) => Colors.white),
+                          shape: MaterialStateProperty.all(CircleBorder(
+                          )),
+                          side: MaterialStateProperty.all(BorderSide(color: ColorSchemes.kingacolor, width: 2))
+                          //shape: MaterialStateProperty.all(RoundedRectangleBorder( borderRadius: BorderRadius.circular(5000) )),
+                        ),
 
-                        },),
+                        onPressed: () {
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => AbsenceScreen(widget.studentId)));
+                        },
+                        child: const Icon(Icons.event_busy, size: 30,),
+                      ),
                       Container(
                         width: 50,
                       ),
@@ -106,20 +119,20 @@ class _ShowStudentScreenState extends State<ShowStudentScreen> {
                         },),
                     ],
                   ),
-                  Divider(
+                  const Divider(
                     thickness: 2,
                     endIndent: 15,
                     indent: 15,
                     height: 50,
                   ),
                   Card(
-                    margin: EdgeInsets.fromLTRB(10, 5, 10, 5),
+                    margin: const EdgeInsets.fromLTRB(10, 5, 10, 5),
                     child: Theme(
                       data: Theme.of(context).copyWith(
                           dividerColor: Colors.transparent),
                       child: ExpansionTile(
 
-                        title: Text(Strings.infoGeneral),
+                        title: const Text(Strings.infoGeneral),
                         children: [
                           buildReadOnlyTextField(Strings.firstname, student.firstname),
                           buildReadOnlyTextField(Strings.middlename, student.middlename),
@@ -129,15 +142,15 @@ class _ShowStudentScreenState extends State<ShowStudentScreen> {
                       ),
                     ),
                   ),
-                  Card(
+                  const Card(
                     margin: EdgeInsets.fromLTRB(10, 5, 10, 5),
                     child: ExpansionTile(title: Text(Strings.infoPickup)),
                   ),
-                  Card(
+                  const Card(
                     margin: EdgeInsets.fromLTRB(10, 5, 10, 5),
                     child: ExpansionTile(title: Text(Strings.infoHealth)),
                   ),
-                  Card(
+                  const Card(
                     margin: EdgeInsets.fromLTRB(10, 5, 10, 5),
                     child: ExpansionTile(title: Text(Strings.permission)),
                   ),
@@ -147,7 +160,7 @@ class _ShowStudentScreenState extends State<ShowStudentScreen> {
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
         floatingActionButton: ExpandableFab(
           distance: 150,
-          icon: Icon(Icons.quick_contacts_dialer, color: Colors.white,),
+          icon: const Icon(Icons.quick_contacts_dialer, color: Colors.white,),
           color: Theme
               .of(context)
               .errorColor,
@@ -156,7 +169,7 @@ class _ShowStudentScreenState extends State<ShowStudentScreen> {
         ),
       );
     } else {
-      return Text('Not loaded yet'); // TODO
+      return const Text('Not loaded yet'); // TODO
     }
   },
     );
@@ -168,22 +181,20 @@ class _ShowStudentScreenState extends State<ShowStudentScreen> {
     if (text.isEmpty) return Container();
 
     return Container(
-      margin: EdgeInsets.all(10),
+      margin: const EdgeInsets.all(10),
       child: TextField(
         enabled: false,
         readOnly: true,
-        decoration: InputDecoration(
-            border: OutlineInputBorder(),
-            labelText: label
-        ),
+        decoration:
+            InputDecoration(border: const OutlineInputBorder(), labelText: label),
         controller: controller,
       ),
     );
   }
 
   Future<bool> debugPickImage(BuildContext context, bool camera, String studentId) async {
-    final ImagePicker _picker = ImagePicker();
-    final XFile? image = await _picker.pickImage(
+    final ImagePicker picker = ImagePicker();
+    final XFile? image = await picker.pickImage(
         source: camera ? ImageSource.camera : ImageSource.gallery);
     if (image != null) {
       CroppedFile? croppedFile = await ImageCropper().cropImage(
@@ -228,7 +239,7 @@ class _ShowStudentScreenState extends State<ShowStudentScreen> {
     for (var caregiver in caregivers) {
       caregiver.phoneNumbers.forEach((label, phoneNumber) {
         contacts.add(ActionButton(
-            icon: Icon(Icons.phone, color: Colors.white),
+            icon: const Icon(Icons.phone, color: Colors.white),
             text: "${caregiver.firstname} ${caregiver.lastname} ($label)",
             onPressed: () async{
               Uri number = Uri.parse('tel:$phoneNumber');
@@ -240,4 +251,3 @@ class _ShowStudentScreenState extends State<ShowStudentScreen> {
     return contacts;
   }
 }
-

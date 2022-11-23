@@ -1,5 +1,7 @@
 
 class Strings {
+  static const String absence = 'Abwesenheit';
+  static const String absences = 'Abwesenheiten';
   static const String allGroups = 'Alle';
   static const String alreadyRegistered = 'Ich habe bereits ein Benutzerkonto';
   static const String alternative = 'oder';
@@ -7,9 +9,13 @@ class Strings {
   static const String birthday = 'Geburtsdatum';
   static const String cancel = 'Abbrechen';
   static const String city = 'Ort';
+  static const String confirm = 'Bestätigen';
   static const String createInstitution = 'Eine neue Einrichtung anlegen';
   static const String createNewStudent = 'Neues Kind anlegen';
+  static const String date_format = 'mm.dd.yyyy';
   static const String email = 'E-Mail-Adresse';
+  static const String end = 'Ende';
+  static const String enter = 'Eintragen';
   static const String feedback = 'Feedback';
   static const String firstname = 'Vorname';
   static const String housenumber = 'Hausnummer';
@@ -37,12 +43,15 @@ class Strings {
   static const String passwordRepeat = 'Passwort wiederholen';
   static const String permission = 'Berechtigungen';
   static const String postcode = 'Postleitzahl';
+  static const String reason = 'Grund';
+  static const String removeAbsence = 'Abwesenheit entfernen?';
   static const String scanQr = 'QR Code scannen';
   static const String search = 'Suche';
   static const String settings = 'Einstellungen';
   static const String street = 'Straße';
   static const String signIn = 'Anmelden';
   static const String signUp = 'Registrieren';
+  static const String start = 'Anfang';
   static const String support = 'Support';
   static const String errorEmailAlreadyInUse = 'Es besteht bereits ein Benutzerkonto mit der angegebenen E-Mail-Adresse';
   static const String errorEmailEmpty = 'E-Mail-Adresse darf nicht leer sein';
@@ -57,6 +66,7 @@ class Strings {
   static const String errorUserDisabled = 'Das angegebene Benutzerkonto wurde vorübergehend deaktiviert. Bitte kontaktieren Sie den Support, damit wir Ihnen weiterhelfen können';
   static const String errorUserNotFound = 'Unter der angegebenen E-Mail-Adresse wurde noch kein Benutzerkonto erstellt';
   static const String errorWeakPassword = 'Das eingegebene Passwort ist zu schwach. Das Passwort muss mindestens 6 Zeichen lang sein und sollte Sonderzeichen sowie Groß- und Kleinbuchstaben enthalten';
+
 
   // Firebase error codes for signInWithEmailAndPassword
   static const String firebaseErrorInvalidEmail = 'invalid-email';

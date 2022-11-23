@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:kinga/domain/entity/absence.dart';
 import 'package:kinga/domain/entity/attendance.dart';
 import 'package:kinga/domain/entity/caregiver.dart';
 import 'package:kinga/domain/entity/student.dart';
@@ -13,6 +14,15 @@ class FirebaseUtils {
     Map map = json.decode(CryptoUtils.decrypt(decrypted));
 
     // absences
+    List<Absence> absences = [];
+    for (var absence in map['absences'] ?? {}) {
+      absences.add(Absence(
+        absence['from'],
+        absence['until'],
+        absence['sickness'],
+      ));
+    }
+
     // attendances
     Set<Attendance> attendances = {};
     for (var attendance in map['attendances'] ?? {}) {
@@ -48,6 +58,7 @@ class FirebaseUtils {
       //map['profileImage'],
       caregivers.toList(),
       attendances.toList(),
+      absences,
       [],
       [],
       [],

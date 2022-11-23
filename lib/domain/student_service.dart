@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:get_it/get_it.dart';
-import 'package:injectable/injectable.dart';
+import 'package:kinga/domain/entity/absence.dart';
 import 'package:kinga/domain/entity/attendance.dart';
 import 'package:kinga/domain/entity/student.dart';
 import 'package:kinga/domain/student_repository.dart';
@@ -53,6 +53,12 @@ class StudentService {
   }
 
   Future<void> toggleAttendance(String studentId) async {
+
+    if (isAbsent(studentId)) {
+      // if absent, do nothing
+      return;
+    }
+
     String now = DateTime.now().toIso8601String();
     String currentDate = IsoDateUtils.getIsoDateFromIsoDateTime(now);
     String currentTime = IsoDateUtils.getIsoTimeFromIsoDateTime(now);
@@ -69,7 +75,7 @@ class StudentService {
       } else {
         // else check if student came within the last 5 minutes
         DateTime coming = DateTime.parse('${attendanceOfToday.date}T${attendanceOfToday.coming}');
-        if (coming.add(Duration(minutes: 5)).isAfter(DateTime.now())) {
+        if (coming.add(const Duration(minutes: 5)).isAfter(DateTime.now())) {
           // within last 5 minutes --> undo coming
           attendances.remove(attendanceOfToday);
         } else {
@@ -82,6 +88,23 @@ class StudentService {
       attendances.add(Attendance(currentDate, currentTime));
     }
     updateStudent(getStudent(studentId));
+  }
+
+  List<Absence> getAbsencesOfToday(List<Absence> absences) {
+    return getAbsencesOfDay(absences, DateTime.now());
+  }
+
+  List<Absence> getAbsencesOfDay(List<Absence> absences, DateTime date) {
+    List<Absence> absencesOfDay = [];
+    for (var absence in absences) {
+      DateTime from = DateTime.parse(absence.from);
+      DateTime until = DateTime.parse(absence.until);
+
+      if (date.isAfter(from) && date.isBefore(until.add(const Duration(days: 1)))) {
+        absencesOfDay.add(absence);
+      }
+    }
+    return absencesOfDay;
   }
 
   Attendance? getAttendanceOfToday(List<Attendance> attendances) {
@@ -111,4 +134,17 @@ class StudentService {
   void setProfileImage(String studentId, Uint8List image) {
     _studentRepository.setProfileImage(studentId, image);
   }
+
+  bool isAbsent(String studentId) {
+    return getAbsencesOfToday(getStudent(studentId).absences).isNotEmpty;
+  }
+
+  Future<void> createAbsence(String studentId, Absence absence) async {
+    _studentRepository.createAbsence(studentId, absence);
+  }
+
+  Future<void> removeAbsence(String studentId, Absence absence) async {
+    _studentRepository.removeAbsence(studentId, absence);
+  }
+
 }

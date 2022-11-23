@@ -5,6 +5,7 @@ import 'package:get_it/get_it.dart';
 import 'package:http/http.dart' as http;
 import 'package:kinga/constants/keys.dart';
 import 'package:kinga/data/firebase_utils.dart';
+import 'package:kinga/domain/entity/absence.dart';
 import 'package:kinga/domain/entity/attendance.dart';
 import 'package:kinga/domain/entity/caregiver.dart';
 import 'package:kinga/domain/student_repository.dart';
@@ -55,6 +56,18 @@ class FirebaseRestStudentRepository implements StudentRepository {
   @override
   Future<void> setProfileImage(String studentId, Uint8List image) {
     // TODO: implement setProfileImage
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> createAbsence(String studentId, Absence absence) {
+    // TODO: implement createAbsence
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> removeAbsence(String studentId, Absence absence) {
+    // TODO: implement removeAbsence
     throw UnimplementedError();
   }
 
