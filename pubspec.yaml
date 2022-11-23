@@ -70,6 +70,7 @@ dependencies:
   image: ^3.3.0
   grpc: ^3.1.0
   protobuf: ^2.1.0
+  mqtt_client: ^9.6.8
 
 dev_dependencies:
   flutter_test:
