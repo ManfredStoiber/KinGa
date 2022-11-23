@@ -45,7 +45,6 @@ class AbsenceDialog extends StatelessWidget {
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          //Row(),
           Row(
             mainAxisSize: MainAxisSize.max,
             children: [
