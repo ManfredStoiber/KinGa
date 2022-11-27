@@ -25,10 +25,12 @@ import 'package:streaming_shared_preferences/streaming_shared_preferences.dart';
 
 Future<Map<String, Uint8List>> loadProfileImages() async {
   Map<String, Uint8List> profileImages = {};
-  var profileImagesDirectory = Directory('${GetIt.I<Directory>(instanceName: Keys.applicationDocumentsDirectory).path}/profileImages');
-  for (var fileSystemEntity in profileImagesDirectory.listSync()) {
-    if (fileSystemEntity is File) {
-      profileImages[basename(fileSystemEntity.path)] = fileSystemEntity.readAsBytesSync();
+  var profileImagesDirectory = Directory('${GetIt.I<Directory>(instanceName: Keys.applicationDocumentsDirectory).path}${Platform.pathSeparator}profileImages');
+  if (profileImagesDirectory.existsSync()) {
+    for (var fileSystemEntity in profileImagesDirectory.listSync()) {
+      if (fileSystemEntity is File) {
+        profileImages[basename(fileSystemEntity.path)] = fileSystemEntity.readAsBytesSync();
+      }
     }
   }
   return profileImages;
