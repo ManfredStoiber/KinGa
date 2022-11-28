@@ -171,7 +171,7 @@ class FirebaseStudentRepository implements StudentRepository {
       [],
       [],
       [],
-      {},
+      [],
     );
   }
 
@@ -207,6 +207,7 @@ class FirebaseStudentRepository implements StudentRepository {
         group,
         profileImage,
         caregivers,
+        [],
         [],
         [],
         [],

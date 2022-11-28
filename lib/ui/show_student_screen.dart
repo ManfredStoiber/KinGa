@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:confetti/confetti.dart';
+
 import 'package:flutter/material.dart';
 
 import 'package:flutter_svg/flutter_svg.dart';
@@ -18,6 +19,7 @@ import 'package:kinga/features/absences/ui/absence_screen.dart';
 import 'package:kinga/features/incidences/ui/incidence_dialog.dart';
 import 'package:kinga/features/incidences/ui/show_incidences_widget.dart';
 import 'package:kinga/ui/show_student_data_screen.dart';
+import 'package:kinga/features/observations/ui/observation_screen.dart';
 import 'package:kinga/ui/widgets/expandable_fab.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -80,7 +82,7 @@ class _ShowStudentScreenState extends State<ShowStudentScreen> {
               Future.delayed(const Duration(seconds: 1)).then((value) => _confettiController.stop());
             }), child: Container(padding: const EdgeInsets.only(top: 6), child: Image.asset('assets${Platform.pathSeparator}images${Platform.pathSeparator}cupcake.png', height: kToolbarHeight / 2))),
           ),
-          IconButton(padding: const EdgeInsets.only(right: 10), onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => ShowStudentDataScreen(student),)), icon: const Icon(Icons.info_outline))
+          IconButton(padding: const EdgeInsets.only(right: 10), onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => ShowStudentDataScreen(student),)), icon: const Icon(Icons.info_outline)),
         ],
         ),
         body: CustomScrollView(
@@ -229,11 +231,11 @@ class ShowStudentSliverAppBar extends SliverPersistentHeaderDelegate {
                                   child: Hero(
                                       tag: "hero${student.studentId}",
                                       child: () {
-                                        if (student.profileImage.isEmpty) {
+                                        if (student.profileImage == null) {
                                           return SvgPicture.asset(
                                             'assets${Platform.pathSeparator}images${Platform.pathSeparator}hamster.svg',);
                                         } else {
-                                          return Container(margin: const EdgeInsets.only(top: 5), clipBehavior: Clip.antiAlias, decoration: ShapeDecoration(shape: ContinuousRectangleBorder(borderRadius: BorderRadius.circular(44))), child: Image.memory(student.profileImage));
+                                          return Container(margin: const EdgeInsets.only(top: 5), clipBehavior: Clip.antiAlias, decoration: ShapeDecoration(shape: ContinuousRectangleBorder(borderRadius: BorderRadius.circular(44))), child: Image.memory(student.profileImage!));
                                         }
                                       } ()
                                   ),
@@ -275,7 +277,30 @@ class ShowStudentSliverAppBar extends SliverPersistentHeaderDelegate {
                             ),
                           ),
                           Container(
-                            width: 50,
+                            width: 25,
+                          ),
+                          FittedBox(
+                            child: ElevatedButton(
+                              style: ButtonStyle(
+                                backgroundColor: MaterialStateProperty.resolveWith((states) => Colors.white),
+                                side: MaterialStateProperty.all(const BorderSide(color: ColorSchemes.kingacolor, width: 2)),
+                                shape: MaterialStateProperty.all(RoundedRectangleBorder( borderRadius: BorderRadius.circular(5000) )),
+                              ),
+
+                              onPressed: () {
+                                Navigator.push(context, MaterialPageRoute(builder: (context) => ObservationScreen(student.studentId)));
+                              },
+                              child: Row(
+                                children: [
+                                  //const Text("Beobachtungen"),
+                                  Container(width: 5,),
+                                  const Icon(Icons.search),
+                                ],
+                              ),
+                            ),
+                          ),
+                          Container(
+                            width: 25,
                           ),
                           FittedBox(
                             child: ElevatedButton(

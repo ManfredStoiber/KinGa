@@ -61,6 +61,8 @@ dependencies:
   table_calendar: ^3.0.8
   flutter_keyboard_visibility: ^5.4.0
   confetti: ^0.7.0
+  csv: ^5.0.1
+  collection: ^1.16.0
 
 dev_dependencies:
   flutter_test:

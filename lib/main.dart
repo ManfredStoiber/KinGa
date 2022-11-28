@@ -72,6 +72,15 @@ class MyApp extends StatelessWidget {
                         scaffoldBackgroundColor: ColorSchemes.backgroundColor,
                         backgroundColor: ColorSchemes.backgroundColor,
                         errorColor: ColorSchemes.errorColor,
+                        cardTheme: CardTheme.of(context).copyWith(
+                          shape: RoundedRectangleBorder(
+                            side: BorderSide(
+                              color: ColorSchemes.absentColor,
+                              width: 3.0,
+                            ),
+                            borderRadius: BorderRadius.circular(10.0),
+                          )
+                        )
                       ),
                       home: const AttendanceScreen(),
                     ),

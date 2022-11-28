@@ -1,10 +1,9 @@
-import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:flutter/material.dart';
 import 'package:kinga/domain/entity/absence.dart';
 import 'package:kinga/domain/entity/caregiver.dart';
 import 'package:kinga/domain/entity/incidence.dart';
+import 'package:kinga/features/observations/domain/entity/observation.dart';
 
 import 'attendance.dart';
 import 'person.dart';
@@ -18,15 +17,16 @@ class Student extends Person implements Comparable<Student> {
   String group = "";
   List<Incidence> incidences = [];
   List<Caregiver> caregivers;
-  List<Person> pickups = List.empty(growable: true);
-  List<Attendance> attendances = List.empty(growable: true);
-  Uint8List profileImage = Uint8List(0);
-  List<Absence> absences = List.empty(growable: true);
+  List<Person> pickups;
+  List<Attendance> attendances;
+  Uint8List? profileImage;
+  List<Absence> absences;
   List<String> allergies;
   List<String> diseases;
   List<String> medicines;
   List<String> healthNotes;
   Set<String> permissions;
+  List<Observation> observations;
 
 
 
@@ -38,16 +38,18 @@ class Student extends Person implements Comparable<Student> {
       this.birthday,
       this.address,
       this.group,
-      this.profileImage,
-      this.caregivers,
-      this.attendances,
-      this.absences,
-      this.allergies,
-      this.diseases,
-      this.medicines,
-      this.healthNotes,
-      this.incidences,
-      this.permissions,
+      [ this.profileImage,
+        this.caregivers = const [],
+        this.attendances = const [],
+        this.pickups = const [],
+        this.absences = const [],
+        this.allergies = const [],
+        this.diseases = const [],
+        this.medicines = const [],
+        this.healthNotes = const [],
+        this.incidences = const [],
+        this.permissions = const {},
+        this.observations = const []]
   );
 
   @override
