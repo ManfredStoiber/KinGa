@@ -8,7 +8,7 @@ import 'package:kinga/domain/entity/caregiver.dart';
 import 'attendance.dart';
 import 'person.dart';
 
-class Student extends Person {
+class Student extends Person implements Comparable<Student> {
 
   String studentId;
   String middlename;
@@ -27,7 +27,7 @@ class Student extends Person {
   List<String> diseases;
   List<String> medicines;
   List<String> healthNotes;
-  List<String> permissions;
+  Set<String> permissions;
 
 
 
@@ -51,7 +51,11 @@ class Student extends Person {
       this.permissions,
   );
 
-  // TODO: other attributes
+  @override
+  int compareTo(Student other) {
+    // TODO: compare all properties
+    return "$firstname $lastname".compareTo("${other.firstname} ${other.lastname}");
+  }
 
 }
 

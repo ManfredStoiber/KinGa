@@ -67,6 +67,18 @@ class Strings {
   static const String errorUserNotFound = 'Unter der angegebenen E-Mail-Adresse wurde noch kein Benutzerkonto erstellt';
   static const String errorWeakPassword = 'Das eingegebene Passwort ist zu schwach. Das Passwort muss mindestens 6 Zeichen lang sein und sollte Sonderzeichen sowie Groß- und Kleinbuchstaben enthalten';
 
+  // permissions
+  static const String confirmDeletePermission = 'Soll die Berechtigung wirklich gelöscht werden?';
+  static const String confirmDiscardNewPermission = 'Soll die neue Berechtigung wirklich verworfen werden?';
+  static const String createNewPermission = 'Neue Berechtigung anlegen?';
+  static const String filterAttendant = 'Anwesend';
+  static const String newPermissionHint = 'Neue Berechtigung';
+  static const String noPermissionsYet = 'Noch keine Berechtigungen';
+  static const String noPermissionsYetDescription = 'Oben rechts kannst du festlegen, was die Kinder dürfen und was nicht';
+  static const String permitted = 'Erlaubt';
+  static const String prohibited = 'Verboten';
+  static const String selectGroups = 'Gruppen auswählen';
+  static const String selectFilter = 'Filter';
 
   // Firebase error codes for signInWithEmailAndPassword
   static const String firebaseErrorInvalidEmail = 'invalid-email';

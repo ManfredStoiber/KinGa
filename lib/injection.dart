@@ -2,10 +2,8 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/material.dart';
 
 import 'package:get_it/get_it.dart';
-import 'package:injectable/injectable.dart';
 import 'package:kinga/constants/keys.dart';
 import 'package:kinga/data/firebase_authentication_repository.dart';
 import 'package:kinga/data/firebase_institution_repository.dart';
@@ -18,6 +16,9 @@ import 'package:kinga/domain/authentication_service.dart';
 import 'package:kinga/domain/institution_repository.dart';
 import 'package:kinga/domain/student_repository.dart';
 import 'package:kinga/domain/student_service.dart';
+import 'package:kinga/features/permissions/data/firebase_permission_repository.dart';
+import 'package:kinga/features/permissions/domain/permission_repository.dart';
+import 'package:kinga/features/permissions/domain/permission_service.dart';
 import 'package:kinga/firebase_options.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart';
@@ -36,7 +37,6 @@ Future<Map<String, Uint8List>> loadProfileImages() async {
   return profileImages;
 }
 
-@InjectableInit()
 Future<void> configureDependencies() async {
   GetIt.I.registerSingleton<String>('identitytoolkit.googleapis.com', instanceName: Keys.firebaseAuthUrl);
   GetIt.I.registerSingleton<String>('firestore.googleapis.com', instanceName: Keys.firebaseFirestoreUrl);
@@ -59,4 +59,9 @@ Future<void> configureDependencies() async {
   }
   GetIt.I.registerSingleton<AuthenticationService>(AuthenticationService());
   GetIt.I.registerSingleton<StudentService>(StudentService());
+
+  // permissions
+  GetIt.I.registerSingleton<PermissionRepository>(FirebasePermissionRepository());
+  GetIt.I.registerSingleton<PermissionService>(PermissionService());
+
 }
