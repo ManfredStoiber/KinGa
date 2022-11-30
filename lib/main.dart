@@ -7,6 +7,8 @@ import 'package:kinga/constants/keys.dart';
 import 'package:kinga/domain/authentication_service.dart';
 import 'package:kinga/domain/entity/user.dart';
 import 'package:kinga/domain/student_service.dart';
+import 'package:kinga/features/permissions/ui/list_permissions_screen.dart';
+import 'package:kinga/features/permissions/ui/show_permission_screen.dart';
 import 'package:kinga/injection.dart';
 import 'package:kinga/ui/attendance_screen.dart';
 import 'package:kinga/ui/setup_account_screen.dart';

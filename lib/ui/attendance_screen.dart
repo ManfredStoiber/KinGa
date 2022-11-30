@@ -6,6 +6,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import 'package:get_it/get_it.dart';
 import 'package:kinga/domain/entity/caregiver.dart';
+import 'package:kinga/features/permissions/ui/list_permissions_screen.dart';
+import 'package:kinga/shared/loading_indicator.dart';
 import 'package:kinga/ui/new_student_screen.dart';
 import 'package:kinga/domain/institution_repository.dart';
 import 'package:kinga/ui/show_student_screen.dart';
@@ -165,7 +167,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                     .map((e) =>
                     AttendanceItem(studentId: e.studentId))
                     .toList()
-                  ..sort((a, b) => state.getStudent(a.studentId).firstname.compareTo(state.getStudent(b.studentId).firstname)),
+                  ..sort((a, b) => state.getStudent(a.studentId).compareTo(state.getStudent(b.studentId))),
               );
             } else {
               return const Text("Exception"); // TODO
@@ -194,7 +196,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
               ListTile(
                 title: const Text(Strings.permission),
                 onTap: () {
-                  Navigator.pop(context);
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => const ListPermissionsScreen(),));
                 },
                 leading: const Icon(Icons.checklist),
               ),

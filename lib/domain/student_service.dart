@@ -35,6 +35,8 @@ class StudentService {
   }
 
   Future<void> updateStudent(Student student) async {
+    students.removeWhere((s) => s.studentId == student.studentId);
+    students.add(student);
     _studentRepository.updateStudent(student);
   }
 

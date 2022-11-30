@@ -121,63 +121,12 @@ class FirebaseStudentRepository implements StudentRepository {
   @override
   Future<void> updateStudent(Student student) async {
     db.collection('Institution').doc(currentInstitutionId).collection('Student').doc(
-        student.studentId).set(studentToMap(student)).onError((error,
+        student.studentId).set(FirebaseUtils.studentToMap(student)).onError((error,
         stackTrace) {
       if (kDebugMode) {
         print(stackTrace);
       } // TODO
     });
-  }
-
-  Map<String, dynamic> studentToMap(Student student) {
-    // convert student to map
-    Map<String, dynamic> map = {
-      'studentId': student.studentId,
-      'firstname': student.firstname,
-      'middlename': student.middlename,
-      'lastname': student.lastname,
-      'birthday': student.birthday,
-      'address': student.address,
-      'city': student.city,
-      'group': student.group,
-    };
-
-    List<Map<String, dynamic>> absences = [];
-    for (final Absence absence in student.absences) {
-      absences.add({
-        'from': absence.from,
-        'until': absence.until,
-        'sickness': absence.sickness
-      });
-    }
-    map['absences'] = absences;
-
-    List<Map<String, dynamic>> attendances = [];
-    for (final Attendance attendance in student.attendances) {
-      attendances.add({
-        'date': attendance.date,
-        'coming': attendance.coming,
-        'leaving': attendance.leaving
-      });
-    }
-    map['attendances'] = attendances;
-
-    List<Map<String, dynamic>> caregivers = [];
-    for (final Caregiver caregiver in student.caregivers) {
-      caregivers.add({
-        'firstname': caregiver.firstname,
-        'lastname': caregiver.lastname,
-        'label': caregiver.label,
-        'phoneNumbers': caregiver.phoneNumbers,
-        'email': caregiver.email
-      });
-    }
-    map['caregivers'] = caregivers;
-    map['profileImage'] = base64.encode(student.profileImage).hashCode.toString();
-    //map['profileImage'] = student.profileImage.toString().hashCode.toString();
-    //map['profileImage'] = sha1.convert(student.profileImage).toString();
-
-    return {'value': CryptoUtils.encrypt(json.encode(map))};
   }
 
   Student mapToStudentLegacy(Map<String, dynamic> map) {
@@ -221,7 +170,7 @@ class FirebaseStudentRepository implements StudentRepository {
       [],
       [],
       [],
-      [],
+      {},
     );
   }
 
@@ -265,11 +214,11 @@ class FirebaseStudentRepository implements StudentRepository {
         [],
         [],
         [],
-        []);
+        {});
 
     db.collection('Institution').doc(currentInstitutionId).collection('Student')
         .doc(studentId)
-        .set(studentToMap(student))
+        .set(FirebaseUtils.studentToMap(student))
         .onError((error, stackTrace) {
       if (kDebugMode) {
         print(stackTrace);
@@ -303,54 +252,6 @@ class FirebaseStudentRepository implements StudentRepository {
     updateStudent(s);
   }
 
-}
-
-Map<String, dynamic> studentToMap(Student student) {
-  // convert student to map
-  Map<String, dynamic> map = {
-    'studentId': student.studentId,
-    'firstname': student.firstname,
-    'middlename': student.middlename,
-    'lastname': student.lastname,
-    'birthday': student.birthday,
-    'address': student.address,
-    'city': student.city,
-    'group': student.group,
-  };
-
-  List<Map<String, dynamic>> absences = [];
-  for (final Absence absence in student.absences) {
-    absences.add({
-      'from': absence.from,
-      'until': absence.until,
-      'sickness': absence.sickness
-    });
-  }
-
-  map['absences'] = absences;
-  List<Map<String, dynamic>> attendances = [];
-  for (final Attendance attendance in student.attendances) {
-    attendances.add({
-      'date': attendance.date,
-      'coming': attendance.coming,
-      'leaving': attendance.leaving
-    });
-  }
-  map['attendances'] = attendances;
-
-  List<Map<String, dynamic>> caregivers = [];
-  for (final Caregiver caregiver in student.caregivers) {
-    caregivers.add({
-      'firstname': caregiver.firstname,
-      'lastname': caregiver.lastname,
-      'label': caregiver.label,
-      'phoneNumbers': caregiver.phoneNumbers,
-      'email': caregiver.email
-    });
-  }
-  map['caregivers'] = caregivers;
-
-  return map;
 }
 
 Future<Uint8List> randomImage(String studentId) async {
