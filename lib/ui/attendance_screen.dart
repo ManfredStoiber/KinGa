@@ -13,6 +13,8 @@ import 'package:kinga/domain/institution_repository.dart';
 import 'package:kinga/ui/show_student_screen.dart';
 import 'package:kinga/constants/strings.dart';
 import 'package:kinga/constants/colors.dart';
+import 'package:kinga/ui/widgets/drop.dart';
+import 'package:kinga/ui/widgets/loading_indicator.dart';
 
 import 'bloc/students_cubit.dart';
 
@@ -317,8 +319,8 @@ class _AttendanceItemState extends State<AttendanceItem> {
               ),
               Visibility(
                 visible: BlocProvider.of<StudentsCubit>(context).hasBirthday(widget.studentId),
-                child: const Icon(Icons.cake)
-              ),
+                child: Drop(image: Image.asset('assets/images/cupcake.png'), width: 35.0, height: 35.0, reversed: false,)
+        ),
             ]
           );
         } else {
