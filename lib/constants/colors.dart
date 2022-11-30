@@ -22,7 +22,7 @@ class ColorSchemes {
     400: Color(0xFFB0FFCF),
     700: Color(0xFF96FFC0),
   });
-  static const int _kingacolorAccentValue = 0xFFE3FFEE;
+  static const int _kingacolorAccentValue = 0xFF8AFFFF;
 
   static const Color backgroundColor = Color.fromARGB(255, 254, 233, 214);
   static const Color errorColor = Color.fromARGB(255, 229, 91, 160);

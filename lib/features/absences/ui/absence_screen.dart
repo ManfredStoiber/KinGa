@@ -4,9 +4,10 @@ import 'package:kinga/constants/colors.dart';
 import 'package:kinga/constants/keys.dart';
 import 'package:kinga/constants/strings.dart';
 
-import 'package:kinga/domain/entity/absence.dart';import 'package:kinga/features/absences/ui/absence_dialog.dart';
+import 'package:kinga/domain/entity/absence.dart';
+import 'package:kinga/features/absences/ui/absence_dialog.dart';
 import 'package:kinga/features/absences/ui/bloc/absences_cubit.dart';
-import 'package:kinga/shared/loading_indicator.dart';
+import 'package:kinga/ui/widgets/loading_indicator.dart';
 import 'package:kinga/util/date_utils.dart';
 import 'package:table_calendar/table_calendar.dart';
 
