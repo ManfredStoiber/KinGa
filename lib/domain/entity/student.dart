@@ -15,12 +15,10 @@ class Student extends Person implements Comparable<Student> {
   String middlename;
   String birthday; // ISO-String
   String address = "";
-  String city = "";
   String group = "";
   List<Incidence> incidences = [];
-  //List<Kudo> kudos = new ArrayList<>();
   List<Caregiver> caregivers;
-  //List<Person> pickups = new ArrayList<>();
+  List<Person> pickups = List.empty(growable: true);
   List<Attendance> attendances = List.empty(growable: true);
   Uint8List profileImage = Uint8List(0);
   List<Absence> absences = List.empty(growable: true);
@@ -39,7 +37,6 @@ class Student extends Person implements Comparable<Student> {
       super.lastname,
       this.birthday,
       this.address,
-      this.city,
       this.group,
       this.profileImage,
       this.caregivers,

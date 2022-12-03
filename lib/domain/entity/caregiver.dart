@@ -12,4 +12,7 @@ class Caregiver extends Person {
     return {'firstname':firstname, 'lastname':lastname, 'label':label, 'phoneNumbers':phoneNumbers, 'email':email};
   }
 
+  static Caregiver fromMap(Map<String, dynamic> caregiver) {
+    return Caregiver(caregiver['firstname'], caregiver['lastname'], caregiver['label'], caregiver['phoneNumbers'], caregiver['email'] ?? '');
+  }
 }
