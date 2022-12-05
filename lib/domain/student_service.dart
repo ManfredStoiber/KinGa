@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:get_it/get_it.dart';
 import 'package:kinga/domain/entity/absence.dart';
 import 'package:kinga/domain/entity/attendance.dart';
+import 'package:kinga/domain/entity/incidence.dart';
 import 'package:kinga/domain/entity/student.dart';
 import 'package:kinga/domain/student_repository.dart';
 import 'package:kinga/util/date_utils.dart';
@@ -52,6 +53,42 @@ class StudentService {
         student['city'],
         profileImage,
         student['caregivers']);
+  }
+
+  Future<void> createIncidence(String studentId, Incidence incidence) async {
+    return _studentRepository.createIncidence(studentId, incidence);
+  }
+
+  Future<void> deleteIncidence(String studentId, Incidence incidence) async {
+    return _studentRepository.deleteIncidence(studentId, incidence);
+  }
+
+  List<Incidence> getIncidencesOfDays(List<Incidence> incidences, DateTime from, DateTime until) {
+    List<Incidence> incidencesOfDays = [];
+    for (var incidence in incidences) {
+      DateTime date = DateTime.parse(incidence.dateTime);
+
+      if (DateTime.parse(IsoDateUtils.getIsoDateFromIsoDateTime(date.toIso8601String())).isAfter(from.subtract(const Duration(days: 1))) && 
+          DateTime.parse(IsoDateUtils.getIsoDateFromIsoDateTime(date.toIso8601String())).isBefore(until.add(const Duration(days: 1)))) {
+        incidencesOfDays.add(incidence);
+      }
+    }
+    return incidencesOfDays;
+  }
+
+  List<Incidence> getIncidencesOfToday(List<Incidence> incidences) {
+    return getIncidencesOfDays(incidences, DateTime.now(), DateTime.now());
+  }
+
+  bool hasIncidences(String studentId) {
+    List<Incidence> incidences = getStudent(studentId).incidences;
+    for (var incidence in incidences) {
+      if (IsoDateUtils.getIsoDateFromIsoDateTime(incidence.dateTime)
+          == IsoDateUtils.getIsoDateFromIsoDateTime(DateTime.now().toIso8601String())) {
+        return true;
+      }
+    }
+    return false;
   }
 
   Future<void> toggleAttendance(String studentId) async {
@@ -146,7 +183,7 @@ class StudentService {
   }
 
   Future<void> removeAbsence(String studentId, Absence absence) async {
-    _studentRepository.removeAbsence(studentId, absence);
+    _studentRepository.deleteAbsence(studentId, absence);
   }
 
 }

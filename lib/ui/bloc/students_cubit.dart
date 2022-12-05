@@ -27,6 +27,9 @@ class StudentsCubit extends Cubit<StudentsState> {
     super.close();
   }
 
+  bool hasIncidences(String studentId) {
+    return _studentService.hasIncidences(studentId);
+  }
 
   Future<void> toggleAttendance(String studentId) async {
     if (state is StudentsLoaded) {

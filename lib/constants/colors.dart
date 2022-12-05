@@ -26,8 +26,14 @@ class ColorSchemes {
 
   static const Color backgroundColor = Color.fromARGB(255, 254, 233, 214);
   static const Color errorColor = Color.fromARGB(255, 229, 91, 160);
+  static const Color errorColorLight = Color(0xFFFDBAB6);
   static const Color attendantColor = kingacolor;
   static const Color notAttendantColor = errorColor;
   //static const Color absentColor = Color.fromARGB(255, 132, 91, 229);
   static const Color absentColor = Color.fromARGB(255, 200, 200, 200);
+
+  static const Color categoryColor = Color(0xFF03A9F4);
+  static const Color categoryColorLight = Color(0xFFB3E5FC);
+
+  static const Color textColorLight = Color(0xA0424242);
 }

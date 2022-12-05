@@ -14,6 +14,7 @@ import 'package:kinga/data/firebase_utils.dart';
 import 'package:flutter/services.dart';
 import 'package:kinga/domain/entity/absence.dart';
 import 'package:kinga/domain/entity/attendance.dart';
+import 'package:kinga/domain/entity/incidence.dart';
 import 'package:kinga/domain/student_repository.dart';
 import 'package:kinga/domain/entity/caregiver.dart';
 import 'package:kinga/domain/entity/student.dart';
@@ -43,7 +44,7 @@ class FirebaseStudentRepository implements StudentRepository {
     _profileImagesCache[studentId] = profileImage;
 
     // store locally
-    var file = File('${_applicationDocumentsDirectory.path}/profileImages/$studentId');
+    var file = File('${_applicationDocumentsDirectory.path}${Platform.pathSeparator}profileImages${Platform.pathSeparator}$studentId');
     file.create(recursive: true);
     file.writeAsBytes(profileImage);
   }
@@ -54,7 +55,7 @@ class FirebaseStudentRepository implements StudentRepository {
 
   clearProfileImageCache() {
     _profileImagesCache.clear();
-    Directory('${_applicationDocumentsDirectory.path}/profileImages').delete(recursive: true);
+    Directory('${_applicationDocumentsDirectory.path}${Platform.pathSeparator}profileImages').delete(recursive: true);
   }
 
   @override
@@ -120,8 +121,8 @@ class FirebaseStudentRepository implements StudentRepository {
 
   @override
   Future<void> updateStudent(Student student) async {
-    db.collection('Institution').doc(currentInstitutionId).collection('Student').doc(
-        student.studentId).set(FirebaseUtils.studentToMap(student)).onError((error,
+    return db.collection('Institution').doc(currentInstitutionId).collection('Student')
+        .doc(student.studentId).set(FirebaseUtils.studentToMap(student)).onError((error,
         stackTrace) {
       if (kDebugMode) {
         print(stackTrace);
@@ -170,12 +171,13 @@ class FirebaseStudentRepository implements StudentRepository {
       [],
       [],
       [],
+      [],
       {},
     );
   }
 
   void createTestStudents() async {
-    // TODO: create students instead from copying from debug
+    // TODO: create students instead of copying from debug
     QuerySnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore
         .instance.collection('Institution').doc('debug')
         .collection('Student')
@@ -214,6 +216,7 @@ class FirebaseStudentRepository implements StudentRepository {
         [],
         [],
         [],
+        [],
         {});
 
     db.collection('Institution').doc(currentInstitutionId).collection('Student')
@@ -246,130 +249,144 @@ class FirebaseStudentRepository implements StudentRepository {
   }
 
   @override
-  Future<void> removeAbsence(String studentId, Absence absence) async {
+  Future<void> deleteAbsence(String studentId, Absence absence) async {
     Student s = GetIt.I<StudentService>().getStudent(studentId);
     s.absences.remove(absence);
     updateStudent(s);
   }
 
-}
-
-Future<Uint8List> randomImage(String studentId) async {
-  int hashValue = studentId.hashCode.abs();
-  String image = 'assets/images/';
-
-  switch ((hashValue % 35).toInt()) {
-    case 0:
-      image += 'bear.png';
-      break;
-    case 1:
-      image += 'beaver.png';
-      break;
-    case 2:
-      image += 'bees.png';
-      break;
-    case 3:
-      image += 'boar.png';
-      break;
-    case 4:
-      image += 'bull.png';
-      break;
-    case 5:
-      image += 'camel.png';
-      break;
-    case 6:
-      image += 'crocodile.png';
-      break;
-    case 7:
-      image += 'deer.png';
-      break;
-    case 8:
-      image += 'duck.png';
-      break;
-    case 9:
-      image += 'eagle.png';
-      break;
-    case 10:
-      image += 'elephant.png';
-      break;
-    case 11:
-      image += 'fox.png';
-      break;
-    case 12:
-      image += 'frog.png';
-      break;
-    case 13:
-      image += 'giraffe.png';
-      break;
-    case 14:
-      image += 'goat.png';
-      break;
-    case 15:
-      image += 'gorilla.png';
-      break;
-    case 16:
-      image += 'hedgehog.png';
-      break;
-    case 17:
-      image += 'hippo.png';
-      break;
-    case 18:
-      image += 'horse.png';
-      break;
-    case 19:
-      image += 'koala.png';
-      break;
-    case 20:
-      image += 'lion.png';
-      break;
-    case 21:
-      image += 'owl.png';
-      break;
-    case 22:
-      image += 'panda.png';
-      break;
-    case 23:
-      image += 'parrot.png';
-      break;
-    case 24:
-      image += 'polar_bear.png';
-      break;
-    case 25:
-      image += 'rabbit.png';
-      break;
-    case 26:
-      image += 'racoon.png';
-      break;
-    case 27:
-      image += 'rhinoceros.png';
-      break;
-    case 28:
-      image += 'sheep.png';
-      break;
-    case 29:
-      image += 'sloth.png';
-      break;
-    case 30:
-      image += 'snake.png';
-      break;
-    case 31:
-      image += 'squirrel.png';
-      break;
-    case 32:
-      image += 'tiger.png';
-      break;
-    case 33:
-      image += 'walrus.png';
-      break;
-    case 34:
-      image += 'wolf.png';
-      break;
-    case 35:
-      image += 'zebra.png';
-      break;
+  @override
+  Future<void> createIncidence(String studentId, Incidence incidence) async {
+    Student s = GetIt.I<StudentService>().getStudent(studentId);
+    s.incidences.add(incidence);
+    return updateStudent(s);
   }
 
-  ByteData bytes = await rootBundle.load(image);
-  Uint8List list = bytes.buffer.asUint8List();
-  return list;
+  @override
+  Future<void> deleteIncidence(String studentId, Incidence incidence) async {
+    Student s = GetIt.I<StudentService>().getStudent(studentId);
+    s.incidences.remove(incidence);
+    return updateStudent(s);
+  }
+
+  Future<Uint8List> randomImage(String studentId) async {
+    int hashValue = studentId.hashCode.abs();
+    String image = 'assets${Platform.pathSeparator}images${Platform.pathSeparator}';
+
+    switch ((hashValue % 35).toInt()) {
+      case 0:
+        image += 'bear.png';
+        break;
+      case 1:
+        image += 'beaver.png';
+        break;
+      case 2:
+        image += 'bees.png';
+        break;
+      case 3:
+        image += 'boar.png';
+        break;
+      case 4:
+        image += 'bull.png';
+        break;
+      case 5:
+        image += 'camel.png';
+        break;
+      case 6:
+        image += 'crocodile.png';
+        break;
+      case 7:
+        image += 'deer.png';
+        break;
+      case 8:
+        image += 'duck.png';
+        break;
+      case 9:
+        image += 'eagle.png';
+        break;
+      case 10:
+        image += 'elephant.png';
+        break;
+      case 11:
+        image += 'fox.png';
+        break;
+      case 12:
+        image += 'frog.png';
+        break;
+      case 13:
+        image += 'giraffe.png';
+        break;
+      case 14:
+        image += 'goat.png';
+        break;
+      case 15:
+        image += 'gorilla.png';
+        break;
+      case 16:
+        image += 'hedgehog.png';
+        break;
+      case 17:
+        image += 'hippo.png';
+        break;
+      case 18:
+        image += 'horse.png';
+        break;
+      case 19:
+        image += 'koala.png';
+        break;
+      case 20:
+        image += 'lion.png';
+        break;
+      case 21:
+        image += 'owl.png';
+        break;
+      case 22:
+        image += 'panda.png';
+        break;
+      case 23:
+        image += 'parrot.png';
+        break;
+      case 24:
+        image += 'polar_bear.png';
+        break;
+      case 25:
+        image += 'rabbit.png';
+        break;
+      case 26:
+        image += 'racoon.png';
+        break;
+      case 27:
+        image += 'rhinoceros.png';
+        break;
+      case 28:
+        image += 'sheep.png';
+        break;
+      case 29:
+        image += 'sloth.png';
+        break;
+      case 30:
+        image += 'snake.png';
+        break;
+      case 31:
+        image += 'squirrel.png';
+        break;
+      case 32:
+        image += 'tiger.png';
+        break;
+      case 33:
+        image += 'walrus.png';
+        break;
+      case 34:
+        image += 'wolf.png';
+        break;
+      case 35:
+        image += 'zebra.png';
+        break;
+    }
+
+    ByteData bytes = await rootBundle.load(image);
+    Uint8List list = bytes.buffer.asUint8List();
+    return list;
+  }
+
 }

@@ -2,17 +2,22 @@
 class Strings {
   static const String absence = 'Abwesenheit';
   static const String absences = 'Abwesenheiten';
-  static const String allGroups = 'Alle';
+  static const String accident = 'Vorfall';
+  static const String achievement = 'Erfolg';
+  static const String all = 'Alle';
   static const String alreadyRegistered = 'Ich habe bereits ein Benutzerkonto';
   static const String alternative = 'oder';
   static const String back = 'Zurück';
   static const String birthday = 'Geburtsdatum';
   static const String cancel = 'Abbrechen';
+  static const String category = 'Kategorie';
   static const String city = 'Ort';
   static const String confirm = 'Bestätigen';
   static const String createInstitution = 'Eine neue Einrichtung anlegen';
   static const String createNewStudent = 'Neues Kind anlegen';
+  static const String custom = 'Benutzerdefiniert';
   static const String date_format = 'mm.dd.yyyy';
+  static const String description = 'Beschreibung';
   static const String email = 'E-Mail-Adresse';
   static const String end = 'Ende';
   static const String enter = 'Eintragen';
@@ -21,6 +26,7 @@ class Strings {
   static const String housenumber = 'Hausnummer';
   static const String greeting = 'Herzlich willkommen bei KinGa!';
   static const String impressum = 'Impressum';
+  static const String incidence = 'Ereignis';
   static const String infoGeneral = 'Allgemeines';
   static const String infoPickup = 'Abholberechtigte';
   static const String infoHealth = 'Gesundheit';
@@ -31,7 +37,9 @@ class Strings {
   static const String institutionName = 'Name der Einrichtung';
   static const String joinInstitution = 'Einer bestehenden Einrichtung beitreten';
   static const String kinga = 'KinGa';
+  static const String lastMonth = 'Letzter Monat';
   static const String lastname = 'Nachname';
+  static const String lastYear = 'Letztes Jahr';
   static const String loading = 'Wird geladen..';
   static const String logout = 'Ausloggen';
   static const String middlename = 'Zweitname(n)';
@@ -39,6 +47,7 @@ class Strings {
   static const String next = 'Weiter';
   static const String notRegistered = 'Ich benutze KinGa das erste Mal';
   static const String notInInstitutionYet = "Sie sind noch keiner Einrichtung beigetreten";
+  static const String other = 'Sonstiges';
   static const String password = 'Passwort';
   static const String passwordRepeat = 'Passwort wiederholen';
   static const String permission = 'Berechtigungen';
@@ -52,7 +61,10 @@ class Strings {
   static const String signIn = 'Anmelden';
   static const String signUp = 'Registrieren';
   static const String start = 'Anfang';
+  static const String studentsData = 'Stammdaten';
   static const String support = 'Support';
+  static const String time = 'Uhrzeit';
+  static const String today = 'Heute';
   static const String errorEmailAlreadyInUse = 'Es besteht bereits ein Benutzerkonto mit der angegebenen E-Mail-Adresse';
   static const String errorEmailEmpty = 'E-Mail-Adresse darf nicht leer sein';
   static const String errorInvalidEmail = 'Die angegebene E-Mail-Adresse ist ungültig';
@@ -66,6 +78,10 @@ class Strings {
   static const String errorUserDisabled = 'Das angegebene Benutzerkonto wurde vorübergehend deaktiviert. Bitte kontaktieren Sie den Support, damit wir Ihnen weiterhelfen können';
   static const String errorUserNotFound = 'Unter der angegebenen E-Mail-Adresse wurde noch kein Benutzerkonto erstellt';
   static const String errorWeakPassword = 'Das eingegebene Passwort ist zu schwach. Das Passwort muss mindestens 6 Zeichen lang sein und sollte Sonderzeichen sowie Groß- und Kleinbuchstaben enthalten';
+
+  // incidences
+  static const String confirmDeleteIncidence = 'Soll die Notiz wirklich gelöscht werden?';
+  static const String noIncidences = 'Keine Ereignisse';
 
   // permissions
   static const String confirmDeletePermission = 'Soll die Berechtigung wirklich gelöscht werden?';

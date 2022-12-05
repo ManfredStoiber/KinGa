@@ -6,11 +6,10 @@ import 'package:http/http.dart' as http;
 import 'package:kinga/constants/keys.dart';
 import 'package:kinga/data/firebase_utils.dart';
 import 'package:kinga/domain/entity/absence.dart';
-import 'package:kinga/domain/entity/attendance.dart';
 import 'package:kinga/domain/entity/caregiver.dart';
+import 'package:kinga/domain/entity/incidence.dart';
 import 'package:kinga/domain/student_repository.dart';
 import 'package:kinga/domain/entity/student.dart';
-import 'package:kinga/util/crypto_utils.dart';
 import 'package:streaming_shared_preferences/streaming_shared_preferences.dart';
 
 class FirebaseRestStudentRepository implements StudentRepository {
@@ -66,8 +65,20 @@ class FirebaseRestStudentRepository implements StudentRepository {
   }
 
   @override
-  Future<void> removeAbsence(String studentId, Absence absence) {
+  Future<void> deleteAbsence(String studentId, Absence absence) {
     // TODO: implement removeAbsence
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> createIncidence(String studentId, Incidence incidence) {
+    // TODO: implement createIncidence
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> deleteIncidence(String studentId, Incidence incidence) {
+    // TODO: implement deleteIncidence
     throw UnimplementedError();
   }
 

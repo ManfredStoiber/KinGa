@@ -60,6 +60,7 @@ dependencies:
   intl: ^0.17.0
   table_calendar: ^3.0.8
   flutter_keyboard_visibility: ^5.4.0
+  confetti: ^0.7.0
 
 dev_dependencies:
   flutter_test:
