@@ -230,11 +230,19 @@ class FirebaseStudentRepository implements StudentRepository {
   }
 
   @override
+  Future<void> deleteStudent(String studentId) async {
+    await db.collection('Institution').doc(currentInstitutionId).collection('Student')
+        .doc(studentId).delete().then((_) {
+      storage.ref().child('$currentInstitutionId/$studentId').delete();
+    });
+  }
+
+  @override
   Future<void> setProfileImage(String studentId, Uint8List image) async {
     // store in cache
     cacheProfileImage(studentId, image);
     // store in firebase storage
-    FirebaseStorage.instance.ref().child('$currentInstitutionId/$studentId').putData(image);
+    storage.ref().child('$currentInstitutionId/$studentId').putData(image);
     // update student
     StudentService studentService = GetIt.I<StudentService>();
     studentService.updateStudent(studentService.getStudent(studentId)..profileImage = image);

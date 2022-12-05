@@ -12,6 +12,7 @@ abstract class StudentRepository {
   Future<String> createStudent(String firstname, String middlename, String lastname,
       String birthday, String address, String group, Uint8List profileImage,
       List<Caregiver> caregivers, Set<String> permissions);
+  Future<void> deleteStudent(String studentId);
   Future<void> setProfileImage(String studentId, Uint8List image);
   Future<void> createAbsence(String studentId, Absence absence);
   Future<void> deleteAbsence(String studentId, Absence absence);

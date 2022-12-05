@@ -105,14 +105,19 @@ class _CreateBasicInfoState extends State<CreateBasicInfo> {
                         width: 150,
                         child: () {
                           if (widget._profileImage.isEmpty) {
-                            return Stack(children: const [
+                            return Stack(children: [
                               Center(
-                                  child: Icon(
-                                    color: Colors.grey,
-                                    Icons.circle,
-                                    size: 150,
+                                  child: Container(
+                                    height: 150,
+                                    width: 150,
+                                    decoration: ShapeDecoration(
+                                      color: Colors.grey,
+                                      shape: ContinuousRectangleBorder(
+                                        borderRadius: BorderRadius.circular(44)
+                                      )
+                                    ),
                                   )),
-                              Center(
+                              const Center(
                                   child: Icon(
                                     color: Colors.white,
                                     Icons.add_a_photo,
@@ -123,8 +128,10 @@ class _CreateBasicInfoState extends State<CreateBasicInfo> {
                             return Container(
                                 height: 150,
                                 width: 150,
-                                decoration: const BoxDecoration(
-                                  shape: BoxShape.circle,
+                                decoration: ShapeDecoration(
+                                    shape: ContinuousRectangleBorder(
+                                        borderRadius: BorderRadius.circular(44)
+                                    )
                                 ),
                                 clipBehavior: Clip.antiAlias,
                                 //child: Image.file(File(_imagePath))

@@ -57,7 +57,6 @@ class Student extends Person implements Comparable<Student> {
     // TODO: compare all properties
     return "$firstname $lastname".compareTo("${other.firstname} ${other.lastname}");
   }
-
 }
 
 

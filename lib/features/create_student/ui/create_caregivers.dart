@@ -47,8 +47,19 @@ class _CreateCaregiversState extends State<CreateCaregivers> {
                       IconButton(
                           onPressed: () {
                             setState(() {
-                              FocusScope.of(context).unfocus();
-                              widget.caregivers.removeAt(i);
+                              if (widget.caregivers.length > 1) {
+                                FocusScope.of(context).unfocus();
+                                widget.caregivers.removeAt(i);
+                              } else {
+                                showDialog(context: context, builder: (context) => AlertDialog(
+                                  title: const Text(Strings.requiredCaregiver),
+                                  actions: [
+                                    TextButton(onPressed: () {
+                                      Navigator.of(context).pop();
+                                    }, child: const Text(Strings.okay)),
+                                  ],
+                                ));
+                              }
                             });
                           },
                           icon: const Icon(
@@ -82,6 +93,11 @@ class _CreateCaregiversState extends State<CreateCaregivers> {
                                   hintText: Strings.phoneLabelHint,
                                   floatingLabelBehavior: FloatingLabelBehavior.always
                               ),
+                              validator: (value) {
+                                if (value == null || value.trim().isEmpty) {
+                                  return '${Strings.phoneLabel} ${Strings.requiredFieldMessage}';
+                                }
+                              },
                             ),
                           ),
                         ),
@@ -98,13 +114,30 @@ class _CreateCaregiversState extends State<CreateCaregivers> {
                               scrollPadding: const EdgeInsets.all(40),
                               decoration:
                               const InputDecoration(border: OutlineInputBorder(), labelText: Strings.phoneNumber),
+                              validator: (value) {
+                                if (value == null || value.trim().isEmpty) {
+                                  return '${Strings.phoneNumber} ${Strings.requiredFieldMessage}';
+                                }
+                              },
                             ),
                           ),
                         ),
                         IconButton(
                             onPressed: () {
                               setState(() {
-                                widget.caregivers[i]['phoneNumbers'].remove(phoneNumber);
+                                if (widget.caregivers[i]['phoneNumbers'].length > 1) {
+                                  FocusScope.of(context).unfocus();
+                                  widget.caregivers[i]['phoneNumbers'].remove(phoneNumber);
+                                } else {
+                                  showDialog(context: context, builder: (context) => AlertDialog(
+                                    title: const Text(Strings.requiredPhoneNumber),
+                                    actions: [
+                                      TextButton(onPressed: () {
+                                        Navigator.of(context).pop();
+                                      }, child: const Text(Strings.okay)),
+                                    ],
+                                  ));
+                                }
                               });
                             },
                             icon: const Icon(
