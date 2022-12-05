@@ -43,7 +43,11 @@ class ShowInstitutionQrCodeScreen extends StatelessWidget {
               padding: EdgeInsets.all(32),
               child: Column(
                 children: [
-                   QrImage(data: json.encode({Keys.institutionId: _institutionId, Keys.institutionPassword: _institutionPassword})),
+                   QrImage(data: json.encode({Keys.institutionId: _institutionId, Keys.institutionPassword: _institutionPassword}),
+                   embeddedImage: AssetImage('assets/images/QR_logo.png'),
+                   embeddedImageStyle: QrEmbeddedImageStyle(
+                     size: const Size(60, 60)
+                   ),),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Row(
