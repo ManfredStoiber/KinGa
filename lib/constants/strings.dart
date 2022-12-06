@@ -65,12 +65,16 @@ class Strings {
   static const String support = 'Support';
   static const String time = 'Uhrzeit';
   static const String today = 'Heute';
+
+  // error
+  static const String exception = 'Fehler';
   static const String errorEmailAlreadyInUse = 'Es besteht bereits ein Benutzerkonto mit der angegebenen E-Mail-Adresse';
   static const String errorEmailEmpty = 'E-Mail-Adresse darf nicht leer sein';
   static const String errorInvalidEmail = 'Die angegebene E-Mail-Adresse ist ungültig';
   static const String errorInvalidEmailOrPassword = 'E-Mail-Adresse und/oder Passwort ungültig';
   static const String errorNetwork = 'Verbindung konnte nicht hergestellt werden. Überprüfen Sie ihre Netzwerkverbindung und versuchen Sie es erneut.';
-  static const String errorOccured = 'Es ist ein Fehler aufgetreten';
+  static const String errorOccurred = 'Es ist ein Fehler aufgetreten';
+  static const String errorOccurredDescription = 'Bitte versuche es später nochmal. Bei anhaltenden Problemen, wende dich bitte an unseren Support.';
   static const String errorPasswordEmpty = 'Passwort darf nicht leer sein';
   static const String errorRepeatPasswordEmpty = 'Bitte Passwort erneut eingeben';
   static const String errorRepeatPasswordNotEqual = 'Die beiden Passwörter stimmen nicht überein';

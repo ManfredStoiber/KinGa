@@ -15,6 +15,7 @@ import 'package:kinga/ui/show_student_screen.dart';
 import 'package:kinga/constants/strings.dart';
 import 'package:kinga/constants/colors.dart';
 import 'package:kinga/ui/widgets/drop.dart';
+import 'package:kinga/ui/widgets/error.dart';
 import 'package:kinga/ui/widgets/loading_indicator.dart';
 
 import 'bloc/students_cubit.dart';
@@ -132,7 +133,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                       ]
                   );
                 } else {
-                  return const Text("Exception"); // TODO
+                  return Text(Strings.exception);
                 }
   },
 )
@@ -162,7 +163,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                   ..sort((a, b) => state.getStudent(a.studentId).compareTo(state.getStudent(b.studentId))),
               );
             } else {
-              return const Text("Exception"); // TODO
+              return const Error();
             }
           }
         ),
@@ -330,7 +331,7 @@ class _AttendanceItemState extends State<AttendanceItem> {
             ]
           );
         } else {
-          throw Exception('Invalid State');
+          throw Exception('Invalid State'); // TODO
         }
       },
     );
