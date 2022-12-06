@@ -64,7 +64,6 @@ class FirebaseUtils {
       map['lastname'],
       map['birthday'],
       map['address'],
-      map['city'] ?? "",
       map['group'],
       Uint8List(0),
       caregivers.toList(),
@@ -88,7 +87,6 @@ class FirebaseUtils {
       'lastname': student.lastname,
       'birthday': student.birthday,
       'address': student.address,
-      'city': student.city,
       'group': student.group,
     };
 

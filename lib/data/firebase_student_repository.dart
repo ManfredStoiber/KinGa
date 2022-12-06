@@ -161,7 +161,6 @@ class FirebaseStudentRepository implements StudentRepository {
       map['lastname'],
       map['birthday'],
       map['address'],
-      map['city'],
       map['group'],
       Uint8List.fromList([]),
       caregivers.toList(),
@@ -191,10 +190,9 @@ class FirebaseStudentRepository implements StudentRepository {
   }
 
   @override
-  Future<void> createStudent(String firstname, String middlename, String lastname,
-      String birthday, String street, String housenumber, String postcode,
-      String city, Uint8List profileImage, List<Caregiver> caregivers) async {
-    String address = '$street $housenumber, $postcode';
+  Future<String> createStudent(String firstname, String middlename, String lastname,
+      String birthday, String address, String group, Uint8List profileImage, List<Caregiver> caregivers,
+      Set<String> permissions) async {
     String studentId = const Uuid().v1();
 
     if (profileImage.isEmpty) profileImage = await randomImage(studentId);
@@ -206,8 +204,7 @@ class FirebaseStudentRepository implements StudentRepository {
         lastname,
         birthday,
         address,
-        city,
-        '',
+        group,
         profileImage,
         caregivers,
         [],
@@ -217,9 +214,9 @@ class FirebaseStudentRepository implements StudentRepository {
         [],
         [],
         [],
-        {});
+        permissions);
 
-    db.collection('Institution').doc(currentInstitutionId).collection('Student')
+    await db.collection('Institution').doc(currentInstitutionId).collection('Student')
         .doc(studentId)
         .set(FirebaseUtils.studentToMap(student))
         .onError((error, stackTrace) {
@@ -227,7 +224,8 @@ class FirebaseStudentRepository implements StudentRepository {
         print(stackTrace);
       }
     });
-    setProfileImage(studentId, profileImage);
+
+    return studentId;
   }
 
   @override

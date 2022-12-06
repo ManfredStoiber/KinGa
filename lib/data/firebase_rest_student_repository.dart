@@ -47,7 +47,7 @@ class FirebaseRestStudentRepository implements StudentRepository {
   }
 
   @override
-  Future<void> createStudent(String firstname, String middlename, String lastname, String birthday, String street, String housenumber, String postcode, String city, Uint8List profileImage, List<Caregiver> caregivers) {
+  Future<String> createStudent(String firstname, String middlename, String lastname, String birthday, String address, String group, Uint8List profileImage, List<Caregiver> caregivers, Set<String> permissions) {
     // TODO: implement createStudent
     throw UnimplementedError();
   }

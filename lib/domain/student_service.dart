@@ -40,19 +40,20 @@ class StudentService {
     students.add(student);
     _studentRepository.updateStudent(student);
   }
-
-  void createStudent(Map<String, dynamic> student, Uint8List profileImage) {
-    _studentRepository.createStudent(
+  // TODO: improve setProfileImage in case student isn't created yet
+  Future<void> createStudent(Map<String, dynamic> student, Uint8List profileImage) async {
+    String studentId = await _studentRepository.createStudent(
         student['firstname'],
-        student['middlename'],
+        student['middlename'] ?? '',
         student['lastname'],
         student['birthday'],
-        student['street'],
-        student['housenumber'],
-        student['postcode'],
-        student['city'],
+        student['address'],
+        student['group'],
         profileImage,
-        student['caregivers']);
+        student['caregivers'],
+        student['permissions']);
+
+    _studentRepository.setProfileImage(studentId, profileImage);
   }
 
   Future<void> createIncidence(String studentId, Incidence incidence) async {
