@@ -22,9 +22,8 @@ import 'package:kinga/ui/widgets/expandable_fab.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ShowStudentScreen extends StatefulWidget {
-  ShowStudentScreen({Key? key, required this.studentId,}) : super(key: key);
+  const ShowStudentScreen({Key? key, required this.studentId,}) : super(key: key);
 
-  final GlobalKey<AnimatedListState> _incidenceListKey = GlobalKey<AnimatedListState>();
   final String studentId;
 
   @override
@@ -37,7 +36,7 @@ class _ShowStudentScreenState extends State<ShowStudentScreen> {
   final _studentService = GetIt.I<StudentService>();
   late final ScrollController _scrollController;
   bool isScrollable = false;
-  final _confettiController = ConfettiController();
+  final _confettiController = ConfettiController(duration: const Duration(seconds: 5));
   final _fabState = GlobalKey<ExpandableFabState>();
 
   @override
@@ -76,7 +75,10 @@ class _ShowStudentScreenState extends State<ShowStudentScreen> {
         actions: [
           Visibility(
             visible: GetIt.I<StudentService>().hasBirthday(student.studentId),
-            child: Container(padding: const EdgeInsets.only(top: 6), child: Image.asset('assets${Platform.pathSeparator}images${Platform.pathSeparator}cupcake.png', height: kToolbarHeight / 2)),
+            child: InkWell(onTap: () => setState(() {
+              _confettiController.play();
+              Future.delayed(const Duration(seconds: 1)).then((value) => _confettiController.stop());
+            }), child: Container(padding: const EdgeInsets.only(top: 6), child: Image.asset('assets${Platform.pathSeparator}images${Platform.pathSeparator}cupcake.png', height: kToolbarHeight / 2))),
           ),
           IconButton(padding: const EdgeInsets.only(right: 10), onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => ShowStudentDataScreen(student),)), icon: const Icon(Icons.info_outline))
         ],
@@ -86,7 +88,7 @@ class _ShowStudentScreenState extends State<ShowStudentScreen> {
           controller: _scrollController,
           shrinkWrap: true,
           slivers: [
-            SliverPersistentHeader(pinned: true, floating: false, delegate: ShowStudentSliverAppBar(student, expandedHeight: 300.0, collapsedHeight: 100.0)),
+            SliverPersistentHeader(pinned: true, floating: false, delegate: ShowStudentSliverAppBar(student, _confettiController, expandedHeight: 300.0, collapsedHeight: 100.0,)),
             SliverList(delegate: SliverChildListDelegate.fixed([
               ShowIncidencesWidget(widget.studentId, onIncidencesChanged: () {
                 // TODO: like other todo in ShowIncidencesScreen (scrollable)
@@ -196,8 +198,9 @@ class ShowStudentSliverAppBar extends SliverPersistentHeaderDelegate {
   final double expandedHeight;
   final double collapsedHeight;
   final Student student;
+  final ConfettiController _confettiController;
 
-  ShowStudentSliverAppBar(this.student, {required this.expandedHeight, required this.collapsedHeight});
+  ShowStudentSliverAppBar(this.student, this._confettiController, {required this.expandedHeight, required this.collapsedHeight});
 
   @override
   Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
@@ -314,7 +317,7 @@ class ShowStudentSliverAppBar extends SliverPersistentHeaderDelegate {
                   blastDirection: 0,
                   gravity: 0.05,
                   canvas: Size(constraints.maxWidth, constraints.maxHeight + 50),
-                  maxBlastForce: 5, minBlastForce: 2, numberOfParticles: 2, emissionFrequency: 0.02, confettiController: ConfettiController(duration: const Duration(seconds: 10))..play(), blastDirectionality: BlastDirectionality.directional,
+                  maxBlastForce: 5, minBlastForce: 2, numberOfParticles: 2, emissionFrequency: 0.02, confettiController: _confettiController, blastDirectionality: BlastDirectionality.directional,
                 ),
               ),
             ),
@@ -326,7 +329,7 @@ class ShowStudentSliverAppBar extends SliverPersistentHeaderDelegate {
                   blastDirection: pi,
                   gravity: 0.05,
                   canvas: Size(constraints.maxWidth, constraints.maxHeight + 50),
-                  maxBlastForce: 5, minBlastForce: 2, numberOfParticles: 2, emissionFrequency: 0.02, confettiController: ConfettiController(duration: const Duration(seconds: 10))..play(), blastDirectionality: BlastDirectionality.directional,
+                  maxBlastForce: 5, minBlastForce: 2, numberOfParticles: 2, emissionFrequency: 0.02, confettiController: _confettiController, blastDirectionality: BlastDirectionality.directional,
                 ),
               ),
             ),
