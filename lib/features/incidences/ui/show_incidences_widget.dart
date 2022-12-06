@@ -189,10 +189,7 @@ class ShowIncidencesWidgetState extends State<ShowIncidencesWidget> {
               physics: const ClampingScrollPhysics(),
               initialItemCount: state.incidences.length,
               itemBuilder: (context, index, animation) {
-                if (widget.listKey?.currentState?.widget.initialItemCount == 0) {
-                  return Container();
-                }
-                return AnimatedSlideMenu(animation: animation, index: index, listKey: widget.listKey, studentId: widget.studentId,);
+                return AnimatedSlideMenu(key: UniqueKey(), animation: animation, index: index, listKey: widget.listKey, studentId: widget.studentId,);
             },),
             BlocBuilder<IncidencesCubit, IncidencesState>(
               builder: (context, state) {
