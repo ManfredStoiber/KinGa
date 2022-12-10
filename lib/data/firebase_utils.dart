@@ -68,6 +68,7 @@ class FirebaseUtils {
       Uint8List(0),
       caregivers.toList(),
       attendances.toList(),
+      [],
       absences,
       [],
       [],
@@ -121,7 +122,9 @@ class FirebaseUtils {
       });
     }
     map['caregivers'] = caregivers;
-    map['profileImage'] = base64.encode(student.profileImage).hashCode.toString();
+    if (student.profileImage != null) {
+      map['profileImage'] = base64.encode(student.profileImage!).hashCode.toString();
+    }
     //map['profileImage'] = student.profileImage.toString().hashCode.toString();
     //map['profileImage'] = sha1.convert(student.profileImage).toString();
 

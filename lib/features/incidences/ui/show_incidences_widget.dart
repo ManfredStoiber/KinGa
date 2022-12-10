@@ -43,7 +43,7 @@ class ShowIncidencesWidgetState extends State<ShowIncidencesWidget> {
         // incidence(s) removed
         var removedIncidences = previousIncidences.where((incidence) => !newIncidences.contains(incidence)).toList();
         for (var incidence in removedIncidences) {
-          widget.listKey?.currentState?.removeItem(duration: changedFilter ? const Duration(milliseconds: 0) : const Duration(milliseconds: 500), previousIncidences.indexOf(incidence), (context, animation) {
+          widget.listKey.currentState?.removeItem(duration: changedFilter ? const Duration(milliseconds: 0) : const Duration(milliseconds: 500), previousIncidences.indexOf(incidence), (context, animation) {
             return changedFilter ? AnimatedBuilder(
               animation: animation,
               builder: (context, child) {
@@ -90,7 +90,7 @@ class ShowIncidencesWidgetState extends State<ShowIncidencesWidget> {
         // new incidence(s) added
         var addedIncidences = newIncidences.where((incidence) => !previousIncidences.contains(incidence)).toList();
         for (var incidence in addedIncidences) {
-          widget.listKey!.currentState!.insertItem(duration: changedFilter ? const Duration(milliseconds: 0) : const Duration(milliseconds: 250), newIncidences.indexOf(incidence));
+          widget.listKey.currentState!.insertItem(duration: changedFilter ? const Duration(milliseconds: 0) : const Duration(milliseconds: 250), newIncidences.indexOf(incidence));
           previousIncidences.insert(newIncidences.indexOf(incidence), incidence); // insert to keep track of indices
         }
 

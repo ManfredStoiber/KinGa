@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -300,11 +302,12 @@ class _AttendanceItemState extends State<AttendanceItem> {
                             child: Hero(
                             tag: "hero${widget.studentId}",
                             child: () {
-                              if (state.getStudent(widget.studentId).profileImage.isEmpty) {
+                              Uint8List? profileImage = state.getStudent(widget.studentId).profileImage;
+                              if (profileImage == null) {
                                 return SvgPicture.asset(
                                   'assets${Platform.pathSeparator}images${Platform.pathSeparator}hamster.svg',);
                               } else {
-                                return Container(margin: const EdgeInsets.only(top: 5), clipBehavior: Clip.antiAlias, decoration: ShapeDecoration(shape: ContinuousRectangleBorder(borderRadius: BorderRadius.circular(44))), child: Image.memory(fit: BoxFit.fitHeight, state.getStudent(widget.studentId).profileImage));
+                                return Container(margin: const EdgeInsets.only(top: 5), clipBehavior: Clip.antiAlias, decoration: ShapeDecoration(shape: ContinuousRectangleBorder(borderRadius: BorderRadius.circular(44))), child: Image.memory(fit: BoxFit.fitHeight, profileImage));
                               }
                               } ()
                             ),

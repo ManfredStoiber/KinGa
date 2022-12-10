@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
@@ -39,10 +41,11 @@ class _PermissionItemState extends State<PermissionItem> {
                             children: [
                               Expanded(
                                 child: () {
-                                  if (state.getStudent(widget.studentId).profileImage == null) {
+                                  Uint8List? profileImage = state.getStudent(widget.studentId).profileImage;
+                                  if (profileImage == null) {
                                     return SvgPicture.asset('assets/images/hamster.svg',);
                                   } else {
-                                    return Container(margin: const EdgeInsets.only(top: 5), clipBehavior: Clip.antiAlias, decoration: ShapeDecoration(shape: ContinuousRectangleBorder(borderRadius: BorderRadius.circular(44))), child: Image.memory(fit: BoxFit.fitHeight, state.getStudent(widget.studentId).profileImage));
+                                    return Container(margin: const EdgeInsets.only(top: 5), clipBehavior: Clip.antiAlias, decoration: ShapeDecoration(shape: ContinuousRectangleBorder(borderRadius: BorderRadius.circular(44))), child: Image.memory(fit: BoxFit.fitHeight, profileImage));
                                   }
                                 } (),
                               ),

@@ -16,6 +16,7 @@ class Strings {
   static const String category = 'Kategorie';
   static const String caregiverLabel = 'Bezeichnung';
   static const String caregiverLabelHint = 'z.B. Mama, Papa, ...';
+  static const String close = 'Schließen';
   static const String confirm = 'Bestätigen';
   static const String contact = 'Kontakt';
   static const String createInstitution = 'Eine neue Einrichtung anlegen';
@@ -58,6 +59,8 @@ class Strings {
   static const String noPermissionsCreateStudent = 'Neue Berechtigungen können im Hauptmenü hinzugefügt werden';
   static const String notRegistered = 'Ich benutze KinGa das erste Mal';
   static const String notInInstitutionYet = "Sie sind noch keiner Einrichtung beigetreten";
+  static const String notesOptional = "Notizen (optional)";
+  static const String observationForm = "Beobachtungsbogen:";
   static const String other = 'Sonstiges';
   static const String password = 'Passwort';
   static const String passwordRepeat = 'Passwort wiederholen';
@@ -97,6 +100,11 @@ class Strings {
   // incidences
   static const String confirmDeleteIncidence = 'Soll die Notiz wirklich gelöscht werden?';
   static const String noIncidences = 'Keine Ereignisse';
+
+  // observations
+  static const String createObservationForm = 'Beobachtungsbogen anlegen';
+  static const String noObservationFormYet = 'noch nicht angelegt';
+  static const String note = 'Notiz';
 
   // permissions
   static const String confirmDeletePermission = 'Soll die Berechtigung wirklich gelöscht werden?';
