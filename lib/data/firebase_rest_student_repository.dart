@@ -53,6 +53,12 @@ class FirebaseRestStudentRepository implements StudentRepository {
   }
 
   @override
+  Future<void> deleteStudent(String studentId) {
+    // TODO: implement createStudent
+    throw UnimplementedError();
+  }
+
+  @override
   Future<void> setProfileImage(String studentId, Uint8List image) {
     // TODO: implement setProfileImage
     throw UnimplementedError();

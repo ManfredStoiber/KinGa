@@ -23,7 +23,9 @@ class Strings {
   static const String createNewStudent = 'Neues Kind anlegen';
   static const String custom = 'Benutzerdefiniert';
   static const String date_format = 'mm.dd.yyyy';
+  static const String deleteChild = 'Kind löschen?';
   static const String description = 'Beschreibung';
+  static const String editStudent = 'Stammdaten bearbeiten';
   static const String email = 'E-Mail-Adresse';
   static const String end = 'Ende';
   static const String enter = 'Eintragen';
@@ -61,6 +63,7 @@ class Strings {
   static const String notInInstitutionYet = "Sie sind noch keiner Einrichtung beigetreten";
   static const String notesOptional = "Notizen (optional)";
   static const String observationForm = "Beobachtungsbogen:";
+  static const String okay = 'OK';
   static const String other = 'Sonstiges';
   static const String password = 'Passwort';
   static const String passwordRepeat = 'Passwort wiederholen';
@@ -71,7 +74,9 @@ class Strings {
   static const String pickImageOption = 'Option auswählen:';
   static const String reason = 'Grund';
   static const String removeAbsence = 'Abwesenheit entfernen?';
+  static const String requiredCaregiver = 'Es muss mindestens ein Kontakt angegeben werden.';
   static const String requiredFieldMessage = 'darf nicht leer sein.';
+  static const String requiredPhoneNumber = 'Es muss mindestens eine Telefonnummer angegeben werden.';
   static const String scanQr = 'QR Code scannen';
   static const String search = 'Suche';
   static const String selectGroup = 'Gruppe auswählen';

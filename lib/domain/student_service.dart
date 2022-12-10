@@ -56,6 +56,10 @@ class StudentService {
     _studentRepository.setProfileImage(studentId, profileImage);
   }
 
+  Future<void> deleteStudent(String studentId) {
+    return _studentRepository.deleteStudent(studentId);
+  }
+
   Future<void> createIncidence(String studentId, Incidence incidence) async {
     return _studentRepository.createIncidence(studentId, incidence);
   }
@@ -171,8 +175,8 @@ class StudentService {
         .birthday.substring(5);
   }
 
-  void setProfileImage(String studentId, Uint8List image) {
-    _studentRepository.setProfileImage(studentId, image);
+  Future<void> setProfileImage(String studentId, Uint8List image) async {
+    return _studentRepository.setProfileImage(studentId, image);
   }
 
   bool isAbsent(String studentId) {

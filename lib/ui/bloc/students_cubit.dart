@@ -53,6 +53,15 @@ class StudentsCubit extends Cubit<StudentsState> {
     _studentService.createStudent(student, profileImage);
   }
 
+  Future<void> updateStudent(Student student, Uint8List profileImage) async {
+    await _studentService.updateStudent(student);
+    return setProfileImage(student.studentId, profileImage);
+  }
+
+  Future<void> deleteStudent(String studentId) async {
+    return _studentService.deleteStudent(studentId);
+  }
+
   void setProfileImage(String studentId, Uint8List image) {
     _studentService.setProfileImage(studentId, image);
   }
