@@ -455,4 +455,10 @@ class FirebaseStudentRepository implements StudentRepository {
     return list;
   }
 
+  @override
+  Future<String> getStudentIdFromRfid(String rfid) {
+    // TODO: implement getStudentIdFromRfid
+    throw UnimplementedError();
+  }
+
 }

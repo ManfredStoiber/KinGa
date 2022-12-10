@@ -49,7 +49,7 @@ class FirebaseInstitutionRepository implements InstitutionRepository {
   }
 
   @override
-  Future<void> joinInstitution(String institutionId, String institutionPassword) async {
+  Future<String?> joinInstitution(String institutionId, String institutionPassword) async {
     final kdf = CryptoUtils.getKdf();
     late final Uint8List encryptedInstitutionKey;
     late final Uint8List institutionKeyIv;

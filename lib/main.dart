@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -12,8 +14,11 @@ import 'package:kinga/domain/student_service.dart';
 import 'package:kinga/features/commons/domain/analytics_service.dart';
 import 'package:kinga/injection.dart';
 import 'package:kinga/ui/attendance_screen.dart';
+import 'package:kinga/ui/attendance_screen_native.dart';
 import 'package:kinga/ui/setup_account_screen.dart';
+import 'package:kinga/ui/setup_account_screen_native.dart';
 import 'package:kinga/ui/setup_institution_screen.dart';
+import 'package:kinga/ui/setup_institution_screen_native.dart';
 import 'package:streaming_shared_preferences/streaming_shared_preferences.dart';
 import 'ui/bloc/students_cubit.dart';
 
@@ -34,10 +39,12 @@ void main() async {
 
   //Setting SystmeUIMode
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge, overlays: [SystemUiOverlay.top]);
-  SystemChrome.setPreferredOrientations([
-    DeviceOrientation.portraitUp,
-    DeviceOrientation.portraitDown,
-  ]);
+  if (!(Platform.isWindows || Platform.isLinux)) {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+  }
 
   final StudentService studentService = GetIt.I<StudentService>();
   final AuthenticationService authenticationService = GetIt.I<AuthenticationService>();
@@ -129,7 +136,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                               )
                           )
                       ),
-                      home: const AttendanceScreen(),
+                      home: (Platform.isWindows || Platform.isLinux) ? const AttendanceScreenNative() : const AttendanceScreen(),
                     ),
                   );
                 } else {
@@ -138,7 +145,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                     providers: [
                       BlocProvider(
                         create: (context) => StudentsCubit(widget._studentService),
-                        child: const AttendanceScreen(),
+                        child: (Platform.isWindows || Platform.isLinux) ? AttendanceScreenNative() : const AttendanceScreen(),
                       )
                     ],
                     child: MaterialApp(
@@ -147,7 +154,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                         // This is the theme of your application.
                           scaffoldBackgroundColor: ColorSchemes.backgroundColor, colorScheme: ColorScheme.fromSwatch(primarySwatch: ColorSchemes.kingacolor).copyWith(background: ColorSchemes.backgroundColor).copyWith(error: ColorSchemes.errorColor)
                       ),
-                      home: const SetupInstitutionScreen(),
+                      home: (Platform.isWindows || Platform.isLinux) ? SetupInstitutionScreenNative() : const SetupInstitutionScreen(),
                     ),
                   );
                 }
@@ -168,7 +175,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                 // This is the theme of your application.
                   scaffoldBackgroundColor: ColorSchemes.backgroundColor, colorScheme: ColorScheme.fromSwatch(primarySwatch: ColorSchemes.kingacolor).copyWith(background: ColorSchemes.backgroundColor).copyWith(error: ColorSchemes.errorColor)
               ),
-              home: const SetupAccountScreen(),
+              home: (Platform.isWindows || Platform.isLinux) ? const SetupAccountScreenNative() : const SetupAccountScreen(),
             ),
           );
         }

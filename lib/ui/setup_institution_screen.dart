@@ -9,6 +9,8 @@ import 'package:kinga/domain/institution_repository.dart';
 import 'package:kinga/ui/widgets/loading_indicator_dialog.dart';
 import 'package:kinga/ui/qr_scanner_dialog.dart';
 import 'package:kinga/ui/show_institution_qr_code_screen.dart';
+import 'package:qr_flutter/qr_flutter.dart';
+import 'package:http/http.dart' as http;
 
 class SetupInstitutionScreen extends StatefulWidget {
   const SetupInstitutionScreen({Key? key}) : super(key: key);
@@ -38,8 +40,23 @@ class _SetupInstitutionScreenState extends State<SetupInstitutionScreen> with Ti
   List<Widget> _tabs = [];
   bool passwordVisible = false;
 
+  void debug() async {
+    var response = await http.get(Uri.https("www.google.de"));
+
+    if (response.statusCode == 200) {
+      return;
+    } else {
+    }
+  }
+
   @override
   void initState() {
+
+  debug();
+
+
+
+
     _tabs = [tab1(), ...tabsCreateInstitution()];
     _tabController = TabController(length: _tabs.length, vsync: this);
     _tabController.addListener(() {

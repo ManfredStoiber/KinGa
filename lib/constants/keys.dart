@@ -8,6 +8,7 @@ class Keys {
   static const String firebaseApiKey = "firebaseApiKey";
   static const String firebaseAuthUrl = "firebaseAuthUrl";
   static const String firebaseFirestoreUrl = "firebaseFirestoreUrl";
+  static const String firebaseStorageUrl = "firebaseStorageUrl";
   static const String institutionKey = "institutionKey";
   static const String institutionKeyIv = "institutionKeyIv";
   static const String institutionPassword = "institutionPassword";

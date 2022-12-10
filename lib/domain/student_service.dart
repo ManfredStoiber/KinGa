@@ -1,3 +1,4 @@
+import 'dart:collection';
 import 'dart:typed_data';
 
 import 'package:get_it/get_it.dart';
@@ -7,6 +8,7 @@ import 'package:kinga/domain/entity/incidence.dart';
 import 'package:kinga/domain/entity/student.dart';
 import 'package:kinga/domain/student_repository.dart';
 import 'package:kinga/util/date_utils.dart';
+import 'package:kinga/util/timed_cache.dart';
 
 class StudentService {
 
@@ -14,6 +16,9 @@ class StudentService {
   late Stream<Set<Student>> studentStream;
   late Set<Student> students;
   late Set<String> groups;
+
+  final _rfidCache = TimedCache<String, void>(const Duration(seconds: 25).inMilliseconds);
+  final _rfidQueue = Queue();
 
   StudentService() {
     studentStream = _studentRepository.watchStudents().map((students) {
@@ -101,14 +106,63 @@ class StudentService {
     return false;
   }
 
-  Future<void> toggleAttendance(String studentId) async {
+  Future<void> registerRfidAttendance(String rfid, bool canUnregister) async {
+
+    //print("Got RFID registration attempt: id: ${rfid}, canUnregister: ${canUnregister}");
+
+    bool alreadyRegistered = _rfidCache.contains(rfid);
+    if (alreadyRegistered) {
+      //print("already registered");
+      // if already registered, do nothing
+      return;
+    }
+
+    _rfidCache.set(rfid, null);
+    _rfidQueue.addFirst([rfid, DateTime.now()]);
+
+    while (_rfidQueue.isNotEmpty) {
+      var rfidRegistration = _rfidQueue.removeFirst();
+      String? studentId;
+      try {
+        studentId = await _studentRepository.getStudentIdFromRfid(rfidRegistration[0]);
+        //print("StudentId of RFID Tag: ${studentId}");
+      } catch (err) {
+        print("Error, enqueueing registration attempt..");
+        print("Error: ${err}");
+        // enqueue registration attempt
+        _rfidQueue.addLast(rfidRegistration);
+        return;
+      }
+      if (studentId == null) {
+        // rfid not assigned to a student
+        print("RFID not assigned to a student");
+        return;
+      }
+      Student student = getStudent(studentId);
+      Attendance? attendance = getAttendanceOfToday(student.attendances);
+      // only register if not attendant or unregistering allowed
+      if (attendance == null || attendance.leaving != null || canUnregister) {
+        //print("Toggle attendance of student ${student.firstname} ${student.lastname}");
+        toggleAttendance(studentId);
+      }
+    }
+
+
+  }
+
+  Future<void> toggleAttendance(String studentId, {DateTime? dateTime}) async {
 
     if (isAbsent(studentId)) {
       // if absent, do nothing
       return;
     }
 
-    String now = DateTime.now().toIso8601String();
+    String now;
+    if (dateTime != null) {
+      now = dateTime.toIso8601String();
+    } else {
+      now = DateTime.now().toIso8601String();
+    }
     String currentDate = IsoDateUtils.getIsoDateFromIsoDateTime(now);
     String currentTime = IsoDateUtils.getIsoTimeFromIsoDateTime(now);
 

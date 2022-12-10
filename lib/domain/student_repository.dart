@@ -20,4 +20,5 @@ abstract class StudentRepository {
   Future<void> createIncidence(String studentId, Incidence incidence);
   Future<void> updateIncidence(String studentId, Incidence oldIncidence, Incidence newIncidence);
   Future<void> deleteIncidence(String studentId, Incidence incidence);
+  Future<String?> getStudentIdFromRfid(String rfid);
 }

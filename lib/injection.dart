@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 import 'dart:typed_data';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -17,6 +18,7 @@ import 'package:kinga/domain/institution_repository.dart';
 import 'package:kinga/domain/student_repository.dart';
 import 'package:kinga/domain/student_service.dart';
 import 'package:kinga/features/commons/data/firebase_analytics_repository.dart';
+import 'package:kinga/features/commons/data/firebase_rest_analytics_repository.dart';
 import 'package:kinga/features/commons/domain/analytics_repository.dart';
 import 'package:kinga/features/commons/domain/analytics_service.dart';
 import 'package:kinga/features/connectivity_indicator/connection_status_singleton.dart';
@@ -47,6 +49,7 @@ Future<Map<String, Uint8List>> loadProfileImages() async {
 Future<void> configureDependencies() async {
   GetIt.I.registerSingleton<String>('identitytoolkit.googleapis.com', instanceName: Keys.firebaseAuthUrl);
   GetIt.I.registerSingleton<String>('firestore.googleapis.com', instanceName: Keys.firebaseFirestoreUrl);
+  GetIt.I.registerSingleton<String>('firebasestorage.googleapis.com', instanceName: Keys.firebaseStorageUrl);
   GetIt.I.registerSingleton<String>('AIzaSyD1bsq7scBz7iyyTLJm-qnS1qap9N9JrUk', instanceName: Keys.firebaseApiKey);
   GetIt.I.registerSingleton<StreamingSharedPreferences>(await StreamingSharedPreferences.instance);
   GetIt.I.registerSingleton<Directory>(await getApplicationDocumentsDirectory(), instanceName: Keys.applicationDocumentsDirectory);
@@ -68,16 +71,25 @@ Future<void> configureDependencies() async {
   GetIt.I.registerSingleton<StudentService>(StudentService());
 
   // observations
-  GetIt.I.registerSingleton<ObservationRepository>(FirebaseObservationRepository());
-  GetIt.I.registerSingleton<ObservationService>(ObservationService());
+  if (!(Platform.isWindows || Platform.isLinux)) {
+    GetIt.I.registerSingleton<ObservationRepository>(FirebaseObservationRepository());
+    GetIt.I.registerSingleton<ObservationService>(ObservationService());
+  }
 
   // permissions
-  GetIt.I.registerSingleton<PermissionRepository>(FirebasePermissionRepository());
-  GetIt.I.registerSingleton<PermissionService>(PermissionService());
+  if (!(Platform.isWindows || Platform.isLinux)) {
+    GetIt.I.registerSingleton<PermissionRepository>(FirebasePermissionRepository());
+    GetIt.I.registerSingleton<PermissionService>(PermissionService());
+  }
 
   // analytics
-  GetIt.I.registerSingleton<AnalyticsRepository>(FirebaseAnalyticsRepository());
-  GetIt.I.registerSingleton<AnalyticsService>(AnalyticsService());
+  if (!(Platform.isWindows || Platform.isLinux)) {
+    GetIt.I.registerSingleton<AnalyticsRepository>(FirebaseAnalyticsRepository());
+    GetIt.I.registerSingleton<AnalyticsService>(AnalyticsService());
+  } else {
+    GetIt.I.registerSingleton<AnalyticsRepository>(FirebaseRestAnalyticsRepository());
+    GetIt.I.registerSingleton<AnalyticsService>(AnalyticsService());
+  }
 
   // connection status singleton
   ConnectionStatusSingleton connectionStatus = ConnectionStatusSingleton.getInstance();
