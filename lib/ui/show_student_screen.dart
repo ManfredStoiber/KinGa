@@ -68,64 +68,20 @@ class _ShowStudentScreenState extends State<ShowStudentScreen> {
                   Container(
                     height: 200,
                     margin: EdgeInsets.all(20),
-                    child: Row(
-                      children: [
-                        Container(
-                          margin: EdgeInsets.all(10),
-                          child: ElevatedButton(
-                            child: const Text("Press"),
-                            onPressed: () {
-                              Navigator.push(context, MaterialPageRoute(
-                                  builder: (context) => const AttendanceScreen()));
-                              pick();
-                            },
-                          ),
-                        ),
-                        Expanded(
-                            child: Stack(
-                              children: [
-                                Hero(
-                                    tag: "hero${student.studentId}",
-                                    child: SvgPicture.asset('assets/images/hamster.svg',)
-                                ),
-                                Visibility(
-                                    visible: BlocProvider.of<StudentsCubit>(context).hasBirthday(widget.studentId),
-                                    child: const Icon(Icons.cake)
-                                ),
-                              ]
-                            )
-                        ),
-                        Container(
-                          margin: EdgeInsets.all(10),
-                          child: ElevatedButton(
-                            child: const Text("Press"),
-                            onPressed: () {
-                              Navigator.push(context, MaterialPageRoute(
-                                  builder: (context) => const AttendanceScreen()));
-                              pick();
-                            },
-                          ),
-                        ),
-                      ],
+                    child: Expanded(
+                        child: Stack(
+                          children: [
+                            Hero(
+                                tag: "hero${student.studentId}",
+                                child: SvgPicture.asset('assets/images/hamster.svg',)
+                            ),
+                            Visibility(
+                                visible: BlocProvider.of<StudentsCubit>(context).hasBirthday(widget.studentId),
+                                child: const Icon(Icons.cake)
+                            ),
+                          ]
+                        )
                     ),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      FloatingActionButton(
-                        heroTag: "tmp1",
-                        onPressed: () {
-
-                        },),
-                      Container(
-                        width: 50,
-                      ),
-                      FloatingActionButton(
-                        heroTag: "tmp2",
-                        onPressed: () {
-
-                        },),
-                    ],
                   ),
                   Divider(
                     thickness: 2,
@@ -152,7 +108,27 @@ class _ShowStudentScreenState extends State<ShowStudentScreen> {
                   ),
                   Card(
                     margin: EdgeInsets.fromLTRB(10, 5, 10, 5),
-                    child: ExpansionTile(title: Text(Strings.infoPickup)),
+                    child: ExpansionTile(
+                      title: Text(Strings.infoPickup),
+                      children: [
+                        buildReadOnlyTextField('Bezeichnung', 'Mama'),
+                        buildReadOnlyTextField('Vorname', 'Martina'),
+                        buildReadOnlyTextField('Nachname', 'Weber'),
+                        Row(
+                          children: [
+                            SizedBox(width: 200, child: buildReadOnlyTextField('Label', 'Handy Arbeit')),
+                            SizedBox(width: 200, child: buildReadOnlyTextField('Nummer', '016293958')),
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            SizedBox(width: 200, child: buildReadOnlyTextField('Label', 'Handy Privat')),
+                            SizedBox(width: 200, child: buildReadOnlyTextField('Nummer', '015193570')),
+                          ],
+                        ),
+                        buildReadOnlyTextField('E-Mail', 'martinaweber@mustermail.de'),
+                      ],
+                    ),
                   ),
                   Card(
                     margin: EdgeInsets.fromLTRB(10, 5, 10, 5),
@@ -160,7 +136,21 @@ class _ShowStudentScreenState extends State<ShowStudentScreen> {
                   ),
                   Card(
                     margin: EdgeInsets.fromLTRB(10, 5, 10, 5),
-                    child: ExpansionTile(title: Text(Strings.permission)),
+                    child: ExpansionTile(
+                      title: Text(Strings.permission),
+                      children: [
+                        ListView.separated(
+                          shrinkWrap: true,
+                          itemBuilder: (context, index) {
+                            Set<String> permissions = {'Foto auf der Website', 'Barfuß laufen'};
+                            return ListTile(
+                              title: Text(permissions.elementAt(index))
+                            );
+                          },
+                          separatorBuilder: (context, index) => const Divider(height: 1,),
+                          itemCount: 2,
+                        )
+                    ],),
                   ),
                 ]
             ),
