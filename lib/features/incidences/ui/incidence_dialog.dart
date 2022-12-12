@@ -17,6 +17,7 @@ class IncidenceDialog extends StatefulWidget {
 class _IncidenceDialogState extends State<IncidenceDialog> {
   final TextEditingController _timeController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
+  final GlobalKey<FormState> descriptionKey = GlobalKey<FormState>();
   String _selectedCategory = Strings.achievement;
 
   @override
@@ -33,11 +34,13 @@ class _IncidenceDialogState extends State<IncidenceDialog> {
         ),
         TextButton(
           onPressed: () {
-            String dateTime = "${IsoDateUtils.getIsoDateFromIsoDateTime(DateTime.now().toIso8601String())}T${_timeController.text}";
-            Incidence incidence = Incidence(dateTime, _descriptionController.text, _selectedCategory);
-            GetIt.I<StudentService>().createIncidence(widget.studentId, incidence).then((value) {
-              Navigator.of(context).pop(incidence);
-            }); // TODO: What if network connection is slow and you close dialog manually? Will the next element of Navigator be popped then?
+            if (descriptionKey.currentState?.validate() ?? false) {
+              String dateTime = "${IsoDateUtils.getIsoDateFromIsoDateTime(DateTime.now().toIso8601String())}T${_timeController.text}";
+              Incidence incidence = Incidence(dateTime, _descriptionController.text.trim(), _selectedCategory);
+              GetIt.I<StudentService>().createIncidence(widget.studentId, incidence).then((value) {
+                Navigator.of(context).pop(incidence);
+              }); // TODO: What if network connection is slow and you close dialog manually? Will the next element of Navigator be popped then?
+            }
           },
           child: const Text(Strings.enter),
         )
@@ -88,16 +91,27 @@ class _IncidenceDialogState extends State<IncidenceDialog> {
           ),
           Container(height: 20,),
           Scrollbar(
-            child: TextField(
-              controller: _descriptionController,
-              minLines: 1,
-              maxLines: 5,
-              keyboardType: TextInputType.multiline,
-              scrollPadding: const EdgeInsets.all(100),
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: Strings.description,
-                floatingLabelBehavior: FloatingLabelBehavior.always),
+            child: Form(
+              key: descriptionKey,
+              child: TextFormField(
+                textCapitalization: TextCapitalization.sentences,
+                controller: _descriptionController,
+                minLines: 1,
+                maxLines: 5,
+                keyboardType: TextInputType.multiline,
+                scrollPadding: const EdgeInsets.all(100),
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: Strings.description,
+                  floatingLabelBehavior: FloatingLabelBehavior.always),
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return Strings.requiredDescription;
+                  } else {
+                    return null;
+                  }
+                },
+              ),
             ),
           ),
         ],

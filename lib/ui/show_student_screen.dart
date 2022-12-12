@@ -5,7 +5,6 @@ import 'package:confetti/confetti.dart';
 
 import 'package:flutter/material.dart';
 
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get_it/get_it.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
@@ -232,10 +231,10 @@ class ShowStudentSliverAppBar extends SliverPersistentHeaderDelegate {
                                       tag: "hero${student.studentId}",
                                       child: () {
                                         if (student.profileImage == null) {
-                                          return SvgPicture.asset(
-                                            'assets${Platform.pathSeparator}images${Platform.pathSeparator}hamster.svg',);
+                                          return Image.asset(
+                                            'assets${Platform.pathSeparator}images${Platform.pathSeparator}squirrel.png',);
                                         } else {
-                                          return Container(margin: const EdgeInsets.only(top: 5), clipBehavior: Clip.antiAlias, decoration: ShapeDecoration(shape: ContinuousRectangleBorder(borderRadius: BorderRadius.circular(44))), child: Image.memory(student.profileImage!));
+                                          return Container(margin: const EdgeInsets.only(top: 5), clipBehavior: Clip.antiAlias, decoration: ShapeDecoration(shape: ContinuousRectangleBorder(borderRadius: BorderRadius.circular(64 + (1 - progress) * 64))), child: Image.memory(student.profileImage!));
                                         }
                                       } ()
                                   ),
@@ -290,13 +289,16 @@ class ShowStudentSliverAppBar extends SliverPersistentHeaderDelegate {
                               onPressed: () {
                                 Navigator.push(context, MaterialPageRoute(builder: (context) => ObservationScreen(student.studentId)));
                               },
+                              child: const Icon(Icons.construction),
+                              /*
                               child: Row(
                                 children: [
                                   //const Text("Beobachtungen"),
                                   Container(width: 5,),
-                                  const Icon(Icons.search),
+                                  const Icon(Icons.construction),
                                 ],
                               ),
+                               */
                             ),
                           ),
                           Container(

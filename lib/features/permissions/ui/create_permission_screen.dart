@@ -1,7 +1,4 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
-import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:get_it/get_it.dart';
 import 'package:kinga/constants/strings.dart';
 import 'package:kinga/domain/entity/student.dart';
@@ -9,7 +6,7 @@ import 'package:kinga/domain/student_service.dart';
 import 'package:kinga/features/permissions/domain/permission_service.dart';
 import 'package:kinga/features/permissions/ui/list_permissions_screen.dart';
 import 'package:kinga/features/permissions/ui/permission_item_widget.dart';
-import 'package:kinga/shared/loading_indicator_dialog.dart';
+import 'package:kinga/ui/widgets/loading_indicator_dialog.dart';
 
 class CreatePermissionScreen extends StatefulWidget {
   const CreatePermissionScreen({Key? key}) : super(key: key);
@@ -26,9 +23,9 @@ class _CreatePermissionScreenState extends State<CreatePermissionScreen> {
   late final List<Student> _students;
   final Map<String, bool> _studentPermissions = {};
   final TextEditingController _newPermissionController = TextEditingController();
-  final _formKey = GlobalKey<FormState>();
-  final _newPermissionTextFieldFocus = FocusNode();
-  late final StreamSubscription<bool> _keyboardSubscription;
+  final GlobalKey<FormState> permissionNameKey = GlobalKey<FormState>();
+
+  bool isEdited = false;
 
   _CreatePermissionScreenState() {
     _students = _studentService.students.toList()..sort();
@@ -39,19 +36,9 @@ class _CreatePermissionScreenState extends State<CreatePermissionScreen> {
   void initState() {
     super.initState();
 
-    var keyboardVisibilityController = KeyboardVisibilityController();
-    _keyboardSubscription = keyboardVisibilityController.onChange.listen((bool isVisible) {
-      if (!isVisible) {
-        _newPermissionTextFieldFocus.unfocus();
-      }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _showPermissionDialog();
     });
-
-  }
-
-  @override
-  void dispose() {
-    _keyboardSubscription.cancel();
-    super.dispose();
   }
 
   @override
@@ -70,99 +57,79 @@ class _CreatePermissionScreenState extends State<CreatePermissionScreen> {
           ],
         ),);
       },
-      child: Listener(
-        behavior: HitTestBehavior.opaque,
-        onPointerDown: (event) {
-          if (_newPermissionTextFieldFocus.hasFocus) {
-            _newPermissionTextFieldFocus.unfocus();
-          }
-        },
-        child: Scaffold(
+      child: Scaffold(
           appBar: AppBar(
             actions: [
               getQuickSelectionButton(),
-            ],
-            title: Form(key: _formKey, child: TextFormField(
-              focusNode: _newPermissionTextFieldFocus,
-              validator: (value) {
-                if (value == null || value.trim().isEmpty) {
-                  return ""; // empty error message
-                } else {
-                  return null;
-                }
-              },
-              controller: _newPermissionController,
-              cursorColor: Colors.black,
-              autofocus: true,
-              decoration: const InputDecoration(
-                errorStyle: TextStyle(height: 0),
-                contentPadding: EdgeInsets.only(left: 10, top: 7, bottom: 7),
-                isDense: true,
-                hintText: Strings.newPermissionHint,
-                focusedBorder: UnderlineInputBorder(),
-              ),
-            )),
-          ),
-            floatingActionButton: FloatingActionButton(
-              child: const Icon(Icons.check),
-              onPressed: () {
-                if (_formKey.currentState?.validate() ?? false) {
-                  showDialog(context: context, builder: (context) => AlertDialog(
-                    title: const Text(Strings.createNewPermission),
-                    actions: [
-                      TextButton(onPressed: () {
-                        Navigator.of(context).pop(false);
-                      }, child: const Text(Strings.cancel)),
-                      TextButton(onPressed: () {
-                        Navigator.of(context).pop(true);
-                      }, child: const Text(Strings.confirm))
-                    ],
-                  ),).then((confirmed) {
-                    if (confirmed) {
-                      LoadingIndicatorDialog.show(context);
-                      _permissionService.createPermission(_newPermissionController.text.trim(), _studentPermissions).then((value) {
-                        Navigator.of(context).pop();
-                        Navigator.of(context).pop();
-                        Navigator.of(context).pop();
-                        Navigator.of(context).push(MaterialPageRoute(builder: (context) => const ListPermissionsScreen(),));
-                      });
-                    }
-                  });
-                } else {
-                  _newPermissionTextFieldFocus.unfocus();
-                  _newPermissionTextFieldFocus.requestFocus();
-                }
-              },
+          ],
+          title: TextField(
+            onTap: () => _showPermissionDialog(),
+            controller: _newPermissionController,
+            mouseCursor: SystemMouseCursors.none,
+            textCapitalization: TextCapitalization.sentences,
+            decoration: const InputDecoration(
+              errorStyle: TextStyle(height: 0),
+              contentPadding: EdgeInsets.only(left: 10, top: 7, bottom: 7),
+              isDense: true,
+              hintText: Strings.newPermissionHint,
+              focusedBorder: UnderlineInputBorder(),
             ),
-            body: Column(
-              children: [
-                Expanded(
-                  child: GridView(gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
-                  children: _students.map((student) => Stack(
-                    alignment: Alignment.topRight,
-                    children: [
-                      PermissionItem(studentId: student.studentId, onPressed: () {
-                        setState(() {
-                          _studentPermissions[student.studentId] = !_studentPermissions[student.studentId]!;
-                        });
-                      },),
-                      AnimatedOpacity(
-                        opacity: _studentPermissions[student.studentId]! ? 1.0 : 0.0,
-                        duration: const Duration(milliseconds: 200),
-                        child: Transform.scale(
-                          scale: 1.2,
-                          child: Checkbox(materialTapTargetSize: MaterialTapTargetSize.shrinkWrap, shape: const CircleBorder(), value: true, onChanged: (value) {
-
-                          },),
-                        ),
-                      )
-                    ],
-                  )).toList(),
-                ),
-              ),
-            ],
-          )
+          ),
         ),
+          floatingActionButton: FloatingActionButton(
+            child: const Icon(Icons.check),
+            onPressed: () {
+              showDialog(context: context, builder: (context) => AlertDialog(
+                title: const Text(Strings.createNewPermission),
+                actions: [
+                  TextButton(onPressed: () {
+                    Navigator.of(context).pop(false);
+                  }, child: const Text(Strings.cancel)),
+                  TextButton(onPressed: () {
+                    Navigator.of(context).pop(true);
+                  }, child: const Text(Strings.confirm))
+                ],
+              ),).then((confirmed) {
+                if (confirmed) {
+                  LoadingIndicatorDialog.show(context);
+                  _permissionService.createPermission(_newPermissionController.text.trim(), _studentPermissions).then((value) {
+                    Navigator.of(context).pop();
+                    Navigator.of(context).pop();
+                    Navigator.of(context).pop();
+                    Navigator.of(context).push(MaterialPageRoute(builder: (context) => const ListPermissionsScreen(),));
+                  });
+                }
+              });
+            },
+          ),
+          body: Column(
+            children: [
+              Expanded(
+                child: GridView(gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
+                children: _students.map((student) => Stack(
+                  alignment: Alignment.topRight,
+                  children: [
+                    PermissionItem(studentId: student.studentId, onPressed: () {
+                      setState(() {
+                        _studentPermissions[student.studentId] = !_studentPermissions[student.studentId]!;
+                      });
+                    },),
+                    AnimatedOpacity(
+                      opacity: _studentPermissions[student.studentId]! ? 1.0 : 0.0,
+                      duration: const Duration(milliseconds: 200),
+                      child: Transform.scale(
+                        scale: 1.2,
+                        child: Checkbox(materialTapTargetSize: MaterialTapTargetSize.shrinkWrap, shape: const CircleBorder(), value: true, onChanged: (value) {
+
+                        },),
+                      ),
+                    )
+                  ],
+                )).toList(),
+              ),
+            ),
+          ],
+        )
       ),
     );
   }
@@ -171,14 +138,36 @@ class _CreatePermissionScreenState extends State<CreatePermissionScreen> {
     if (_studentPermissions.values.contains(false)) {
       if (_studentPermissions.values.contains(true)) {
         // mixed state
-        return IconButton(icon: const Icon(Icons.indeterminate_check_box_outlined), onPressed: () {
+        return TextButton(
+          child: Row(
+            children: [
+              Container(
+                  padding: const EdgeInsets.only(right: 5),
+                  child: const Text(Strings.deselectAll,
+                      style: TextStyle(color: Colors.black)
+                  )
+              ),
+              const Icon(Icons.indeterminate_check_box_outlined, color: Colors.black),
+            ],
+          ), onPressed: () {
           setState(() {
             _studentPermissions.updateAll((key, value) => false);
           });
         },);
       } else {
         // none selected
-        return IconButton(icon: const Icon(Icons.check_box_outline_blank), onPressed: () {
+        return TextButton(
+          child: Row(
+            children: [
+              Container(
+                  padding: const EdgeInsets.only(right: 5),
+                  child: const Text(Strings.selectAll,
+                      style: TextStyle(color: Colors.black)
+                  )
+              ),
+              const Icon(Icons.check_box_outline_blank, color: Colors.black),
+            ],
+          ), onPressed: () {
           setState(() {
             _studentPermissions.updateAll((key, value) => true);
           });
@@ -186,12 +175,18 @@ class _CreatePermissionScreenState extends State<CreatePermissionScreen> {
       }
     } else {
       // all selected
-      return IconButton(icon: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: const [
-          Icon(Icons.check_box_outlined),
-        ],
-      ), onPressed: () {
+      return TextButton(
+        child: Row(
+          children: [
+            Container(
+                padding: const EdgeInsets.only(right: 5),
+                child: const Text(Strings.deselectAll,
+                    style: TextStyle(color: Colors.black)
+                )
+            ),
+            const Icon(Icons.check_box_outlined, color: Colors.black),
+          ],
+        ), onPressed: () {
         setState(() {
           _studentPermissions.updateAll((key, value) => false);
         });
@@ -199,4 +194,47 @@ class _CreatePermissionScreenState extends State<CreatePermissionScreen> {
     }
   }
 
+  void _showPermissionDialog() {
+    showDialog(context: context, builder: (context) {
+      TextEditingController permissionNameController = TextEditingController();
+      permissionNameController.text = _newPermissionController.text;
+
+      return AlertDialog(
+        title: const Text(Strings.newPermissionHint),
+        actions: [
+          TextButton(onPressed: () {
+            Navigator.of(context).pop();
+            if (!isEdited) Navigator.of(context).pop();
+          }, child: const Text(Strings.cancel)),
+          TextButton(onPressed: () {
+            if (permissionNameKey.currentState?.validate() ?? false) {
+              Navigator.of(context).pop(permissionNameController.text);
+              isEdited = true;
+            }
+          }, child: const Text(Strings.confirm))
+        ],
+        content: Form(
+          key: permissionNameKey,
+          child: TextFormField(
+            controller: permissionNameController,
+            textCapitalization: TextCapitalization.sentences,
+            decoration: const InputDecoration(border: OutlineInputBorder(), labelText: Strings.label),
+            validator: (value) {
+              if (value == null || value.trim().isEmpty) {
+                return '${Strings.label} ${Strings.requiredFieldMessage}';
+              } else {
+                return null;
+              }
+            },
+          ),
+        ),
+      );},
+    ).then((result) {
+      if (result != null) {
+        setState(() {
+          _newPermissionController.text = result;
+        });
+      }
+    });
+  }
 }

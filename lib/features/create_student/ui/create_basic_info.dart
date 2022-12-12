@@ -24,6 +24,7 @@ class CreateBasicInfo extends StatefulWidget {
 }
 
 class _CreateBasicInfoState extends State<CreateBasicInfo> {
+  final GlobalKey<FormState> groupNameKey = GlobalKey<FormState>();
   StudentService studentService = GetIt.I<StudentService>();
   late Set<String> groups;
   late String? selectedGroup;
@@ -113,7 +114,7 @@ class _CreateBasicInfoState extends State<CreateBasicInfo> {
                                     decoration: ShapeDecoration(
                                       color: Colors.grey,
                                       shape: ContinuousRectangleBorder(
-                                        borderRadius: BorderRadius.circular(44)
+                                        borderRadius: BorderRadius.circular(64)
                                       )
                                     ),
                                   )),
@@ -130,11 +131,10 @@ class _CreateBasicInfoState extends State<CreateBasicInfo> {
                                 width: 150,
                                 decoration: ShapeDecoration(
                                     shape: ContinuousRectangleBorder(
-                                        borderRadius: BorderRadius.circular(44)
+                                        borderRadius: BorderRadius.circular(128)
                                     )
                                 ),
                                 clipBehavior: Clip.antiAlias,
-                                //child: Image.file(File(_imagePath))
                                 child: Image.memory(widget._profileImage)
                             );
                           }
@@ -156,6 +156,7 @@ class _CreateBasicInfoState extends State<CreateBasicInfo> {
                       ],
                       onChanged: (String? value) {
                         setState(() {
+                          String? previousGroup = selectedGroup;
                           selectedGroup = value!;
                           widget.student['group'] = value;
 
@@ -167,23 +168,40 @@ class _CreateBasicInfoState extends State<CreateBasicInfo> {
                                 title: const Text(Strings.newGroupInfo),
                                 actions: [
                                   TextButton(onPressed: () {
+                                    setState(() {
+                                      selectedGroup = previousGroup;
+                                    });
                                     Navigator.of(context).pop();
                                   }, child: const Text(Strings.cancel)),
                                   TextButton(onPressed: () {
-                                    Navigator.of(context).pop(groupNameController.text);
+                                    if (groupNameKey.currentState?.validate() ?? false) {
+                                      Navigator.of(context).pop(groupNameController.text);
+                                    }
                                   }, child: const Text(Strings.confirm))
                                 ],
-                                content: TextField(
-                                  controller: groupNameController,
-                                  decoration: const InputDecoration(border: OutlineInputBorder(), labelText: Strings.groupName),
+                                content: Form(
+                                  key: groupNameKey,
+                                  child: TextFormField(
+                                    controller: groupNameController,
+                                    textCapitalization: TextCapitalization.sentences,
+                                    decoration: const InputDecoration(border: OutlineInputBorder(), labelText: Strings.groupName),
+                                    validator: (value) {
+                                      if (value == null || value.trim().isEmpty) {
+                                        return '${Strings.groupName} ${Strings.requiredFieldMessage}';
+                                      } else {
+                                        return null;
+                                      }
+                                    },
+                                  ),
                                 ),
                             );},
                             ).then((result) {
                               if (result != null) {
                                 setState(() {
-                                  widget.student['group'] = result;
-                                  groups.add(result);
-                                  selectedGroup = result;
+                                  String value = result.trim();
+                                  widget.student['group'] = value;
+                                  groups.add(value);
+                                  selectedGroup = value;
                                 });
                               }
                             });

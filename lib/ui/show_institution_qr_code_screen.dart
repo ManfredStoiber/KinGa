@@ -35,15 +35,15 @@ class ShowInstitutionQrCodeScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Expanded(flex: 2, child: Container()),
-            Text(textAlign: TextAlign.center, Strings.institutionCredentialsHint),
+            Container(padding: EdgeInsets.all(8.0), child: Text(textAlign: TextAlign.center, Strings.institutionCredentialsHint)),
             Expanded(flex: 1, child: Container()),
             Container(
               margin: EdgeInsets.all(32),
               color: Colors.white,
-              padding: EdgeInsets.all(32),
+              padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 32.0),
               child: Column(
                 children: [
-                   QrImage(data: json.encode({Keys.institutionId: _institutionId, Keys.institutionPassword: _institutionPassword})),
+                  Container(padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0), child: QrImage(data: json.encode({Keys.institutionId: _institutionId, Keys.institutionPassword: _institutionPassword}))),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Row(
@@ -80,7 +80,7 @@ class ShowInstitutionQrCodeScreen extends StatelessWidget {
               ),
             ),
             Expanded(flex: 1, child: Container()),
-            Text(textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold), Strings.institutionCredentialsWarning),
+            Container(padding: EdgeInsets.all(8.0), child: Text(textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold), Strings.institutionCredentialsWarning)),
             Expanded(flex: 2, child: Container()),
           ]
         ),

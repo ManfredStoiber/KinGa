@@ -1,10 +1,9 @@
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
 import 'package:kinga/constants/strings.dart';
 import 'package:kinga/domain/authentication_service.dart';
+import 'package:kinga/ui/widgets/loading_indicator_dialog.dart';
 
 class SetupAccountScreen extends StatefulWidget {
   const SetupAccountScreen({Key? key}) : super(key: key);
@@ -29,6 +28,8 @@ class _SetupAccountScreenState extends State<SetupAccountScreen> with TickerProv
   late TabController _tabController;
   int _tabIndex = 0;
   List<Widget> _tabs = [];
+  bool passwordVisible = false;
+  bool passwordRepeatVisible = false;
 
   @override
   void initState() {
@@ -50,52 +51,62 @@ class _SetupAccountScreenState extends State<SetupAccountScreen> with TickerProv
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        bottomNavigationBar: ButtonBar(
-          alignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Visibility(
-              visible: _tabIndex > 0,
-              child: TextButton(
-                onPressed: () {
-                  if (_tabIndex > 0) {
-                    _tabController.animateTo(_tabIndex -1);
-                  }
-                },
-                child: const Text(Strings.back),
-              ),
-            ),
-            TextButton(
-                onPressed: () async {
-                  if (_tabIndex == 0) {
-                    _tabController.animateTo(_tabIndex +1);
-                  } else if (_tabIndex == 1) {
-                    if (_alreadyRegistered) {
-                      submitLoginForm();
-                    } else {
-                      submitRegistrationForm();
+    return WillPopScope(
+      onWillPop: () async {
+        if (_tabIndex > 0) {
+          _tabController.animateTo(_tabIndex -1);
+          return false;
+        } else {
+          return true;
+        }
+      },
+      child: Scaffold(
+          bottomNavigationBar: ButtonBar(
+            alignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Visibility(
+                visible: _tabIndex > 0,
+                child: TextButton(
+                  onPressed: () {
+                    if (_tabIndex > 0) {
+                      _tabController.animateTo(_tabIndex -1);
                     }
-                  }
-                },
-                child: Text((){
-                  if (_tabIndex == 1 && _alreadyRegistered) {
-                    return Strings.signIn;
-                  } else if (_tabIndex == 1 && !_alreadyRegistered) {
-                    return Strings.signUp;
-                  } else {
-                    return Strings.next;
-                  }
-                }())
-            )
-          ],
+                  },
+                  child: const Text(Strings.back),
+                ),
+              ),
+              TextButton(
+                  onPressed: () async {
+                    if (_tabIndex == 0) {
+                      _tabController.animateTo(_tabIndex +1);
+                    } else if (_tabIndex == 1) {
+                      if (_alreadyRegistered) {
+                        submitLoginForm();
+                      } else {
+                        submitRegistrationForm();
+                      }
+                    }
+                  },
+                  child: Text((){
+                    if (_tabIndex == 1 && _alreadyRegistered) {
+                      return Strings.signIn;
+                    } else if (_tabIndex == 1 && !_alreadyRegistered) {
+                      return Strings.signUp;
+                    } else {
+                      return Strings.next;
+                    }
+                  }())
+              )
+            ],
+          ),
+          body: TabBarView(controller: _tabController, children: [
+            tab1(),
+            ..._alreadyRegistered
+                ? tabsAlreadyRegistered()
+                : tabsNotRegisteredYet()
+          ])
         ),
-        body: TabBarView(controller: _tabController, children: [
-          tab1(),
-          ..._alreadyRegistered
-              ? tabsAlreadyRegistered()
-              : tabsNotRegisteredYet()
-        ])
-      );
+    );
   }
 
   Widget tab1() {
@@ -103,7 +114,7 @@ class _SetupAccountScreenState extends State<SetupAccountScreen> with TickerProv
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Expanded(flex: 2,child: Container(),),
-        Center(child: Text(textAlign: TextAlign.center, style: TextStyle(fontSize: 25), Strings.greeting)),
+        const Center(child: Text(textAlign: TextAlign.center, style: TextStyle(fontSize: 25), Strings.greeting)),
         Expanded(child: Container(),),
         RadioListTile(
             title: const Text(Strings.notRegistered),
@@ -145,6 +156,8 @@ class _SetupAccountScreenState extends State<SetupAccountScreen> with TickerProv
   }
 
   List<Widget> tabsAlreadyRegistered() {
+    bool passwordObscured = true;
+
     return [
       Container(
         padding: const EdgeInsets.all(40),
@@ -156,17 +169,25 @@ class _SetupAccountScreenState extends State<SetupAccountScreen> with TickerProv
               TextFormField(
                 textInputAction: TextInputAction.next,
                 controller: loginEmailInputController,
-                decoration: InputDecoration(labelText: Strings.email),
+                decoration: const InputDecoration(labelText: Strings.email),
                 validator: emailValidator,
-                inputFormatters: [FilteringTextInputFormatter.deny(new RegExp(r"\s\b|\b\s"))],
+                inputFormatters: [FilteringTextInputFormatter.deny(RegExp(r"\s\b|\b\s"))],
               ),
               TextFormField(
-                obscureText: true,
+                obscureText: !passwordVisible,
                 onFieldSubmitted: (value) => submitLoginForm(),
                 controller: loginPasswordInputController,
-                decoration: InputDecoration(labelText: Strings.password),
+                decoration: InputDecoration(
+                  labelText: Strings.password,
+                  suffixIcon: IconButton(
+                    icon: Icon(passwordVisible ? Icons.visibility : Icons.visibility_off),
+                    onPressed: () => setState(() {
+                      passwordVisible = !passwordVisible;
+                    }),
+                  )
+                ),
                 validator: passwordValidator,
-                inputFormatters: [FilteringTextInputFormatter.deny(new RegExp(r"\s\b|\b\s"))],
+                inputFormatters: [FilteringTextInputFormatter.deny(RegExp(r"\s\b|\b\s"))],
               ),
             ],
           ),
@@ -187,24 +208,40 @@ class _SetupAccountScreenState extends State<SetupAccountScreen> with TickerProv
               TextFormField(
                 textInputAction: TextInputAction.next,
                 controller: registrationEmailInputController,
-                decoration: InputDecoration(labelText: Strings.email),
+                decoration: const InputDecoration(labelText: Strings.email),
                 validator: emailValidator,
-                inputFormatters: [FilteringTextInputFormatter.deny(new RegExp(r"\s\b|\b\s"))],
+                inputFormatters: [FilteringTextInputFormatter.deny(RegExp(r"\s\b|\b\s"))],
               ),
               TextFormField(
-                obscureText: true,
+                obscureText: !passwordVisible,
                 textInputAction: TextInputAction.next,
                 controller: registrationPasswordInputController,
+                onFieldSubmitted: (_) => FocusScope.of(context).nextFocus(),
                 decoration: InputDecoration(
                   labelText: Strings.password,
+                  suffixIcon: IconButton(
+                    icon: Icon(passwordVisible ? Icons.visibility : Icons.visibility_off),
+                    onPressed: () => setState(() {
+                      passwordVisible = !passwordVisible;
+                    }),
+                  )
                 ),
                 validator: passwordValidator,
-                inputFormatters: [FilteringTextInputFormatter.deny(new RegExp(r"\s\b|\b\s"))],
+                inputFormatters: [FilteringTextInputFormatter.deny(RegExp(r"\s\b|\b\s"))],
               ),
               TextFormField(
-                obscureText: true,
+                obscureText: !passwordRepeatVisible,
                 controller: registrationPasswordRepeatInputController,
-                decoration: InputDecoration(labelText: Strings.passwordRepeat),
+                decoration: InputDecoration(
+                  labelText: Strings.passwordRepeat,
+                  suffixIcon: IconButton(
+                    icon: Icon(passwordRepeatVisible ? Icons.visibility : Icons.visibility_off),
+                    onPressed: () => setState(() {
+                      passwordRepeatVisible = !passwordRepeatVisible;
+                    }),
+                  )
+                ),
+                onFieldSubmitted: (_) => submitRegistrationForm(),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return Strings.errorRepeatPasswordEmpty;
@@ -213,7 +250,7 @@ class _SetupAccountScreenState extends State<SetupAccountScreen> with TickerProv
                   }
                   return null;
                 },
-                inputFormatters: [FilteringTextInputFormatter.deny(new RegExp(r"\s\b|\b\s"))],
+                inputFormatters: [FilteringTextInputFormatter.deny(RegExp(r"\s\b|\b\s"))],
               ),
             ],
           ),
@@ -224,21 +261,27 @@ class _SetupAccountScreenState extends State<SetupAccountScreen> with TickerProv
 
   void submitLoginForm() async {
     if (_loginFormKey.currentState!.validate()) {
-      String? error = await _authenticationService.signInWithEmailAndPassword(loginEmailInputController.text, loginPasswordInputController.text);
-      if (error != null) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text(error)));
-      }
+      LoadingIndicatorDialog.show(context);
+      _authenticationService.signInWithEmailAndPassword(loginEmailInputController.text, loginPasswordInputController.text).then((error) {
+        if (error != null) {
+          ScaffoldMessenger.of(context)
+              .showSnackBar(SnackBar(content: Text(error)));
+        }
+        Navigator.of(context).pop();
+      });
     }
   }
 
   void submitRegistrationForm() async {
     if (_registerFormKey.currentState!.validate()) {
-      String? error = await _authenticationService.createUserWithEmailAndPassword(registrationEmailInputController.text, registrationPasswordInputController.text);
-      if (error != null) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text(error)));
-      }
+      LoadingIndicatorDialog.show(context);
+      await _authenticationService.createUserWithEmailAndPassword(registrationEmailInputController.text, registrationPasswordInputController.text).then((error) {
+        if (error != null) {
+          ScaffoldMessenger.of(context)
+              .showSnackBar(SnackBar(content: Text(error)));
+        }
+        Navigator.of(context).pop();
+      });
     }
   }
 

@@ -245,7 +245,7 @@ class FirebaseStudentRepository implements StudentRepository {
     storage.ref().child('$currentInstitutionId/$studentId').putData(image);
     // update student
     StudentService studentService = GetIt.I<StudentService>();
-    studentService.updateStudent(studentService.getStudent(studentId)..profileImage = image);
+    return studentService.updateStudent(studentService.getStudent(studentId)..profileImage = image);
   }
 
   @override

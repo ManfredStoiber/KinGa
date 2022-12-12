@@ -11,8 +11,10 @@ class IncidencesLoaded extends IncidencesState {
   final String selectedCategory;
   final String selectedTimeFrame;
   late final List<Incidence> incidences;
+  late bool hasIncidences;
 
   IncidencesLoaded(this.selectedCategory, this.selectedTimeFrame, incidences) {
+    hasIncidences = incidences.toList().isNotEmpty;
     this.incidences = filterIncidences(incidences, selectedCategory, selectedTimeFrame)..sort((a, b) => b.compareTo(a),); // sort reversed
   }
 

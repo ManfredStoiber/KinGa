@@ -5,7 +5,7 @@ import 'package:kinga/constants/strings.dart';
 import 'package:kinga/features/observations/domain/entity/observation.dart';
 import 'package:kinga/features/observations/domain/entity/question.dart';
 import 'package:kinga/features/observations/domain/observation_service.dart';
-import 'package:kinga/shared/loading_indicator_dialog.dart';
+import 'package:kinga/ui/widgets/loading_indicator_dialog.dart';
 
 class AnswerObservationQuestionDialog extends StatefulWidget {
   final String studentId;
@@ -92,6 +92,7 @@ class _AnswerObservationQuestionDialogState extends State<AnswerObservationQuest
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 15.0),
             child: TextField(
+              textCapitalization: TextCapitalization.sentences,
               controller: _notesController,
               minLines: 1,
               maxLines: null,

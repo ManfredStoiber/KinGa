@@ -8,6 +8,7 @@ import 'package:kinga/constants/strings.dart';
 import 'package:kinga/domain/entity/incidence.dart';
 import 'package:kinga/domain/student_service.dart';
 import 'package:kinga/features/incidences/ui/bloc/incidences_cubit.dart';
+import 'package:simple_shadow/simple_shadow.dart';
 
 import 'incidence_item.dart';
 
@@ -118,62 +119,64 @@ class ShowIncidencesWidgetState extends State<ShowIncidencesWidget> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
-                          IntrinsicWidth(
-                            child: Container(
-                              decoration: ShapeDecoration(shape: OutlineInputBorder(borderRadius: BorderRadius.circular(50), borderSide: const BorderSide(color: ColorSchemes.kingacolor, width: 0)), color: ColorSchemes.kingacolor),
-                              child: DropdownButtonFormField<String>(
-                                decoration: InputDecoration (
-                                  isDense: true,
-                                  prefixIcon: Container(padding: const EdgeInsets.fromLTRB(10, 5, 5, 5), child: Icon(size: 20, Icons.category_outlined, color: Colors.black)),
-                                  prefixIconConstraints: const BoxConstraints(maxHeight: 30),
-                                  enabledBorder: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(16)), borderSide: BorderSide(color: Colors.transparent)),
-                                  focusedBorder: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(16)), borderSide: BorderSide(color: Colors.transparent)),
-                                  border: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(16)), borderSide: BorderSide(color: Colors.transparent)),
-                                  contentPadding: const EdgeInsets.only(left: 0, right: 0, top: 5, bottom: 5)
-                                ),
-                                alignment: Alignment.center,
-                                value: state2.selectedCategory,
-                                items: const [
-                                  DropdownMenuItem( value: Strings.all, child: Text(Strings.all)),
-                                  DropdownMenuItem(value: Strings.achievement, child: Text(Strings.achievement)),
-                                  DropdownMenuItem( value: Strings.accident, child: Text(Strings.accident)),
-                                  DropdownMenuItem( value: Strings.other, child: Text(Strings.other))
-                                ],
-                                onChanged: (String? newValue) {
-                                  BlocProvider.of<IncidencesCubit>(context)
-                                      .onSelectedCategoryChanged(newValue);
-                                },
-                              ),
-                            ),
-                          ),
-                          IntrinsicWidth(
-                            child: Container(
-                              decoration: ShapeDecoration(shape: OutlineInputBorder(borderRadius: BorderRadius.circular(50), borderSide: const BorderSide(color: ColorSchemes.kingacolor, width: 0)), color: ColorSchemes.kingacolor),
-                              child: DropdownButtonFormField<String>(
-                                decoration: InputDecoration (
+                          if (state.hasIncidences)
+                            IntrinsicWidth(
+                              child: Container(
+                                decoration: ShapeDecoration(shape: OutlineInputBorder(borderRadius: BorderRadius.circular(50), borderSide: const BorderSide(color: ColorSchemes.kingacolor, width: 0)), color: ColorSchemes.kingacolor),
+                                child: DropdownButtonFormField<String>(
+                                  decoration: InputDecoration (
                                     isDense: true,
-                                    prefixIcon: Container(padding: const EdgeInsets.fromLTRB(10, 5, 5, 5), child: Icon(size: 20, Icons.calendar_today, color: Colors.black)),
+                                    prefixIcon: Container(padding: const EdgeInsets.fromLTRB(10, 5, 5, 5), child: Icon(size: 20, Icons.category_outlined, color: Colors.black)),
                                     prefixIconConstraints: const BoxConstraints(maxHeight: 30),
-                                    enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.transparent)),
-                                    focusedBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.transparent)),
-                                    border: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.transparent)),
+                                    enabledBorder: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(16)), borderSide: BorderSide(color: Colors.transparent)),
+                                    focusedBorder: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(16)), borderSide: BorderSide(color: Colors.transparent)),
+                                    border: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(16)), borderSide: BorderSide(color: Colors.transparent)),
                                     contentPadding: const EdgeInsets.only(left: 0, right: 0, top: 5, bottom: 5)
+                                  ),
+                                  alignment: Alignment.center,
+                                  value: state2.selectedCategory,
+                                  items: const [
+                                    DropdownMenuItem( value: Strings.all, child: Text(Strings.all)),
+                                    DropdownMenuItem(value: Strings.achievement, child: Text(Strings.achievement)),
+                                    DropdownMenuItem( value: Strings.accident, child: Text(Strings.accident)),
+                                    DropdownMenuItem( value: Strings.other, child: Text(Strings.other))
+                                  ],
+                                  onChanged: (String? newValue) {
+                                    BlocProvider.of<IncidencesCubit>(context)
+                                        .onSelectedCategoryChanged(newValue);
+                                  },
                                 ),
-                                alignment: Alignment.center,
-                                value: state2.selectedTimeFrame,
-                                items: const [
-                                  DropdownMenuItem( value: Strings.today, child: Text(Strings.today)),
-                                  DropdownMenuItem(value: Strings.lastMonth, child: Text(Strings.lastMonth)),
-                                  DropdownMenuItem( value: Strings.lastYear, child: Text(Strings.lastYear)),
-                                  DropdownMenuItem( value: Strings.all, child: Text(Strings.all))
-                                ],
-                                onChanged: (String? newValue) {
-                                  BlocProvider.of<IncidencesCubit>(context)
-                                      .onSelectedTimeFrameChanged(newValue);
-                                },
                               ),
                             ),
-                          ),
+                          if (state.hasIncidences)
+                            IntrinsicWidth(
+                              child: Container(
+                                decoration: ShapeDecoration(shape: OutlineInputBorder(borderRadius: BorderRadius.circular(50), borderSide: const BorderSide(color: ColorSchemes.kingacolor, width: 0)), color: ColorSchemes.kingacolor),
+                                child: DropdownButtonFormField<String>(
+                                  decoration: InputDecoration (
+                                      isDense: true,
+                                      prefixIcon: Container(padding: const EdgeInsets.fromLTRB(10, 5, 5, 5), child: Icon(size: 20, Icons.calendar_today, color: Colors.black)),
+                                      prefixIconConstraints: const BoxConstraints(maxHeight: 30),
+                                      enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.transparent)),
+                                      focusedBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.transparent)),
+                                      border: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.transparent)),
+                                      contentPadding: const EdgeInsets.only(left: 0, right: 0, top: 5, bottom: 5)
+                                  ),
+                                  alignment: Alignment.center,
+                                  value: state2.selectedTimeFrame,
+                                  items: const [
+                                    DropdownMenuItem( value: Strings.today, child: Text(Strings.today)),
+                                    DropdownMenuItem(value: Strings.lastMonth, child: Text(Strings.lastMonth)),
+                                    DropdownMenuItem( value: Strings.lastYear, child: Text(Strings.lastYear)),
+                                    DropdownMenuItem( value: Strings.all, child: Text(Strings.all))
+                                  ],
+                                  onChanged: (String? newValue) {
+                                    BlocProvider.of<IncidencesCubit>(context)
+                                        .onSelectedTimeFrameChanged(newValue);
+                                  },
+                                ),
+                              ),
+                            ),
                         ],
                       ),
                     ),
@@ -193,13 +196,22 @@ class ShowIncidencesWidgetState extends State<ShowIncidencesWidget> {
             },),
             BlocBuilder<IncidencesCubit, IncidencesState>(
               builder: (context, state) {
-                if (state is IncidencesLoaded && state.incidences.isNotEmpty) {
+                if (state is IncidencesLoaded && state.incidences.isNotEmpty || state is IncidencesLoaded && !state.hasIncidences) {
                   return Container();
                 } else {
                   return Center(
                     child: Column(
                       children: [
-                        Container(margin: const EdgeInsets.all(20), width: 50, child: Opacity(opacity: 0.7, child: Image.asset('assets${Platform.pathSeparator}images${Platform.pathSeparator}no_results.png'))),
+                        Container(
+                          margin: const EdgeInsets.all(20),
+                          width: 50,
+                          child: SimpleShadow(
+                            child: Opacity(
+                                opacity: 0.4,
+                                child: Image.asset('assets${Platform.pathSeparator}images${Platform.pathSeparator}no_results.png')
+                            ),
+                          ),
+                        ),
                         const Text(Strings.noIncidences, style: TextStyle(color: ColorSchemes.textColorLight),),
                       ],
                     ),

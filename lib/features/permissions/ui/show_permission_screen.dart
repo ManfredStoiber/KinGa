@@ -8,8 +8,9 @@ import 'package:kinga/domain/student_service.dart';
 import 'package:kinga/features/permissions/domain/permission_service.dart';
 import 'package:kinga/features/permissions/ui/list_permissions_screen.dart';
 import 'package:kinga/features/permissions/ui/permission_item_widget.dart';
-import 'package:kinga/shared/loading_indicator_dialog.dart';
+import 'package:kinga/ui/widgets/loading_indicator_dialog.dart';
 import 'package:kinga/ui/bloc/students_cubit.dart';
+import 'package:simple_shadow/simple_shadow.dart';
 
 class ShowPermissionScreen extends StatefulWidget {
 
@@ -142,13 +143,30 @@ class _ShowPermissionScreenState extends State<ShowPermissionScreen> {
         ),
         const Divider(height: 1,),
         Expanded(
-          child: GridView(gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
-            children: (students..sort()).where((student) =>
-              (groupSelection[student.group] ?? false) &&
-              student.permissions.any((permission) => permission == widget.permission) == permitted &&
-              (BlocProvider.of<StudentsCubit>(context).isAttendant(student.studentId) || !onlyAttendantStudents)
-            ).map((student) => PermissionItem(studentId: student.studentId)).toList(),
-          ),
+          child: () {
+            var list = (students..sort()).where((student) =>
+            (groupSelection[student.group] ?? false) &&
+                student.permissions.any((permission) => permission == widget.permission) == permitted &&
+                (BlocProvider.of<StudentsCubit>(context).isAttendant(student.studentId) || !onlyAttendantStudents)
+            ).map((student) => PermissionItem(studentId: student.studentId)).toList();
+
+            if (list.isEmpty) {
+              return Column(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Container(margin: const EdgeInsets.all(30), width: 200, child: SimpleShadow(child: Opacity(opacity: 0.4, child: Image.asset('assets/images/no_permissions.png')))),
+                  Text(Strings.noPermissionsFiltered, style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.black54), textAlign: TextAlign.center,),
+                  Container(margin: const EdgeInsets.all(20), child: Text(Strings.noPermissionsFilteredDescription, style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.black54), textAlign: TextAlign.center,)),
+                ],
+              );
+            }
+
+            return GridView(gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
+              children: list,
+            );
+          } (),
         )
       ]),
     );

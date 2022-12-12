@@ -41,7 +41,7 @@ class ShowStudentDataScreen extends StatelessWidget {
               child: ExpansionTile(
                 title: const Text(Strings.infoPickup),
                 children: [
-                  student.caregivers.isNotEmpty ?
+                  if (student.caregivers.isNotEmpty)
                       ListView.separated(
                           physics: const NeverScrollableScrollPhysics(),
                           shrinkWrap: true,
@@ -60,8 +60,8 @@ class ShowStudentDataScreen extends StatelessWidget {
                                   Row(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
-                                      SizedBox(width: 200, child: buildReadOnlyTextField(Strings.phoneLabel, phoneNumber.key)),
-                                      SizedBox(width: 200, child: buildReadOnlyTextField(Strings.phoneNumber, phoneNumber.value)),
+                                      Expanded(child: SizedBox(child: buildReadOnlyTextField(Strings.phoneLabel, phoneNumber.key))),
+                                      Expanded(child: SizedBox(child: buildReadOnlyTextField(Strings.phoneNumber, phoneNumber.value))),
                                     ],
                                   ),
                                 buildReadOnlyTextField(Strings.email, student.caregivers.elementAt(index).email),
@@ -70,7 +70,7 @@ class ShowStudentDataScreen extends StatelessWidget {
                           },
                           separatorBuilder: (context, index) => const Divider(height: 1,),
                           itemCount: student.caregivers.length
-                      ) : Container()
+                      )
                 ],
               ),
             ),
@@ -78,24 +78,25 @@ class ShowStudentDataScreen extends StatelessWidget {
               margin: EdgeInsets.fromLTRB(10, 5, 10, 5),
               child: ExpansionTile(title: Text(Strings.infoHealth)),
             ),*/
-            student.permissions.isNotEmpty ? Card(
-              margin: const EdgeInsets.fromLTRB(10, 5, 10, 5),
-              child: ExpansionTile(
-                  title: const Text(Strings.permission),
-                  children: [
-                      ListView.separated(
-                          shrinkWrap: true,
-                          itemBuilder: (context, index) {
-                            return ListTile(
-                              title: Text(student.permissions.elementAt(index)),
-                            );
-                          },
-                          separatorBuilder: (context, index) => const Divider(height: 1,),
-                          itemCount: student.permissions.length
-                      )
-                  ],
+            if (student.permissions.isNotEmpty)
+              Card(
+                margin: const EdgeInsets.fromLTRB(10, 5, 10, 5),
+                child: ExpansionTile(
+                    title: const Text(Strings.permission),
+                    children: [
+                        ListView.separated(
+                            shrinkWrap: true,
+                            itemBuilder: (context, index) {
+                              return ListTile(
+                                title: Text(student.permissions.elementAt(index)),
+                              );
+                            },
+                            separatorBuilder: (context, index) => const Divider(height: 1,),
+                            itemCount: student.permissions.length
+                        )
+                    ],
+                ),
               ),
-            ) : Container(),
           ],),
         ],
       ),

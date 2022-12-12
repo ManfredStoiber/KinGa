@@ -6,11 +6,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 import 'package:get_it/get_it.dart';
 import 'package:kinga/domain/entity/caregiver.dart';
 import 'package:kinga/features/permissions/ui/list_permissions_screen.dart';
+import 'package:kinga/ui/widgets/loading_indicator_dialog.dart';
 import 'package:kinga/ui/new_student_screen.dart';
 import 'package:kinga/domain/institution_repository.dart';
 import 'package:kinga/ui/show_student_screen.dart';
@@ -18,6 +18,7 @@ import 'package:kinga/constants/strings.dart';
 import 'package:kinga/constants/colors.dart';
 import 'package:kinga/ui/widgets/drop.dart';
 import 'package:kinga/ui/widgets/loading_indicator.dart';
+import 'package:simple_shadow/simple_shadow.dart';
 
 import 'bloc/students_cubit.dart';
 
@@ -68,182 +69,211 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-            title: BlocBuilder<StudentsCubit, StudentsState>(
-              builder: (context, state) {
-                if (state is StudentsInitial || state is StudentsLoading) {
-                  return const Text(Strings.loading);
-                } else if (state is StudentsLoaded) {
-                  return Row(
-                      children: [
-                        if (activeSearch) Expanded(
-                            child: TextField(
-                              onChanged: (value) {
+    return WillPopScope(
+      onWillPop: () async {
+        if (activeSearch) {
+          setState(() {
+            activeSearch = false;
+            search = '';
+          });
+          return false;
+        }
+        return true;
+      },
+      child: Scaffold(
+          appBar: AppBar(
+              title: BlocBuilder<StudentsCubit, StudentsState>(
+                builder: (context, state) {
+                  if (state is StudentsInitial || state is StudentsLoading) {
+                    return const Text(Strings.loading);
+                  } else if (state is StudentsLoaded) {
+                    return Row(
+                        children: [
+                          if (activeSearch) Expanded(
+                              child: TextField(
+                                onChanged: (value) {
+                                  setState(() {
+                                    search = value;
+                                  });
+                                },
+                                autofocus: true,
+                                cursorColor: Colors.black38,
+                                textCapitalization: TextCapitalization.words,
+                                decoration: InputDecoration(
+                                    prefixIcon: const Icon(
+                                      Icons.search,
+                                      color: Colors.black38,
+                                    ),
+                                    focusedBorder: const UnderlineInputBorder(
+                                        borderSide: BorderSide(
+                                          color: Colors.black38,
+                                        )
+                                    ),
+                                    hintText: Strings.search,
+                                    suffixIcon: IconButton(
+                                      icon: const Icon(Icons.clear),
+                                      onPressed: () {
+                                        setState(() {
+                                          activeSearch = false;
+                                        });
+                                      },
+                                      color: Colors.black38,
+                                    )
+                                ),
+                              )
+                          )
+                          else Expanded(
+                            child: DropdownButton<String>(
+                              underline: Container(height: 1, color: Colors.black38,),
+                              isExpanded: true,
+                              value: selected,
+                              items: [const DropdownMenuItem(value: Strings.all, child: Text(Strings.all))] + state.groups.map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
+                              onChanged: (String? newValue) {
                                 setState(() {
-                                  search = value;
+                                  selected = newValue!;
                                 });
                               },
-                              autofocus: true,
-                              cursorColor: Colors.black38,
-                              decoration: InputDecoration(
-                                  prefixIcon: const Icon(
-                                    Icons.search,
-                                    color: Colors.black38,
-                                  ),
-                                  focusedBorder: const UnderlineInputBorder(
-                                      borderSide: BorderSide(
-                                        color: Colors.black38,
-                                      )
-                                  ),
-                                  hintText: Strings.search,
-                                  suffixIcon: IconButton(
-                                    icon: const Icon(Icons.clear),
-                                    onPressed: () {
-                                      setState(() {
-                                        activeSearch = false;
-                                      });
-                                    },
-                                    color: Colors.black38,
-                                  )
-                              ),
-                            )
-                        )
-                        else Expanded(
-                          child: DropdownButton<String>(
-                            underline: Container(height: 1, color: Colors.black38,),
-                            isExpanded: true,
-                            value: selected,
-                            items: [const DropdownMenuItem(value: Strings.all, child: Text(Strings.all))] + state.groups.map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
-                            onChanged: (String? newValue) {
-                              setState(() {
-                                selected = newValue!;
-                              });
-                            },
+                            ),
                           ),
-                        ),
 
-                        if (!activeSearch) IconButton(
-                            onPressed: () {
-                              setState(() {
-                                activeSearch = true;
-                              });
-                            },
-                            icon: const Icon(Icons.search)
-                        ),
-                      ]
-                  );
-                } else {
-                  return const Text("Exception"); // TODO
-                }
+                          if (!activeSearch) IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  activeSearch = true;
+                                });
+                              },
+                              icon: const Icon(Icons.search)
+                          ),
+                        ]
+                    );
+                  } else {
+                    return const Text("Exception"); // TODO
+                  }
   },
 )
 
-        ),
-        body: BlocBuilder<StudentsCubit, StudentsState>(
-          builder: (context, state) {
-            if (state is StudentsInitial || state is StudentsLoading) {
-              return const LoadingIndicator();
-            } else if (state is StudentsLoaded) {
-              return GridView(
-                padding: const EdgeInsets.all(10),
-                // TODO: maybe move sorting to state or repository for better performance;
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 3,
-                ),
-                children: state.students
-                    .where((student) =>
-                (selected == Strings.all ||
-                    student.group == selected) && (!activeSearch ||
-                    "${student.firstname} ${student.lastname}"
-                        .toLowerCase()
-                        .contains(search.toLowerCase())))
-                    .map((e) =>
-                    AttendanceItem(studentId: e.studentId))
-                    .toList()
-                  ..sort((a, b) => state.getStudent(a.studentId).compareTo(state.getStudent(b.studentId))),
-              );
-            } else {
-              return const Text("Exception"); // TODO
-            }
-          }
-        ),
-
-        drawer: Drawer(
-          backgroundColor: Theme.of(context).backgroundColor,
-          child: ListView(
-            padding: EdgeInsets.zero,
-            children: [
-              DrawerHeader(
-                padding: EdgeInsets.zero,
-                decoration: BoxDecoration(color: Theme.of(context).primaryColor),
-                //child: const Center(child: Text(Strings.kinga))
-                child: Row(
-                  children: [
-                    Align(alignment: Alignment.centerLeft, child: Opacity(opacity: 0.7, child: Image.asset(fit: BoxFit.fitHeight, "assets${Platform.pathSeparator}images${Platform.pathSeparator}building_blocks.png", height: 200))),
-                    const Spacer(),
-                    Text(Strings.kinga, style: Theme.of(context).textTheme.headlineMedium,),
-                    const Spacer(),
-                  ],
-                )),
-              ListTile(
-                title: const Text(Strings.newChild),
-                onTap: () {
-                  Navigator.push(context, MaterialPageRoute(
-                      builder: (context) =>
-                          const NewStudentScreen()));
-                },
-                leading: const Icon(Icons.add_circle_outline),
-              ),
-              ListTile(
-                title: const Text(Strings.permission),
-                onTap: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => const ListPermissionsScreen(),));
-                },
-                leading: const Icon(Icons.checklist),
-              ),
-              const Divider(),
-              ListTile(
-                title: const Text(Strings.support),
-                onTap: () {
-                  Navigator.pop(context);
-                },
-                leading: const Icon(Icons.question_answer),
-              ),
-              ListTile(
-                title: const Text(Strings.feedback),
-                onTap: () {
-                  Navigator.pop(context);
-                },
-                leading: const Icon(Icons.chat_outlined),
-              ),
-              ListTile(
-                title: const Text(Strings.impressum),
-                onTap: () {
-                  Navigator.pop(context);
-                },
-                leading: const Icon(Icons.domain),
-              ),
-              const Divider(),
-              ListTile(
-                title: const Text(Strings.settings),
-                onTap: () {
-                  Navigator.pop(context);
-                },
-                leading: const Icon(Icons.settings),
-              ),
-              ListTile(
-                title: const Text(Strings.logout),
-                onTap: () {
-                  Navigator.pop(context);
-                  GetIt.I<InstitutionRepository>().leaveInstitution();
-                  FirebaseAuth.instance.signOut();
-                },
-                leading: const Icon(Icons.power_settings_new),
-              ),
-            ],
           ),
-        )
+          body: BlocBuilder<StudentsCubit, StudentsState>(
+            builder: (context, state) {
+              if (state is StudentsInitial || state is StudentsLoading) {
+                return const LoadingIndicator();
+              } else if (state is StudentsLoaded) {
+                return GridView(
+                  padding: const EdgeInsets.all(10),
+                  // TODO: maybe move sorting to state or repository for better performance;
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3,
+                  ),
+                  children: state.students
+                      .where((student) =>
+                  (selected == Strings.all ||
+                      student.group == selected) && (!activeSearch ||
+                      "${student.firstname} ${student.lastname}"
+                          .toLowerCase()
+                          .contains(search.toLowerCase())))
+                      .map((e) =>
+                      AttendanceItem(studentId: e.studentId))
+                      .toList()
+                    ..sort((a, b) => state.getStudent(a.studentId).compareTo(state.getStudent(b.studentId))),
+                );
+              } else {
+                return const Text("Exception"); // TODO
+              }
+            }
+          ),
+
+          drawer: Drawer(
+            backgroundColor: Theme.of(context).backgroundColor,
+            child: ListView(
+              padding: EdgeInsets.zero,
+              children: [
+                DrawerHeader(
+                  padding: EdgeInsets.zero,
+                  decoration: BoxDecoration(color: Theme.of(context).primaryColor),
+                  child: Row(
+                    children: [
+                      Align(alignment: Alignment.centerLeft, child: SimpleShadow(child: Opacity(opacity: 0.7, child: Image.asset(fit: BoxFit.fitHeight, "assets${Platform.pathSeparator}images${Platform.pathSeparator}building_blocks.png", height: 200)))),
+                      const Spacer(),
+                      SimpleShadow(child: Text(Strings.kinga, style: Theme.of(context).textTheme.headlineMedium,)),
+                      const Spacer(),
+                    ],
+                  )),
+                ListTile(
+                  title: const Text(Strings.newChild),
+                  onTap: () {
+                    Navigator.push(context, MaterialPageRoute(
+                        builder: (context) =>
+                            const NewStudentScreen()));
+                  },
+                  leading: const Icon(Icons.add_circle_outline),
+                ),
+                ListTile(
+                  title: const Text(Strings.permission),
+                  onTap: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => const ListPermissionsScreen(),));
+                  },
+                  leading: const Icon(Icons.checklist),
+                ),
+                const Divider(),
+                ListTile(
+                  title: const Text(Strings.support),
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                  leading: const Icon(Icons.question_answer),
+                ),
+                ListTile(
+                  title: const Text(Strings.feedback),
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                  leading: const Icon(Icons.chat_outlined),
+                ),
+                ListTile(
+                  title: const Text(Strings.impressum),
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                  leading: const Icon(Icons.domain),
+                ),
+                const Divider(),
+                ListTile(
+                  title: const Text(Strings.settings),
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                  leading: const Icon(Icons.settings),
+                ),
+                ListTile(
+                  title: const Text(Strings.logout),
+                  onTap: () {
+                    showDialog(context: context, builder: (context) => AlertDialog(
+                      title: const Text(Strings.confirmLogout),
+                      actions: [
+                        TextButton(onPressed: () {
+                          Navigator.of(context).pop(false);
+                        }, child: const Text(Strings.cancel)),
+                        TextButton(onPressed: () {
+                          Navigator.of(context).pop(true);
+                        }, child: const Text(Strings.confirm))
+                      ],
+                    ),).then((confirmed) {
+                      if (confirmed ?? false) {
+                        LoadingIndicatorDialog.show(context);
+                        GetIt.I<InstitutionRepository>().leaveInstitution();
+                        FirebaseAuth.instance.signOut().then((_) {
+                          Navigator.pop(context);
+                          Navigator.pop(context);
+                        });
+                      }
+                    });
+                  },
+                  leading: const Icon(Icons.power_settings_new),
+                ),
+              ],
+            ),
+          )
+      ),
     );
   }
 }
@@ -304,8 +334,8 @@ class _AttendanceItemState extends State<AttendanceItem> {
                             child: () {
                               Uint8List? profileImage = state.getStudent(widget.studentId).profileImage;
                               if (profileImage == null) {
-                                return SvgPicture.asset(
-                                  'assets${Platform.pathSeparator}images${Platform.pathSeparator}hamster.svg',);
+                                return Image.asset(
+                                  'assets${Platform.pathSeparator}images${Platform.pathSeparator}squirrel.png',);
                               } else {
                                 return Container(margin: const EdgeInsets.only(top: 5), clipBehavior: Clip.antiAlias, decoration: ShapeDecoration(shape: ContinuousRectangleBorder(borderRadius: BorderRadius.circular(44))), child: Image.memory(fit: BoxFit.fitHeight, profileImage));
                               }

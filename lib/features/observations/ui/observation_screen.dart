@@ -11,9 +11,10 @@ import 'package:kinga/features/observations/domain/entity/observation_form_part.
 import 'package:kinga/features/observations/domain/entity/observation_form_part_section.dart';
 import 'package:kinga/features/observations/ui/answer_observation_question_dialog.dart';
 import 'package:kinga/features/observations/ui/bloc/observations_cubit.dart';
-import 'package:kinga/shared/loading_indicator_dialog.dart';
+import 'package:kinga/ui/widgets/loading_indicator_dialog.dart';
 import 'package:kinga/ui/widgets/drop.dart';
 import 'package:kinga/ui/widgets/loading_indicator.dart';
+import 'package:simple_shadow/simple_shadow.dart';
 
 class ObservationScreen extends StatelessWidget {
   const ObservationScreen(this.studentId, {Key? key}) : super(key: key);
@@ -72,7 +73,7 @@ class ObservationScreen extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             Text("${state.selectedObservationForm!.title} ${Strings.noObservationFormYet}", style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.black54), textAlign: TextAlign.center,),
-                            Container(margin: const EdgeInsets.all(30), width: 200, child: Opacity(opacity: 0.7, child: Image.asset('assets/images/observations.png'.replaceAll('/', Platform.pathSeparator)))),
+                            Container(margin: const EdgeInsets.all(30), width: 200, child: SimpleShadow(child: Opacity(opacity: 0.4, child: Image.asset('assets/images/observations.png'.replaceAll('/', Platform.pathSeparator))))),
                             ElevatedButton(onPressed: () {
                               LoadingIndicatorDialog.show(context);
                               BlocProvider.of<ObservationsCubit>(context).createObservationForm(studentId, state.selectedObservationForm!.title, state.selectedObservationForm!.version, "TODO").then((value) => Navigator.of(context).pop()); // TODO: timespan
@@ -128,12 +129,13 @@ class ObservationScreen extends StatelessWidget {
                                                 child: Container(
                                                   margin: const EdgeInsets.only(left: 25),
                                                   child: Column(
+                                                    crossAxisAlignment: CrossAxisAlignment.stretch,
                                                     children: [
                                                       Text(
                                                         section.title,
                                                         textScaleFactor: 1.5,
                                                       ),
-                                                      section.subtitle != null ? Text(section.title) : Container(),
+                                                      if (section.subtitle != null) Text(section.title),
                                                     ],
                                                   ),
                                                 ),

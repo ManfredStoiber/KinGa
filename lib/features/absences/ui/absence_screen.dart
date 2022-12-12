@@ -9,6 +9,7 @@ import 'package:kinga/features/absences/ui/absence_dialog.dart';
 import 'package:kinga/features/absences/ui/bloc/absences_cubit.dart';
 import 'package:kinga/ui/widgets/loading_indicator.dart';
 import 'package:kinga/util/date_utils.dart';
+import 'package:simple_shadow/simple_shadow.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class AbsenceScreen extends StatelessWidget {
@@ -114,6 +115,18 @@ class AbsenceScreen extends StatelessWidget {
                       return cubit.getAbsencesOfDay(state.student.absences, day).toList();
                     },
                   ),
+                  const Divider(),
+                  state.selectedAbsences.value.isEmpty ?
+                  Column(
+                    mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Container(margin: const EdgeInsets.all(30), width: 100, child: SimpleShadow(child: Opacity(opacity: 0.4, child: Image.asset('assets/images/no_absences.png')))),
+                      Text(Strings.noAbsences, style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.black54), textAlign: TextAlign.center,),
+                      Container(margin: const EdgeInsets.all(20), child: Text(Strings.noAbsencesDescription, style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.black54), textAlign: TextAlign.center,)),
+                    ],
+                  ) :
                   Expanded(
                     child: ValueListenableBuilder<List<Absence>>(valueListenable: state.selectedAbsences, builder: (context, value, child) => Column(
                       children: [

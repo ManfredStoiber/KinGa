@@ -38,8 +38,9 @@ class StudentService {
   Future<void> updateStudent(Student student) async {
     students.removeWhere((s) => s.studentId == student.studentId);
     students.add(student);
-    _studentRepository.updateStudent(student);
+    return _studentRepository.updateStudent(student);
   }
+
   // TODO: improve setProfileImage in case student isn't created yet
   Future<void> createStudent(Map<String, dynamic> student, Uint8List profileImage) async {
     String studentId = await _studentRepository.createStudent(
@@ -53,7 +54,7 @@ class StudentService {
         student['caregivers'],
         student['permissions']);
 
-    _studentRepository.setProfileImage(studentId, profileImage);
+    return _studentRepository.setProfileImage(studentId, profileImage);
   }
 
   Future<void> deleteStudent(String studentId) {

@@ -4,6 +4,7 @@ import 'package:kinga/constants/strings.dart';
 import 'package:kinga/features/permissions/domain/permission_service.dart';
 import 'package:kinga/features/permissions/ui/create_permission_screen.dart';
 import 'package:kinga/features/permissions/ui/show_permission_screen.dart';
+import 'package:simple_shadow/simple_shadow.dart';
 
 class ListPermissionsScreen extends StatelessWidget {
   const ListPermissionsScreen({Key? key}) : super(key: key);
@@ -27,7 +28,7 @@ class ListPermissionsScreen extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Container(margin: const EdgeInsets.all(30), width: 200, child: Opacity(opacity: 0.7, child: Image.asset('assets/images/no_permissions.png'))),
+          Container(margin: const EdgeInsets.all(30), width: 200, child: SimpleShadow(child: Opacity(opacity: 0.4, child: Image.asset('assets/images/no_permissions.png')))),
           Text(Strings.noPermissionsYet, style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.black54), textAlign: TextAlign.center,),
           Container(margin: const EdgeInsets.all(20), child: Text(Strings.noPermissionsYetDescription, style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.black54), textAlign: TextAlign.center,)),
         ],

@@ -2,15 +2,13 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
-import 'package:kinga/constants/colors.dart';
 import 'package:kinga/constants/keys.dart';
 import 'package:kinga/constants/strings.dart';
 import 'package:kinga/domain/institution_repository.dart';
+import 'package:kinga/ui/widgets/loading_indicator_dialog.dart';
 import 'package:kinga/ui/qr_scanner_dialog.dart';
 import 'package:kinga/ui/show_institution_qr_code_screen.dart';
-import 'package:qr_flutter/qr_flutter.dart';
 
 class SetupInstitutionScreen extends StatefulWidget {
   const SetupInstitutionScreen({Key? key}) : super(key: key);
@@ -32,12 +30,13 @@ class _SetupInstitutionScreenState extends State<SetupInstitutionScreen> with Ti
   TextEditingController registrationPasswordRepeatInputController = TextEditingController();
   String _createInstitutionPassword = "";
 
-  TextEditingController _loginInstitutionIdInputController = TextEditingController();
-  TextEditingController _loginInstitutionPasswordInputController = TextEditingController();
+  final TextEditingController _loginInstitutionIdInputController = TextEditingController();
+  final TextEditingController _loginInstitutionPasswordInputController = TextEditingController();
 
   late TabController _tabController;
   int _tabIndex = 0;
   List<Widget> _tabs = [];
+  bool passwordVisible = false;
 
   @override
   void initState() {
@@ -61,52 +60,62 @@ class _SetupInstitutionScreenState extends State<SetupInstitutionScreen> with Ti
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        bottomNavigationBar: ButtonBar(
-          alignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Visibility(
-              visible: _tabIndex > 0,
-              child: TextButton(
-                onPressed: () {
-                  if (_tabIndex > 0) {
-                    _tabController.animateTo(_tabIndex -1);
-                  }
-                },
-                child: const Text(Strings.back),
-              ),
-            ),
-            TextButton(
-                onPressed: () async {
-                  if (_tabIndex == 0) {
-                    _tabController.animateTo(_tabIndex +1);
-                  } else if (_tabIndex == 1) {
-                    if (_alreadyRegistered) {
-                      submitLoginForm();
-                    } else {
-                      submitCreateInstitutionForm();
+    return WillPopScope(
+      onWillPop: () async {
+        if (_tabIndex > 0) {
+          _tabController.animateTo(_tabIndex -1);
+          return false;
+        } else {
+          return true;
+        }
+      },
+      child: Scaffold(
+          bottomNavigationBar: ButtonBar(
+            alignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Visibility(
+                visible: _tabIndex > 0,
+                child: TextButton(
+                  onPressed: () {
+                    if (_tabIndex > 0) {
+                      _tabController.animateTo(_tabIndex -1);
                     }
-                  }
-                },
-                child: Text((){
-                  if (_tabIndex == 1 && _alreadyRegistered) {
-                    return Strings.signIn;
-                  } else if (_tabIndex == 1 && !_alreadyRegistered) {
-                    return Strings.signUp;
-                  } else {
-                    return Strings.next;
-                  }
-                }())
-            )
-          ],
+                  },
+                  child: const Text(Strings.back),
+                ),
+              ),
+              TextButton(
+                  onPressed: () async {
+                    if (_tabIndex == 0) {
+                      _tabController.animateTo(_tabIndex +1);
+                    } else if (_tabIndex == 1) {
+                      if (_alreadyRegistered) {
+                        submitLoginForm();
+                      } else {
+                        submitCreateInstitutionForm();
+                      }
+                    }
+                  },
+                  child: Text((){
+                    if (_tabIndex == 1 && _alreadyRegistered) {
+                      return Strings.signIn;
+                    } else if (_tabIndex == 1 && !_alreadyRegistered) {
+                      return Strings.signUp;
+                    } else {
+                      return Strings.next;
+                    }
+                  }())
+              )
+            ],
+          ),
+          body: TabBarView(controller: _tabController, children: [
+            tab1(),
+            ..._alreadyRegistered
+                ? tabsJoinInstitution()
+                : tabsCreateInstitution()
+          ])
         ),
-        body: TabBarView(controller: _tabController, children: [
-          tab1(),
-          ..._alreadyRegistered
-              ? tabsJoinInstitution()
-              : tabsCreateInstitution()
-        ])
-      );
+    );
   }
 
   Widget tab1() {
@@ -164,25 +173,37 @@ class _SetupInstitutionScreenState extends State<SetupInstitutionScreen> with Ti
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Expanded(child: Container(), flex: 1,),
-              Center(child: Text(textAlign: TextAlign.center, style: TextStyle(fontSize: 25), Strings.joinInstitution)),
-              Expanded(child: Container(), flex: 1,),
+              Expanded(flex: 1,child: Container(),),
+              const Center(child: Text(textAlign: TextAlign.center, style: TextStyle(fontSize: 25), Strings.joinInstitution)),
+              Expanded(flex: 1,child: Container(),),
               TextFormField(
                 textInputAction: TextInputAction.next,
                 controller: _loginInstitutionIdInputController,
-                decoration: InputDecoration(labelText: Strings.institutionId),
-                validator: institutionIdValidator,
+                decoration: const InputDecoration(labelText: Strings.institutionId),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return Strings.errorIdEmpty;
+                  } else {
+                    return null;
+                  }
+                },
               ),
               TextFormField(
-                obscureText: true,
+                obscureText: !passwordVisible,
                 onFieldSubmitted: (value) => submitLoginForm(),
                 controller: _loginInstitutionPasswordInputController,
-                decoration: InputDecoration(labelText: Strings.password),
+                decoration: InputDecoration(
+                  labelText: Strings.password,
+                  suffixIcon: IconButton(
+                    icon: Icon(passwordVisible ? Icons.visibility : Icons.visibility_off),
+                    onPressed: () => togglePasswordVisibility(),
+                  )
+                ),
                 validator: passwordValidator,
               ),
-              Expanded(child: Container(), flex: 1),
-              Text(Strings.alternative),
-              Expanded(child: Container(), flex: 1),
+              Expanded(flex: 1, child: Container()),
+              const Text(Strings.alternative),
+              Expanded(flex: 1, child: Container()),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -218,7 +239,7 @@ class _SetupInstitutionScreenState extends State<SetupInstitutionScreen> with Ti
                   ),
                 ],
               ),
-              Expanded(child: Container(), flex: 2),
+              Expanded(flex: 2, child: Container()),
             ],
           ),
         ),
@@ -235,14 +256,21 @@ class _SetupInstitutionScreenState extends State<SetupInstitutionScreen> with Ti
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Expanded(child: Container(), flex: 1,),
-              Center(child: Text(textAlign: TextAlign.center, style: TextStyle(fontSize: 25), Strings.createInstitution)),
-              Expanded(child: Container(), flex: 1,),
+              Expanded(flex: 1,child: Container(),),
+              const Center(child: Text(textAlign: TextAlign.center, style: TextStyle(fontSize: 25), Strings.createInstitution)),
+              Expanded(flex: 1,child: Container(),),
               TextFormField(
+                textCapitalization: TextCapitalization.sentences,
                 textInputAction: TextInputAction.next,
                 controller: createInstitutionNameInputController,
                 decoration: const InputDecoration(labelText: Strings.institutionName),
-                validator: institutionIdValidator,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return Strings.errorInstitutionNameEmpty;
+                  } else {
+                    return null;
+                  }
+                },
               ),
               Expanded(flex: 1, child: Container()),
             ],
@@ -254,29 +282,31 @@ class _SetupInstitutionScreenState extends State<SetupInstitutionScreen> with Ti
 
   void submitLoginForm() async {
     if (_loginFormKey.currentState!.validate()) {
-      _institutionRepository.joinInstitution(_loginInstitutionIdInputController.text, _loginInstitutionPasswordInputController.text);
+      LoadingIndicatorDialog.show(context);
+      _institutionRepository.joinInstitution(_loginInstitutionIdInputController.text, _loginInstitutionPasswordInputController.text).then((_) {
+        Navigator.of(context).pop();
+      },);
     }
   }
 
   void submitCreateInstitutionForm() async {
     if (_createInstitutionFormKey.currentState!.validate()) {
-      String? institutionId = await _institutionRepository.createInstitution(createInstitutionNameInputController.text, _createInstitutionPassword);
-      if (institutionId != null) {
-        showDialog(context: context, builder: (context) => ShowInstitutionQrCodeScreen(institutionId, _createInstitutionPassword),)
-            .then((value) => _institutionRepository.joinInstitution(institutionId, _createInstitutionPassword));
-      } else {
-        // TODO: error handling
-        ScaffoldMessenger.of(context)
-            .showSnackBar(const SnackBar(content: Text(Strings.errorUnexpected)));
-      }
+      LoadingIndicatorDialog.show(context);
+      _institutionRepository.createInstitution(createInstitutionNameInputController.text, _createInstitutionPassword).then((institutionId) {
+        Navigator.of(context).pop();
+        if (institutionId != null) {
+          showDialog(context: context, builder: (context) => ShowInstitutionQrCodeScreen(institutionId, _createInstitutionPassword),)
+              .then((value) {
+                LoadingIndicatorDialog.show(context);
+                _institutionRepository.joinInstitution(institutionId, _createInstitutionPassword).then((value) => Navigator.of(context).pop());
+              });
+        } else {
+          // TODO: error handling
+          ScaffoldMessenger.of(context)
+              .showSnackBar(const SnackBar(content: Text(Strings.errorUnexpected)));
+        }
+      });
     }
-  }
-
-  String? institutionIdValidator(value) {
-    if (value == null || value.isEmpty) {
-      return Strings.errorEmailEmpty;
-    }
-    return null;
   }
 
   String? passwordValidator(value) {
@@ -305,4 +335,9 @@ class _SetupInstitutionScreenState extends State<SetupInstitutionScreen> with Ti
     }).join('');
   }
 
+  void togglePasswordVisibility() {
+    setState(() {
+      passwordVisible = !passwordVisible;
+    });
+  }
 }

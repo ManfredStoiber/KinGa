@@ -49,8 +49,8 @@ class StudentsCubit extends Cubit<StudentsState> {
     return _studentService.hasBirthday(studentId);
   }
 
-  void createStudent(Map<String, dynamic> student, Uint8List profileImage) {
-    _studentService.createStudent(student, profileImage);
+  Future<void> createStudent(Map<String, dynamic> student, Uint8List profileImage) async {
+    return _studentService.createStudent(student, profileImage);
   }
 
   Future<void> updateStudent(Student student, Uint8List profileImage) async {
