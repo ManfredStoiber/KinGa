@@ -177,8 +177,13 @@ class _CreateCaregiversState extends State<CreateCaregivers> {
                               decoration:
                               const InputDecoration(border: OutlineInputBorder(), labelText: Strings.phoneNumber),
                               validator: (value) {
+                                RegExp phoneNumber = RegExp(r"^[\+]?[0-9]+$"); // TODO: fix regex
                                 if (value == null || value.trim().isEmpty) {
                                   return '${Strings.phoneNumber} ${Strings.requiredFieldMessage}';
+                                } else if (!phoneNumber.hasMatch(value)){
+                                  Strings.incorrectPhoneNumberFormat;
+                                } else {
+                                  return null;
                                 }
                               },
                             ),
@@ -265,7 +270,7 @@ class _CreateCaregiversState extends State<CreateCaregivers> {
           if ((value == null || value.trim().isEmpty) && !widget.optionalFields.contains(property)) {
             return '$label ${Strings.requiredFieldMessage}';
           } else if (value != null && value != '' && label == Strings.email && !email.hasMatch(value)) {
-            return '$label ${Strings.incorrectEmailFormat}';
+            return Strings.incorrectEmailFormat;
           } else {
             return null;
           }

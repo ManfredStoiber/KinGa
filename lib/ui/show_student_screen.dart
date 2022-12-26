@@ -9,6 +9,7 @@ import 'package:get_it/get_it.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:kinga/constants/colors.dart';
+import 'package:kinga/constants/keys.dart';
 import 'package:kinga/constants/strings.dart';
 import 'package:kinga/domain/entity/caregiver.dart';
 import 'package:kinga/domain/entity/incidence.dart';
@@ -20,6 +21,8 @@ import 'package:kinga/features/incidences/ui/show_incidences_widget.dart';
 import 'package:kinga/ui/show_student_data_screen.dart';
 import 'package:kinga/features/observations/ui/observation_screen.dart';
 import 'package:kinga/ui/widgets/expandable_fab.dart';
+import 'package:showcaseview/showcaseview.dart';
+import 'package:streaming_shared_preferences/streaming_shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ShowStudentScreen extends StatefulWidget {
@@ -32,19 +35,38 @@ class ShowStudentScreen extends StatefulWidget {
 }
 
 class _ShowStudentScreenState extends State<ShowStudentScreen> {
-
+  final GlobalKey showStudentDataKey = GlobalKey();
+  final GlobalKey emergencyContactsKey = GlobalKey();
+  List<GlobalKey> showcases = [];
 
   final _studentService = GetIt.I<StudentService>();
   late final ScrollController _scrollController;
   bool isScrollable = false;
   final _confettiController = ConfettiController(duration: const Duration(seconds: 5));
   final _fabState = GlobalKey<ExpandableFabState>();
+  BuildContext? showStudentContext;
 
   @override
   void initState() {
     super.initState();
     _scrollController = ScrollController();
     _confettiController.play();
+
+    List<String> finishedShowcases = GetIt.instance.get<StreamingSharedPreferences>().getStringList(Keys.finishedShowcases, defaultValue: []).getValue();
+    if (!finishedShowcases.contains('showStudentScreen')) {
+      showcases = [showStudentDataKey, emergencyContactsKey];
+    }
+
+    if (showcases.isNotEmpty) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Future.delayed(const Duration(milliseconds: 400), () {
+          ShowCaseWidget.of(showStudentContext!).startShowCase(showcases);
+          List<String> finishedShowcases = GetIt.instance.get<StreamingSharedPreferences>().getStringList(Keys.finishedShowcases, defaultValue: []).getValue();
+          finishedShowcases.add('showStudentScreen');
+          GetIt.instance.get<StreamingSharedPreferences>().setStringList(Keys.finishedShowcases, finishedShowcases);
+        });
+      });
+    }
   }
 
   @override
@@ -57,63 +79,88 @@ class _ShowStudentScreenState extends State<ShowStudentScreen> {
       return Container();
     }
 
-    return WillPopScope(
-      onWillPop: () async {
-        if (_fabState.currentState?.open ?? false) {
-          _fabState.currentState?.toggle();
-          return false;
-        } else {
-          return true;
-        }
-      },
-      child: Scaffold(
-        appBar: AppBar(title: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Text("${student.firstname}${student.middlename.isNotEmpty ? " ${student.middlename}" : ""} ${student.lastname}"),
-          ],
-        ),
-        actions: [
-          Visibility(
-            visible: GetIt.I<StudentService>().hasBirthday(student.studentId),
-            child: InkWell(onTap: () => setState(() {
-              _confettiController.play();
-              Future.delayed(const Duration(seconds: 1)).then((value) => _confettiController.stop());
-            }), child: Container(padding: const EdgeInsets.only(top: 6), child: Image.asset('assets${Platform.pathSeparator}images${Platform.pathSeparator}cupcake.png', height: kToolbarHeight / 2))),
-          ),
-          IconButton(padding: const EdgeInsets.only(right: 10), onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => ShowStudentDataScreen(student),)), icon: const Icon(Icons.info_outline)),
-        ],
-        ),
-        body: CustomScrollView(
-          physics: const ClampingScrollPhysics(),
-          controller: _scrollController,
-          shrinkWrap: true,
-          slivers: [
-            SliverPersistentHeader(pinned: true, floating: false, delegate: ShowStudentSliverAppBar(student, _confettiController, expandedHeight: 300.0, collapsedHeight: 100.0,)),
-            SliverList(delegate: SliverChildListDelegate.fixed([
-              ShowIncidencesWidget(widget.studentId, onIncidencesChanged: () {
-                // TODO: like other todo in ShowIncidencesScreen (scrollable)
-                /*
-                setState(() {
-                  isScrollable = (_scrollController.position.maxScrollExtent ?? 0) != 0;
-                });
-                 */
-              },),
-            ]),)
-          ],
-        ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-        bottomNavigationBar: BottomAppBar(child: Container(decoration: BoxDecoration(color: ColorSchemes.backgroundColor, boxShadow: [/*if (isScrollable) */BoxShadow(offset: const Offset(0, -1), blurRadius: 0, color: Colors.grey.withAlpha(100))]), height: kToolbarHeight - 10)),
-        floatingActionButton: ExpandableFab(
-          key: _fabState,
-          distance: 150,
-          icon: const Icon(Icons.quick_contacts_dialer, color: Colors.white,),
-          color: Theme
-              .of(context)
-              .errorColor,
-          children: buildContact(student.caregivers)
-          ,
-        ),
+    return ShowCaseWidget(
+      builder: Builder(
+        builder: (context) {
+          showStudentContext = context;
+          return WillPopScope(
+            onWillPop: () async {
+              if (_fabState.currentState?.open ?? false) {
+                _fabState.currentState?.toggle();
+                return false;
+              } else {
+                return true;
+              }
+            },
+            child: Scaffold(
+              appBar: AppBar(title: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Text("${student.firstname}${student.middlename.isNotEmpty ? " ${student.middlename}" : ""} ${student.lastname}"),
+                ],
+              ),
+                actions: [
+                  Visibility(
+                    visible: GetIt.I<StudentService>().hasBirthday(student.studentId),
+                    child: InkWell(onTap: () => setState(() {
+                      _confettiController.play();
+                      Future.delayed(const Duration(seconds: 1)).then((value) => _confettiController.stop());
+                    }), child: Container(padding: const EdgeInsets.only(top: 6), child: Image.asset('assets${Platform.pathSeparator}images${Platform.pathSeparator}cupcake.png', height: kToolbarHeight / 2))),
+                  ),
+                  IconButton(padding: const EdgeInsets.only(right: 10), onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => ShowStudentDataScreen(student),)),
+                      icon: Showcase(
+                          key: showStudentDataKey,
+                          description: Strings.showStudentDataTooltip,
+                          targetShapeBorder: const CircleBorder(),
+                          targetPadding: const EdgeInsets.all(5),
+                          disposeOnTap: true,
+                          onTargetClick: () => Navigator.push(context, MaterialPageRoute(builder: (context) => ShowStudentDataScreen(student),)).then((_) {
+                            setState(() {
+                              ShowCaseWidget.of(showStudentContext!).startShowCase([emergencyContactsKey]);
+                            });
+                          }),
+                          child: const Icon(Icons.info_outline))),
+                ],
+              ),
+              body: CustomScrollView(
+                physics: const ClampingScrollPhysics(),
+                controller: _scrollController,
+                shrinkWrap: true,
+                slivers: [
+                  SliverPersistentHeader(pinned: true, floating: false, delegate: ShowStudentSliverAppBar(student, _confettiController, expandedHeight: 300.0, collapsedHeight: 100.0,)),
+                  SliverList(delegate: SliverChildListDelegate.fixed([
+                    ShowIncidencesWidget(widget.studentId, onIncidencesChanged: () {
+                      // TODO: like other todo in ShowIncidencesScreen (scrollable)
+                      /*
+                  setState(() {
+                    isScrollable = (_scrollController.position.maxScrollExtent ?? 0) != 0;
+                  });
+                   */
+                    },),
+                  ]),)
+                ],
+              ),
+              floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+              bottomNavigationBar: BottomAppBar(child: Container(decoration: BoxDecoration(color: ColorSchemes.backgroundColor, boxShadow: [/*if (isScrollable) */BoxShadow(offset: const Offset(0, -1), blurRadius: 0, color: Colors.grey.withAlpha(100))]), height: kToolbarHeight - 10)),
+              floatingActionButton: ExpandableFab(
+                key: _fabState,
+                distance: 150,
+                icon: Showcase(
+                    key: emergencyContactsKey,
+                    description: Strings.emergencyContactsTooltip,
+                    targetShapeBorder: const CircleBorder(),
+                    targetPadding: const EdgeInsets.all(14),
+                    disposeOnTap: true,
+                    onTargetClick: () => _fabState.currentState?.toggle(),
+                    child: const Icon(Icons.quick_contacts_dialer, color: Colors.white,)),
+                color: Theme
+                    .of(context)
+                    .errorColor,
+                children: buildContact(student.caregivers),
+              ),
+            ),
+          );
+        },
       ),
     );
   }

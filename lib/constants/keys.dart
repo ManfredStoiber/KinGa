@@ -17,4 +17,6 @@ class Keys {
   static const String verificationKey = "verificationKey";
   static const String institutionName = "institutionName";
 
+  // Showcases
+  static const String finishedShowcases = "finishedShowcases";
 }

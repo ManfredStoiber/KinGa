@@ -7,8 +7,6 @@ import 'package:kinga/constants/keys.dart';
 import 'package:kinga/domain/authentication_service.dart';
 import 'package:kinga/domain/entity/user.dart';
 import 'package:kinga/domain/student_service.dart';
-import 'package:kinga/features/permissions/ui/list_permissions_screen.dart';
-import 'package:kinga/features/permissions/ui/show_permission_screen.dart';
 import 'package:kinga/injection.dart';
 import 'package:kinga/ui/attendance_screen.dart';
 import 'package:kinga/ui/setup_account_screen.dart';
@@ -24,6 +22,7 @@ void main() async {
 
   final StudentService studentService = GetIt.I<StudentService>();
   final AuthenticationService authenticationService = GetIt.I<AuthenticationService>();
+  GetIt.instance.get<StreamingSharedPreferences>().setStringList(Keys.finishedShowcases, []);
   runApp(MyApp(studentService, authenticationService));
 }
 
@@ -57,7 +56,7 @@ class MyApp extends StatelessWidget {
                       ),
                     ],
                     child: MaterialApp(
-                      title: 'Flutter Demo',
+                      title: 'KinGa',
                       localizationsDelegates: const [
                         GlobalMaterialLocalizations.delegate,
                         GlobalWidgetsLocalizations.delegate,
@@ -74,7 +73,7 @@ class MyApp extends StatelessWidget {
                         errorColor: ColorSchemes.errorColor,
                         cardTheme: CardTheme.of(context).copyWith(
                           shape: RoundedRectangleBorder(
-                            side: BorderSide(
+                            side: const BorderSide(
                               color: ColorSchemes.absentColor,
                               width: 3.0,
                             ),
@@ -95,7 +94,7 @@ class MyApp extends StatelessWidget {
                       )
                     ],
                     child: MaterialApp(
-                      title: 'Flutter Demo',
+                      title: 'KinGa',
                       theme: ThemeData(
                         // This is the theme of your application.
                           primarySwatch: ColorSchemes.kingacolor,
@@ -119,7 +118,7 @@ class MyApp extends StatelessWidget {
               )
             ],
             child: MaterialApp(
-              title: 'Flutter Demo',
+              title: 'KinGa',
               theme: ThemeData(
                 // This is the theme of your application.
                   primarySwatch: ColorSchemes.kingacolor,

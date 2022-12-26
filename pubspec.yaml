@@ -62,6 +62,7 @@ dependencies:
   csv: ^5.0.1
   collection: ^1.16.0
   simple_shadow: ^0.3.0
+  showcaseview: ^2.0.0
 
 dev_dependencies:
   flutter_test:

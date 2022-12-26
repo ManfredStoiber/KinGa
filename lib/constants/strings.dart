@@ -41,7 +41,8 @@ class Strings {
   static const String groupName = 'Gruppenname';
   static const String impressum = 'Impressum';
   static const String incidence = 'Ereignis';
-  static const String incorrectEmailFormat = 'hat kein korrektes Format.';
+  static const String incorrectEmailFormat = 'Bitte gültige E-Mail-Adresse angeben.';
+  static const String incorrectPhoneNumberFormat = 'Bitte gültige Telefonnummer angeben.';
   static const String infoGeneral = 'Allgemeines';
   static const String infoPickup = 'Kontaktpersonen';
   static const String infoHealth = 'Gesundheit';
@@ -136,6 +137,19 @@ class Strings {
   static const String prohibited = 'Verboten';
   static const String selectGroups = 'Gruppen auswählen';
   static const String selectFilter = 'Filter';
+
+  // Showcases
+  static const String birthdayTooltip = 'Hier siehst du, wenn ein Kind heute Geburtstag hat';
+  static const String createPermissionTooltip = 'Tippe hier, um eine neue Berechtigung anzulegen';
+  static const String createStudentTooltip = 'Tippe hier, um ein neues Kind anzulegen';
+  static const String drawerTooltip = 'Tippe hier, um das Menü zu öffnen';
+  static const String emergencyContactsTooltip = 'Notfallkontakte kannst du hier anrufen';
+  static const String filterStudentTooltip = 'Hier kannst du nach Gruppen filtern';
+  static const String incidenceTooltip = 'Hier siehst du, dass heute Ereignisse für das Kind angelegt wurden';
+  static const String searchStudentTooltip = 'Hier kannst du nach Kindernamen suchen';
+  static const String showHelp = 'Hilfe anzeigen';
+  static const String showStudentDataTooltip = 'Stammdaten findest du hier';
+  static const String toggleAttendanceTooltip = 'Tippe, um die Kindübersicht aufzurufen. \nMit langem Tippen kann das Kind als an- und abwesend markiert werden.';
 
   // Firebase error codes for signInWithEmailAndPassword
   static const String firebaseErrorInvalidEmail = 'invalid-email';
