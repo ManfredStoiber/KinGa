@@ -34,13 +34,6 @@ class _CreateCaregiversState extends State<CreateCaregivers> {
         if (i < widget.caregivers.length) {
           return Card(
             key: UniqueKey(),
-            shape: RoundedRectangleBorder(
-              side: const BorderSide(
-                  color: ColorSchemes.absentColor,
-                  width: 3
-              ),
-              borderRadius: BorderRadius.circular(10.0),
-            ),
             margin: const EdgeInsets.all(10),
             child: Column(
                 children: [

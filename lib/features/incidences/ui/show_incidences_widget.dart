@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:kinga/constants/colors.dart';
@@ -8,23 +9,24 @@ import 'package:kinga/constants/strings.dart';
 import 'package:kinga/domain/entity/incidence.dart';
 import 'package:kinga/domain/student_service.dart';
 import 'package:kinga/features/incidences/ui/bloc/incidences_cubit.dart';
+import 'package:kinga/features/incidences/ui/show_incidences_widget.dart';
 import 'package:simple_shadow/simple_shadow.dart';
 
 import 'incidence_item.dart';
 
 class ShowIncidencesWidget extends StatefulWidget {
   final String studentId;
-  final GlobalKey<AnimatedListState> listKey = GlobalKey<AnimatedListState>();
+  final GlobalKey<AnimatedListState> listKey;
   final Function()? onIncidencesChanged;
 
-  ShowIncidencesWidget(this.studentId, {Key? key, this.onIncidencesChanged}) : super(key: key);
+  ShowIncidencesWidget(this.studentId, this.listKey, {Key? key, this.onIncidencesChanged}) : super(key: key);
 
   @override
   State<ShowIncidencesWidget> createState() => ShowIncidencesWidgetState();
 
 }
 
-class ShowIncidencesWidgetState extends State<ShowIncidencesWidget> {
+class ShowIncidencesWidgetState extends State<ShowIncidencesWidget> with AutomaticKeepAliveClientMixin<ShowIncidencesWidget> {
 
   @override
   Widget build(BuildContext context) {
@@ -106,7 +108,7 @@ class ShowIncidencesWidgetState extends State<ShowIncidencesWidget> {
       builder: (context, state) {
         return state is IncidencesLoaded ? ListView(
           padding: const EdgeInsets.fromLTRB(5, 5, 5, 30),
-          physics: const ClampingScrollPhysics(),
+          physics: const NeverScrollableScrollPhysics(),
           shrinkWrap: true,
           children: [
             BlocBuilder<IncidencesCubit, IncidencesState>(
@@ -148,7 +150,7 @@ class ShowIncidencesWidgetState extends State<ShowIncidencesWidget> {
                                 ),
                               ),
                             ),
-                          if (state.hasIncidences)
+                          state.hasIncidences ?
                             IntrinsicWidth(
                               child: Container(
                                 decoration: ShapeDecoration(shape: OutlineInputBorder(borderRadius: BorderRadius.circular(50), borderSide: const BorderSide(color: ColorSchemes.kingacolor, width: 0)), color: ColorSchemes.kingacolor),
@@ -176,6 +178,14 @@ class ShowIncidencesWidgetState extends State<ShowIncidencesWidget> {
                                   },
                                 ),
                               ),
+                            ) :
+                            Center(
+                              child: Column(
+                                children: [
+                                  Container(margin: const EdgeInsets.all(20), width: 100, child: SimpleShadow(child: Opacity(opacity: 0.4, child: Image.asset('assets${Platform.pathSeparator}images${Platform.pathSeparator}no_results.png')),),),
+                                  const Text(Strings.noIncidences, style: TextStyle(color: ColorSchemes.textColorLight),),
+                                ],
+                              ),
                             ),
                         ],
                       ),
@@ -189,7 +199,7 @@ class ShowIncidencesWidgetState extends State<ShowIncidencesWidget> {
             ),
             AnimatedList(key: widget.listKey,
               shrinkWrap: true,
-              physics: const ClampingScrollPhysics(),
+              physics: const NeverScrollableScrollPhysics(),
               initialItemCount: state.incidences.length,
               itemBuilder: (context, index, animation) {
                 return AnimatedSlideMenu(key: UniqueKey(), animation: animation, index: index, listKey: widget.listKey, studentId: widget.studentId,);
@@ -225,22 +235,31 @@ class ShowIncidencesWidgetState extends State<ShowIncidencesWidget> {
     )
 );
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }
 
-class AnimatedSlideMenu extends StatelessWidget {
+class AnimatedSlideMenu extends StatefulWidget {
 
   final GlobalKey<AnimatedListState>? listKey;
   final int index;
   final String studentId;
   final animation;
-  final GlobalKey<SlideMenuState> slideMenuKey = GlobalKey();
 
   AnimatedSlideMenu({Key? key, required this.listKey, required this.index, required this.studentId, required this.animation}) : super(key: key);
 
   @override
+  State<AnimatedSlideMenu> createState() => _AnimatedSlideMenuState();
+}
+
+class _AnimatedSlideMenuState extends State<AnimatedSlideMenu> with AutomaticKeepAliveClientMixin {
+  final GlobalKey<SlideMenuState> slideMenuKey = GlobalKey();
+
+  @override
   Widget build(BuildContext context) {
     return SizeTransition(
-      sizeFactor: animation,
+      sizeFactor: widget.animation,
       child: SlideMenu(menuItems: [
         Container(
           padding: const EdgeInsets.fromLTRB(0, 5, 5, 5),
@@ -259,34 +278,41 @@ class AnimatedSlideMenu extends StatelessWidget {
                       )
                   )
               ),
-              onPressed: () {
-                showDialog(context: context, builder: (context) =>
-                    AlertDialog(
-                      title: const Text(Strings.confirmDeleteIncidence),
-                      actions: [
-                        TextButton(onPressed: () =>
-                            Navigator.of(context).pop(false),
-                            child: const Text(Strings.cancel)),
-                        TextButton(onPressed: () =>
-                            Navigator.of(context).pop(true),
-                            child: const Text(Strings.confirm))
-                      ],
-                    ),).then((confirmed) {
-                  if (confirmed ?? false) {
-                    Incidence incidenceToRemove = (BlocProvider.of<IncidencesCubit>(context).state as IncidencesLoaded).incidences
-                        .elementAt(index);
-                    GetIt.I<StudentService>().deleteIncidence(studentId, incidenceToRemove).then((value) {
-                    });
-                  }
-                });
-              }, child: const Icon(Icons.delete)
+              onLongPress: onDelete,
+              onPressed: onDelete,
+              child: const Icon(Icons.delete)
           ),
         ),
       ],
-          child: IncidenceItem(studentId, (BlocProvider.of<IncidencesCubit>(context).state as IncidencesLoaded).incidences.elementAt(index))
+          child: IncidenceItem(widget.studentId, (BlocProvider.of<IncidencesCubit>(context).state as IncidencesLoaded).incidences.elementAt(widget.index))
       ),
     );
   }
+
+  void onDelete() {
+    showDialog(context: context, builder: (context) =>
+        AlertDialog(
+          title: const Text(Strings.confirmDeleteIncidence),
+          actions: [
+            TextButton(onPressed: () =>
+                Navigator.of(context).pop(false),
+                child: const Text(Strings.cancel)),
+            TextButton(onPressed: () =>
+                Navigator.of(context).pop(true),
+                child: const Text(Strings.confirm))
+          ],
+        ),).then((confirmed) {
+      if (confirmed ?? false) {
+        Incidence incidenceToRemove = (BlocProvider.of<IncidencesCubit>(context).state as IncidencesLoaded).incidences
+            .elementAt(widget.index);
+        GetIt.I<StudentService>().deleteIncidence(widget.studentId, incidenceToRemove).then((value) {
+        });
+      }
+    });
+  }
+
+  @override
+  bool get wantKeepAlive => true;
 }
 
 
@@ -305,12 +331,24 @@ class SlideMenu extends StatefulWidget {
 
 class SlideMenuState extends State<SlideMenu> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
+  bool isExtended = false;
 
   @override
   initState() {
     super.initState();
     _controller = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 200));
+        vsync: this, duration: const Duration(milliseconds: 100));
+    _controller.addListener(() {
+      if (_controller.value == 1.0) {
+        setState(() {
+          isExtended = true;
+        });
+      } else if (_controller.value == .0) {
+        setState(() {
+          isExtended = false;
+        });
+      }
+    });
   }
 
   @override
@@ -331,15 +369,15 @@ class SlideMenuState extends State<SlideMenu> with SingleTickerProviderStateMixi
         end: Offset(-0.2 * widget.progress!, 0.0)).animate(_controller);
 
     return GestureDetector(
-        onHorizontalDragUpdate: (data) {
+        onHorizontalDragUpdate: isExtended ? (data) {
           // we can access context.size here
           setState(() {
             //Here we set value of Animation controller depending on our finger move in horizontal axis
             //If you want to slide to the right, change "-" to "+"
             _controller.value -= (data.primaryDelta! / (context.size!.width*0.2));
           });
-        },
-        onHorizontalDragEnd: (data) {
+        } : null,
+        onHorizontalDragEnd: isExtended ? (data) {
           //To change slide direction, change to data.primaryVelocity! < -1500
           if (data.primaryVelocity! > 1500)
             _controller.animateTo(.0); //close menu on fast swipe in the right direction
@@ -348,6 +386,13 @@ class SlideMenuState extends State<SlideMenu> with SingleTickerProviderStateMixi
             _controller.animateTo(1.0); // fully open if dragged a lot to left or on fast swipe to left
           else // close if none of above
             _controller.animateTo(.0);
+        } : null,
+        onTap: isExtended ? () {
+          _controller.animateTo(.0);
+        } : null,
+        onLongPress: () {
+          HapticFeedback.vibrate();
+          _controller.value == .0 ? _controller.animateTo(1.0) : _controller.animateTo(.0);
         },
         child: LayoutBuilder(builder: (context, constraint) {
           return Stack(

@@ -63,6 +63,9 @@ dependencies:
   collection: ^1.16.0
   simple_shadow: ^0.3.0
   showcaseview: ^2.0.0
+  pixel_snap: ^0.0.3
+  shifting_tabbar: ^1.0.2
+  extended_nested_scroll_view: ^5.1.3
 
 dev_dependencies:
   flutter_test:

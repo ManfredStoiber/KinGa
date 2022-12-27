@@ -74,7 +74,7 @@ class MyApp extends StatelessWidget {
                         cardTheme: CardTheme.of(context).copyWith(
                           shape: RoundedRectangleBorder(
                             side: const BorderSide(
-                              color: ColorSchemes.absentColor,
+                              color: ColorSchemes.kingaGrey,
                               width: 3.0,
                             ),
                             borderRadius: BorderRadius.circular(10.0),

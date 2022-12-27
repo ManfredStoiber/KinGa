@@ -428,7 +428,8 @@ class AttendanceItemState extends State<AttendanceItem> {
     return BlocBuilder<StudentsCubit, StudentsState>(
       builder: (context, state) {
         if (state is StudentsLoaded) {
-            return Stack(
+          StudentsCubit cubit = BlocProvider.of<StudentsCubit>(context);
+          return Stack(
                 children: [
                   Container(
                       margin: const EdgeInsets.all(10),
@@ -444,9 +445,10 @@ class AttendanceItemState extends State<AttendanceItem> {
                           style: TextButton.styleFrom(
                               shape: ContinuousRectangleBorder(
                                 borderRadius: BorderRadius.circular(64.0),
+                                side: cubit.isAbsent(widget.studentId) && false ? BorderSide() : BorderSide.none
                               ),
+                              //shadowColor: Colors.transparent,
                               backgroundColor: (){
-                                StudentsCubit cubit = BlocProvider.of<StudentsCubit>(context);
                                 if (cubit.isAbsent(widget.studentId)) {
                                   return ColorSchemes.absentColor;
                                 } else {

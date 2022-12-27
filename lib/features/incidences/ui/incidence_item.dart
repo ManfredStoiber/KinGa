@@ -40,13 +40,6 @@ class _IncidenceItemState extends State<IncidenceItem> {
     }
 
     return Card(
-      shape: RoundedRectangleBorder(
-        side: BorderSide(
-          color: categoryColor,
-          width: 3
-        ),
-        borderRadius: BorderRadius.circular(10.0),
-      ),
       child: Theme(
           data: Theme.of(context).copyWith(
               dividerColor: Colors.transparent),

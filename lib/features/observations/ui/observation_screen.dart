@@ -118,7 +118,7 @@ class ObservationScreen extends StatelessWidget {
                                             padding: const EdgeInsets.all(15),
                                             margin: const EdgeInsets.only(bottom: 10),
                                             decoration: ShapeDecoration(
-                                              color: ColorSchemes.absentColor.withAlpha(150),
+                                              color: ColorSchemes.kingaGrey.withAlpha(150),
                                               shape: const RoundedRectangleBorder(
                                                 borderRadius: BorderRadius.vertical(top: Radius.circular(10.0), bottom: Radius.zero)
                                               )

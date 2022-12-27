@@ -44,13 +44,6 @@ class _CreateBasicInfoState extends State<CreateBasicInfo> {
     return ListView(children: [
       Wrap(children: [
         Card(
-          shape: RoundedRectangleBorder(
-            side: const BorderSide(
-                color: ColorSchemes.absentColor,
-                width: 3
-            ),
-            borderRadius: BorderRadius.circular(10.0),
-          ),
           margin: const EdgeInsets.all(10),
           child: Form(
             key: widget.formKeyTab,

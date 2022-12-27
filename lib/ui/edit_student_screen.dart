@@ -12,7 +12,6 @@ import 'package:kinga/features/create_student/ui/create_caregivers.dart';
 import 'package:kinga/features/create_student/ui/create_permissions.dart';
 import 'package:kinga/ui/widgets/loading_indicator_dialog.dart';
 import 'package:kinga/ui/bloc/students_cubit.dart';
-import 'package:kinga/ui/show_student_data_screen.dart';
 import 'package:kinga/ui/show_student_screen.dart';
 
 
@@ -235,7 +234,6 @@ class _EditStudentScreenState extends State<EditStudentScreen>
                                   Navigator.pop(context);
                                   Navigator.pop(context);
                                   Navigator.push(context, MaterialPageRoute(builder: (context) => ShowStudentScreen(studentId: s.studentId)));
-                                  Navigator.push(context, MaterialPageRoute(builder: (context) => ShowStudentDataScreen(s)));
                                 });
                               }
                             }
