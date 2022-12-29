@@ -114,25 +114,25 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
               return true;
             },
             child: Scaffold(
-              key: _scaffoldKey,
+                key: _scaffoldKey,
                 appBar: AppBar(
-                  leading: Showcase(
-                    key: drawerKey,
-                    description: Strings.drawerTooltip,
-                    disposeOnTap: true,
-                    onTargetClick: () {
-                      setState(() {
-                        showcases.remove(drawerKey);
-                      });
-                      _scaffoldKey.currentState!.openDrawer();
-                    },
-                    child: IconButton(
-                      onPressed: () {
+                    leading: Showcase(
+                      key: drawerKey,
+                      description: Strings.drawerTooltip,
+                      disposeOnTap: true,
+                      onTargetClick: () {
+                        setState(() {
+                          showcases.remove(drawerKey);
+                        });
                         _scaffoldKey.currentState!.openDrawer();
                       },
-                      icon: const Icon(Icons.menu),
+                      child: IconButton(
+                        onPressed: () {
+                          _scaffoldKey.currentState!.openDrawer();
+                        },
+                        icon: const Icon(Icons.menu),
+                      ),
                     ),
-                  ),
                     title: BlocBuilder<StudentsCubit, StudentsState>(
                       builder: (context, state) {
                         if (state is StudentsInitial || state is StudentsLoading) {
@@ -291,7 +291,8 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                               SimpleShadow(child: Text(Strings.kinga, style: Theme.of(context).textTheme.headlineMedium,)),
                               const Spacer(),
                             ],
-                          )),
+                          )
+                      ),
                       Showcase(
                         key: createStudentKey,
                         description: Strings.createStudentTooltip,
@@ -404,7 +405,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
             ),
           );
         },
-      )
+      ),
     );
   }
 }

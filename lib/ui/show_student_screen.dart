@@ -43,8 +43,15 @@ class ShowStudentScreen extends StatefulWidget {
 
 class _ShowStudentScreenState extends State<ShowStudentScreen>
     with SingleTickerProviderStateMixin {
-  final GlobalKey showStudentDataKey = GlobalKey();
+  final GlobalKey createAbsenceKey = GlobalKey();
+  final GlobalKey createIncidenceKey = GlobalKey();
+  final GlobalKey editObservationsKey = GlobalKey();
+  final GlobalKey editStudentDataKey = GlobalKey();
   final GlobalKey emergencyContactsKey = GlobalKey();
+  final GlobalKey showAbsencesWidgetKey = GlobalKey();
+  final GlobalKey showIncidenceWidgetKey = GlobalKey();
+  final GlobalKey showObservationsWidgetKey = GlobalKey();
+  final GlobalKey showStudentDataKey = GlobalKey();
   List<GlobalKey> showcases = [];
 
   final SliverOverlapAbsorberHandle headerHandle = SliverOverlapAbsorberHandle();
@@ -83,7 +90,7 @@ class _ShowStudentScreenState extends State<ShowStudentScreen>
 
     List<String> finishedShowcases = GetIt.instance.get<StreamingSharedPreferences>().getStringList(Keys.finishedShowcases, defaultValue: []).getValue();
     if (!finishedShowcases.contains('showStudentScreen')) {
-      showcases = [showStudentDataKey, emergencyContactsKey];
+      showcases = [showIncidenceWidgetKey, createIncidenceKey, showAbsencesWidgetKey, createAbsenceKey, showStudentDataKey, editStudentDataKey, showObservationsWidgetKey, editObservationsKey, emergencyContactsKey];
     }
 
     if (showcases.isNotEmpty) {
@@ -111,181 +118,261 @@ class _ShowStudentScreenState extends State<ShowStudentScreen>
     var cubit = BlocProvider.of<StudentsCubit>(context);
     var color = cubit.isAbsent(student.studentId) ? ColorSchemes.absentColor : cubit.isAttendant(student.studentId) ? ColorSchemes.attendantColor : ColorSchemes.notAttendantColor;
 
-    return Scaffold(
-      backgroundColor: ColorSchemes.kingacolor,
-      /*
-      appBar: ,
+    return ShowCaseWidget(
+        builder: Builder(
+          builder: (context) {
+            showStudentContext = context;
+            return WillPopScope(
+              onWillPop: () async {
+                if (_fabState.currentState?.open ?? false) {
+                  _fabState.currentState?.toggle();
+                  return false;
+                } else {
+                  return true;
+                }
+              },
+              child: Scaffold(
+                backgroundColor: ColorSchemes.kingacolor,
+                /*
+        appBar: ,
 
-       */
-        body: ExtendedNestedScrollView(
+         */
+                body: ExtendedNestedScrollView(
                   onlyOneScrollInBody: true,
-          headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-            // These are the slivers that show up in the "outer" scroll view.
-            return <Widget>[
-              SliverOverlapAbsorber(
-                // This widget takes the overlapping behavior of the SliverAppBar,
-                // and redirects it to the SliverOverlapInjector below. If it is
-                // missing, then it is possible for the nested "inner" scroll view
-                // below to end up under the SliverAppBar even when the inner
-                // scroll view thinks it has not been scrolled.
-                // This is not necessary if the "headerSliverBuilder" only builds
-                // widgets that do not overlap the next sliver.
-                handle: headerHandle,
-                sliver: SliverPersistentHeader(pinned: true, floating: false, delegate: _SliverHeaderDelegate(student, _confettiController, color, expandedHeight: 300.0, collapsedHeight: 150.0, viewPaddingTop: MediaQuery.of(context).viewPadding.top)),
-              ),
-              SliverOverlapAbsorber(
-                handle: tabBarHandle,
-                sliver: SliverPersistentHeader(pinned: true, delegate: _SliverTabBarDelegate(
-                  AnimatedTabBar(
-                    controller: _tabController,
-                    tabs: const [
-                      Tab(
-                          icon: Icon(Icons.edit_note_rounded),
-                          text: 'Ereignisse'
+                  headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+                    // These are the slivers that show up in the "outer" scroll view.
+                    return <Widget>[
+                      SliverOverlapAbsorber(
+                        // This widget takes the overlapping behavior of the SliverAppBar,
+                        // and redirects it to the SliverOverlapInjector below. If it is
+                        // missing, then it is possible for the nested "inner" scroll view
+                        // below to end up under the SliverAppBar even when the inner
+                        // scroll view thinks it has not been scrolled.
+                        // This is not necessary if the "headerSliverBuilder" only builds
+                        // widgets that do not overlap the next sliver.
+                        handle: headerHandle,
+                        sliver: SliverPersistentHeader(pinned: true, floating: false, delegate: _SliverHeaderDelegate(student, _confettiController, color, expandedHeight: 300.0, collapsedHeight: 150.0, viewPaddingTop: MediaQuery.of(context).viewPadding.top)),
                       ),
-                      Tab(
-                          icon: Icon(Icons.event_busy),
-                          text: 'Abwesenheiten'
+                      SliverOverlapAbsorber(
+                        handle: tabBarHandle,
+                        sliver: SliverPersistentHeader(pinned: true, delegate: _SliverTabBarDelegate(
+                            AnimatedTabBar(
+                              controller: _tabController,
+                              tabs: [
+                                Tab(
+                                    icon: Showcase(
+                                      key: showIncidenceWidgetKey,
+                                      description: Strings.showIncidenceWidgetTooltip,
+                                      targetPadding: const EdgeInsets.fromLTRB(20, -10, 20, 10),
+                                      child: const Icon(Icons.edit_note_rounded)),
+                                    text: Strings.tabIncidences
+                                ),
+                                Tab(
+                                    icon: Showcase(
+                                      key: showAbsencesWidgetKey,
+                                      description: Strings.showAbsencesWidgetTooltip,
+                                      targetPadding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+                                      child: const Icon(Icons.event_busy)),
+                                    text: Strings.tabAbsences
+                                ),
+                                Tab(
+                                    icon: Showcase(
+                                      key: showStudentDataKey,
+                                      description: Strings.showStudentDataTooltip,
+                                      targetPadding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+                                      child: const Icon(Icons.info_outline)),
+                                    text: Strings.tabStudentData
+                                ),
+                                Tab(
+                                    icon: Showcase(
+                                      key: showObservationsWidgetKey,
+                                      description: Strings.showObservationsWidgetTooltip,
+                                      targetPadding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+                                      child: const Icon(Icons.auto_graph)),
+                                    text: Strings.tabObservations
+                                ),
+                              ],
+                            ),
+                            color
+                        )),
                       ),
-                      Tab(
-                          icon: Icon(Icons.info_outline),
-                          text: 'Info'
+                    ];
+                  },
+                  body: Stack(
+                    children: [
+                      Container(
+                        color: ColorSchemes.backgroundColor,
+                        child: TabBarView(
+                          controller: _tabController,
+                          // These are the contents of the tab views, below the tabs.
+                          children: [
+                            ShowIncidencesWidget(widget.studentId, _incidencesListKey, onIncidencesChanged: () {
+                              // TODO: like other todo in ShowIncidencesScreen (scrollable)
+                              /*
+                                setState(() {
+                                    isScrollable = (_scrollController.position.maxScrollExtent ?? 0) != 0;
+                                });
+                                 */
+                            },
+
+                            ),
+                            //ListView.builder(shrinkWrap: true, physics: NeverScrollableScrollPhysics(), itemCount: 30, itemExtent: 48.0, itemBuilder: (context, index) => Text("Test $index"),),
+                            ShowAbsencesWidget(widget.studentId),
+                            ShowStudentDataWidget(student),
+                            ShowObservationsWidget(widget.studentId),
+                          ].map((Widget w) {
+                            return SafeArea(
+                              top: false,
+                              bottom: false,
+                              child: Builder(
+                                // This Builder is needed to provide a BuildContext that is
+                                // "inside" the NestedScrollView, so that
+                                // sliverOverlapAbsorberHandleFor() can find the
+                                // NestedScrollView.
+                                builder: (BuildContext context) {
+                                  return CustomScrollView(
+                                    shrinkWrap: true,
+                                    //physics: NeverScrollableScrollPhysics(),
+                                    // The "controller" and "primary" members should be left
+                                    // unset, so that the NestedScrollView can control this
+                                    // inner scroll view.
+                                    // If the "controller" property is set, then this scroll
+                                    // view will not be associated with the NestedScrollView.
+                                    // The PageStorageKey should be unique to this ScrollView;
+                                    // it allows the list to remember its scroll position when
+                                    // the tab view is not on the screen.
+                                    //key: PageStorageKey<Widget>(w),
+                                    slivers: <Widget>[
+                                      SliverOverlapInjector( handle: headerHandle ),
+                                      SliverOverlapInjector( handle: tabBarHandle ),
+                                      SliverToBoxAdapter(child: w,)
+                                    ],
+                                  );
+                                },
+                              ),
+                            );
+                          }).toList(),
+                        ),
                       ),
-                      Tab(
-                          icon: Icon(Icons.auto_graph),
-                          text: 'Entwicklungsbögen'
-                      ),
+                      Container(height: 20, color: ColorSchemes.kingacolor), // to fill out one pixel gap between AppBar and header sliver
                     ],
                   ),
-                  color
-                )),
-              ),
-            ];
-          },
-          body: Stack(
-            children: [
-              Container(
-                color: ColorSchemes.backgroundColor,
-                child: TabBarView(
-                  controller: _tabController,
-                  // These are the contents of the tab views, below the tabs.
-                  children: [
-                    ShowIncidencesWidget(widget.studentId, _incidencesListKey, onIncidencesChanged: () {
-                      // TODO: like other todo in ShowIncidencesScreen (scrollable)
-                      /*
-                              setState(() {
-                                  isScrollable = (_scrollController.position.maxScrollExtent ?? 0) != 0;
-                              });
-                               */
-                      },
+                ),
+                floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
+                bottomNavigationBar: BottomAppBar(child: Container(decoration: BoxDecoration(color: ColorSchemes.backgroundColor, boxShadow: [/*if (isScrollable) */BoxShadow(offset: const Offset(0, -1), blurRadius: 0, color: Colors.grey.withAlpha(100))]), height: kToolbarHeight - 10)),
+                floatingActionButton: FloatingActionButton(
+                    heroTag: 'fabae',
+                    onPressed: () {
+                      switch(_tabIndex) {
+                        case 0:
+                          showDialog<Incidence>(context: context, builder: (context) =>
+                              IncidenceDialog(
+                                  student.studentId
+                              ),).then((Incidence? value) {
+                            if (value != null) {
 
-                    ),
-                    //ListView.builder(shrinkWrap: true, physics: NeverScrollableScrollPhysics(), itemCount: 30, itemExtent: 48.0, itemBuilder: (context, index) => Text("Test $index"),),
-                    ShowAbsencesWidget(widget.studentId),
-                    ShowStudentDataWidget(student),
-                    ShowObservationsWidget(widget.studentId),
-                  ].map((Widget w) {
-                    return SafeArea(
-                      top: false,
-                      bottom: false,
-                      child: Builder(
-                        // This Builder is needed to provide a BuildContext that is
-                        // "inside" the NestedScrollView, so that
-                        // sliverOverlapAbsorberHandleFor() can find the
-                        // NestedScrollView.
-                        builder: (BuildContext context) {
-                          return CustomScrollView(
-                            shrinkWrap: true,
-                            //physics: NeverScrollableScrollPhysics(),
-                            // The "controller" and "primary" members should be left
-                            // unset, so that the NestedScrollView can control this
-                            // inner scroll view.
-                            // If the "controller" property is set, then this scroll
-                            // view will not be associated with the NestedScrollView.
-                            // The PageStorageKey should be unique to this ScrollView;
-                            // it allows the list to remember its scroll position when
-                            // the tab view is not on the screen.
-                            //key: PageStorageKey<Widget>(w),
-                            slivers: <Widget>[
-                              SliverOverlapInjector( handle: headerHandle ),
-                              SliverOverlapInjector( handle: tabBarHandle ),
-                              SliverToBoxAdapter(child: w,)
-                            ],
-                          );
-                        },
-                      ),
-                    );
-                  }).toList(),
+                            }
+                          });
+                          break;
+                        case 1:
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => AbsenceScreen(student.studentId)));
+                          break;
+                        case 2:
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => EditStudentScreen(student: student,)));
+                          break;
+                        case 3:
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => ObservationScreen(student.studentId)));
+                          break;
+                      }
+                    },
+                    child: Stack(
+                      children: [
+                        FadeTransition(
+                            opacity: Tween(begin: 0.0, end: 1.0).animate(ShiftingAnimation(_tabController, 0)),
+                            child: Showcase(
+                              key: createIncidenceKey,
+                              description: Strings.createIncidenceTooltip,
+                              targetShapeBorder: const CircleBorder(),
+                              targetPadding: const EdgeInsets.all(15),
+                              child: const Icon(Icons.add))
+                        ),
+                        FadeTransition(
+                            opacity: Tween(begin: 0.0, end: 1.0).animate(ShiftingAnimation(_tabController, 1)),
+                            child: Stack(
+                              children: [
+                                Visibility(
+                                  visible: _tabIndex == 1,
+                                  child: Showcase(
+                                    key: createAbsenceKey,
+                                    description: Strings.createAbsenceTooltip,
+                                    targetShapeBorder: const CircleBorder(),
+                                    targetPadding: const EdgeInsets.all(15),
+                                    child: const Icon(Icons.calendar_month)
+                                  ),
+                                ),
+                                const Icon(Icons.calendar_month)
+                              ],
+                            )
+                        ),
+                        FadeTransition(
+                            opacity: Tween(begin: 0.0, end: 1.0).animate(ShiftingAnimation(_tabController, 2)),
+                            child: Stack(
+                              children: [
+                                Visibility(
+                                  visible: _tabIndex == 2,
+                                  child: Showcase(
+                                    key: editStudentDataKey,
+                                    description: Strings.editStudentDataTooltip,
+                                    targetShapeBorder: const CircleBorder(),
+                                    targetPadding: const EdgeInsets.all(15),
+                                    child: const Icon(Icons.edit)
+                                  ),
+                                ),
+                                const Icon(Icons.edit)
+                              ],
+                            )
+                        ),
+                        FadeTransition(
+                            opacity: Tween(begin: 0.0, end: 1.0).animate(ShiftingAnimation(_tabController, 3)),
+                            child: Stack(
+                              children: [
+                                Visibility(
+                                  visible: _tabIndex == 3,
+                                  child: Showcase(
+                                    key: editObservationsKey,
+                                    description: Strings.editObservationsTooltip,
+                                    targetShapeBorder: const CircleBorder(),
+                                    targetPadding: const EdgeInsets.all(15),
+                                    child: const Icon(Icons.edit)
+                                  ),
+                                ),
+                                const Icon(Icons.edit)
+                              ],
+                            )
+                        ),
+                      ],
+                    )
                 ),
+                /*ExpandableFab(
+                key: _fabState,
+                distance: 150,
+                icon: Showcase(
+                    key: emergencyContactsKey,
+                    description: Strings.emergencyContactsTooltip,
+                    targetShapeBorder: const CircleBorder(),
+                    targetPadding: const EdgeInsets.all(14),
+                    disposeOnTap: true,
+                    onTargetClick: () => _fabState.currentState?.toggle(),
+                    child: const Icon(Icons.quick_contacts_dialer, color: Colors.white,)),
+                color: Theme
+                    .of(context)
+                    .errorColor,
+                children: buildContact(student.caregivers),
+              ),*/
               ),
-              Container(height: 20, color: ColorSchemes.kingacolor), // to fill out one pixel gap between AppBar and header sliver
-            ],
-          ),
-        ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-        bottomNavigationBar: BottomAppBar(child: Container(decoration: BoxDecoration(color: ColorSchemes.backgroundColor, boxShadow: [/*if (isScrollable) */BoxShadow(offset: const Offset(0, -1), blurRadius: 0, color: Colors.grey.withAlpha(100))]), height: kToolbarHeight - 10)),
-        floatingActionButton: FloatingActionButton(
-            heroTag: 'fabae',
-            onPressed: () {
-              switch(_tabIndex) {
-                case 0:
-                  showDialog<Incidence>(context: context, builder: (context) =>
-                      IncidenceDialog(
-                          student.studentId
-                      ),).then((Incidence? value) {
-                    if (value != null) {
-
-                    }
-                  });
-                  break;
-                case 1:
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => AbsenceScreen(student.studentId)));
-                  break;
-                case 2:
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => EditStudentScreen(student: student,)));
-                  break;
-                case 3:
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => ObservationScreen(student.studentId)));
-                  break;
-              }
-            },
-            child: Stack(
-              children: [
-                FadeTransition(
-                    opacity: Tween(begin: 0.0, end: 1.0).animate(ShiftingAnimation(_tabController, 0)),
-                    child: const Icon(Icons.add)
-                ),
-                FadeTransition(
-                    opacity: Tween(begin: 0.0, end: 1.0).animate(ShiftingAnimation(_tabController, 1)),
-                    child: const Icon(Icons.calendar_month)
-                ),
-                FadeTransition(
-                    opacity: Tween(begin: 0.0, end: 1.0).animate(ShiftingAnimation(_tabController, 2)),
-                    child: const Icon(Icons.edit)
-                ),
-                FadeTransition(
-                    opacity: Tween(begin: 0.0, end: 1.0).animate(ShiftingAnimation(_tabController, 3)),
-                    child: const Icon(Icons.edit)
-                ),
-              ],
-            )
-        ),
-      /*ExpandableFab(
-              key: _fabState,
-              distance: 150,
-              icon: Showcase(
-                  key: emergencyContactsKey,
-                  description: Strings.emergencyContactsTooltip,
-                  targetShapeBorder: const CircleBorder(),
-                  targetPadding: const EdgeInsets.all(14),
-                  disposeOnTap: true,
-                  onTargetClick: () => _fabState.currentState?.toggle(),
-                  child: const Icon(Icons.quick_contacts_dialer, color: Colors.white,)),
-              color: Theme
-                  .of(context)
-                  .errorColor,
-              children: buildContact(student.caregivers),
-            ),*/
+            );
+        },
+      )
     );
   }
 

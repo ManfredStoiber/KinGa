@@ -95,6 +95,10 @@ class Strings {
   static const String start = 'Anfang';
   static const String studentsData = 'Stammdaten';
   static const String support = 'Support';
+  static const String tabAbsences = 'Abwesenheiten';
+  static const String tabIncidences = 'Ereignisse';
+  static const String tabObservations = 'Entwicklungsbögen';
+  static const String tabStudentData = 'Info';
   static const String time = 'Uhrzeit';
   static const String today = 'Heute';
   static const String errorEmailAlreadyInUse = 'Es besteht bereits ein Benutzerkonto mit der angegebenen E-Mail-Adresse';
@@ -140,14 +144,21 @@ class Strings {
 
   // Showcases
   static const String birthdayTooltip = 'Hier siehst du, wenn ein Kind heute Geburtstag hat';
+  static const String createAbsenceTooltip = 'Tippe hier, um eine neue Abwesenheit einzutragen';
+  static const String createIncidenceTooltip = 'Tippe hier, um ein neues Ereignis hinzuzufügen';
   static const String createPermissionTooltip = 'Tippe hier, um eine neue Berechtigung anzulegen';
   static const String createStudentTooltip = 'Tippe hier, um ein neues Kind anzulegen';
   static const String drawerTooltip = 'Tippe hier, um das Menü zu öffnen';
+  static const String editObservationsTooltip = 'Tippe hier, um die Entwicklungsbögen für das Kind zu bearbeiten';
+  static const String editStudentDataTooltip = 'Tippe hier, um die Stammdaten dieses Kinds zu bearbeiten';
   static const String emergencyContactsTooltip = 'Notfallkontakte kannst du hier anrufen';
   static const String filterStudentTooltip = 'Hier kannst du nach Gruppen filtern';
   static const String incidenceTooltip = 'Hier siehst du, dass heute Ereignisse für das Kind angelegt wurden';
   static const String searchStudentTooltip = 'Hier kannst du nach Kindernamen suchen';
   static const String showHelp = 'Hilfe anzeigen';
+  static const String showAbsencesWidgetTooltip = 'Hier kannst du Abwesenheiten für das Kind verwalten';
+  static const String showIncidenceWidgetTooltip = 'Hier kannst du Ereignisse mit diesem Kind ansehen und verwalten';
+  static const String showObservationsWidgetTooltip = 'Hier kannst du Entwicklungsbögen für das Kind verwalten';
   static const String showStudentDataTooltip = 'Stammdaten findest du hier';
   static const String toggleAttendanceTooltip = 'Tippe, um die Kindübersicht aufzurufen. \nMit langem Tippen kann das Kind als an- und abwesend markiert werden.';
 

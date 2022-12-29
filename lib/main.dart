@@ -22,7 +22,6 @@ void main() async {
 
   final StudentService studentService = GetIt.I<StudentService>();
   final AuthenticationService authenticationService = GetIt.I<AuthenticationService>();
-  GetIt.instance.get<StreamingSharedPreferences>().setStringList(Keys.finishedShowcases, []);
   runApp(MyApp(studentService, authenticationService));
 }
 
