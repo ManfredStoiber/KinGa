@@ -3,7 +3,7 @@ import 'package:kinga/constants/strings.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
 class QrScannerDialog extends StatefulWidget {
-  QrScannerDialog({Key? key}) : super(key: key);
+  const QrScannerDialog({Key? key}) : super(key: key);
 
   @override
   State<QrScannerDialog> createState() => _QrScannerDialogState();
@@ -17,7 +17,7 @@ class _QrScannerDialogState extends State<QrScannerDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: Text(Strings.cancel),
+          child: const Text(Strings.cancel),
         ),
       ],
       //insetPadding: EdgeInsets.all(10),
@@ -26,7 +26,7 @@ class _QrScannerDialogState extends State<QrScannerDialog> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Container(
+          SizedBox(
             width: MediaQuery.of(context).size.width * 0.5,
             height: MediaQuery.of(context).size.height * 0.5,
             child: MobileScanner(

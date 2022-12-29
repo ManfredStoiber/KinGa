@@ -14,7 +14,7 @@ class ColorSchemes {
     900: Color(0xFF2FD373),
   });
   static const int _kingacolorPrimaryValue = 0xFF5BE5A0;
-  static const int _kingacolorSecondaryValue = 0xFFE5B5A0;
+  // static const int _kingacolorSecondaryValue = 0xFFE5B5A0;
 
   static const MaterialColor kingacolorAccent = MaterialColor(_kingacolorAccentValue, <int, Color>{
     100: Color(0xFFFFFFFF),

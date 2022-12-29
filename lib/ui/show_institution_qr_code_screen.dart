@@ -9,10 +9,10 @@ import 'package:qr_flutter/qr_flutter.dart';
 
 class ShowInstitutionQrCodeScreen extends StatelessWidget {
 
-  String _institutionId;
-  String _institutionPassword;
+  final String _institutionId;
+  final String _institutionPassword;
 
-  ShowInstitutionQrCodeScreen(this._institutionId, this._institutionPassword, {Key? key}) : super(key: key);
+  const ShowInstitutionQrCodeScreen(this._institutionId, this._institutionPassword, {Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +35,7 @@ class ShowInstitutionQrCodeScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Expanded(flex: 2, child: Container()),
-            Container(padding: const EdgeInsets.all(8.0), child: Text(textAlign: TextAlign.center, Strings.institutionCredentialsHint)),
+            Container(padding: const EdgeInsets.all(8.0), child: const Text(textAlign: TextAlign.center, Strings.institutionCredentialsHint)),
             Expanded(flex: 1, child: Container()),
             Container(
               margin: const EdgeInsets.all(32),
@@ -49,7 +49,7 @@ class ShowInstitutionQrCodeScreen extends StatelessWidget {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(
+                        const Text(
                             style: TextStyle(fontSize: 20),
                             "${Strings.institutionId}: ",
                         ),
@@ -65,7 +65,7 @@ class ShowInstitutionQrCodeScreen extends StatelessWidget {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(
+                        const Text(
                             style: TextStyle(fontSize: 20),
                             "${Strings.password}: ",
                         ),
@@ -80,7 +80,7 @@ class ShowInstitutionQrCodeScreen extends StatelessWidget {
               ),
             ),
             Expanded(flex: 1, child: Container()),
-            Container(padding: const EdgeInsets.all(8.0), child: Text(textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold), Strings.institutionCredentialsWarning)),
+            Container(padding: const EdgeInsets.all(8.0), child: const Text(textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold), Strings.institutionCredentialsWarning)),
             Expanded(flex: 1, child: Container()),
           ]
         ),

@@ -19,7 +19,6 @@ class FirebaseRestInstitutionRepository implements InstitutionRepository {
     throw UnimplementedError();
   }
 
-  @override
   Future<String> generateInstitutionId() {
     // TODO: implement generateInstitutionId
     throw UnimplementedError();

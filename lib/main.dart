@@ -24,7 +24,7 @@ void main() async {
   await configureDependencies();
 
   //Setting SysemUIOverlay
-  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
       systemStatusBarContrastEnforced: true,
       systemNavigationBarColor: Colors.transparent,
       systemNavigationBarDividerColor: Colors.transparent,
@@ -145,10 +145,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                       title: 'KinGa',
                       theme: ThemeData(
                         // This is the theme of your application.
-                          primarySwatch: ColorSchemes.kingacolor,
-                          scaffoldBackgroundColor: ColorSchemes.backgroundColor,
-                          backgroundColor: ColorSchemes.backgroundColor,
-                          errorColor: ColorSchemes.errorColor
+                          scaffoldBackgroundColor: ColorSchemes.backgroundColor, colorScheme: ColorScheme.fromSwatch(primarySwatch: ColorSchemes.kingacolor).copyWith(background: ColorSchemes.backgroundColor).copyWith(error: ColorSchemes.errorColor)
                       ),
                       home: const SetupInstitutionScreen(),
                     ),
@@ -169,10 +166,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
               title: 'KinGa',
               theme: ThemeData(
                 // This is the theme of your application.
-                  primarySwatch: ColorSchemes.kingacolor,
-                  scaffoldBackgroundColor: ColorSchemes.backgroundColor,
-                  backgroundColor: ColorSchemes.backgroundColor,
-                  errorColor: ColorSchemes.errorColor
+                  scaffoldBackgroundColor: ColorSchemes.backgroundColor, colorScheme: ColorScheme.fromSwatch(primarySwatch: ColorSchemes.kingacolor).copyWith(background: ColorSchemes.backgroundColor).copyWith(error: ColorSchemes.errorColor)
               ),
               home: const SetupAccountScreen(),
             ),

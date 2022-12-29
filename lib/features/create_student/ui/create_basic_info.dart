@@ -16,7 +16,7 @@ class CreateBasicInfo extends StatefulWidget {
   final Function(Uint8List newProfileImage) _onImagePicked;
 
   Map<String, dynamic> student;
-  Uint8List _profileImage;
+  final Uint8List _profileImage;
 
   @override
   State<CreateBasicInfo> createState() => _CreateBasicInfoState();
@@ -37,10 +37,11 @@ class _CreateBasicInfoState extends State<CreateBasicInfo> with AutomaticKeepAli
   }
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     TextEditingController birthdayController = TextEditingController();
     birthdayController.text = widget.student['birthday'] != null && widget.student['birthday'] != "" ? IsoDateUtils.getGermanDateFromIsoDate(widget.student['birthday']) : '';
 
-    return ListView(padding: EdgeInsets.only(bottom: 80.0), children: [
+    return ListView(padding: const EdgeInsets.only(bottom: 80.0), children: [
     Wrap(children: [
     Card(
       margin: const EdgeInsets.all(10),

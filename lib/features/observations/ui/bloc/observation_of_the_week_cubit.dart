@@ -1,11 +1,10 @@
 import 'package:bloc/bloc.dart';
 import 'package:collection/collection.dart';
 import 'package:get_it/get_it.dart';
-import 'package:kinga/domain/entity/student.dart';
 import 'package:kinga/domain/student_service.dart';
 import 'package:kinga/features/observations/domain/entity/question.dart';
 import 'package:kinga/features/observations/domain/observation_service.dart';
-import 'package:kinga/features/observations/ui/ObservationStudentDto.dart';
+import 'package:kinga/features/observations/ui/observation_student_dto.dart';
 import 'package:meta/meta.dart';
 
 part 'observation_of_the_week_state.dart';
@@ -49,7 +48,7 @@ class ObservationOfTheWeekCubit extends Cubit<ObservationOfTheWeekState> {
   setAnswer(String studentId, int answerIndex) {
     if (state is ObservationOfTheWeekLoaded) {
       var state = (this.state as ObservationOfTheWeekLoaded);
-      var answers = (state as ObservationOfTheWeekLoaded).answers;
+      var answers = (state).answers;
       for (var answer in answers.entries) {
         answer.value.remove(studentId);
       }

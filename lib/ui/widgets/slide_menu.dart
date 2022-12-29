@@ -64,13 +64,13 @@ class SlideMenuState extends State<SlideMenu> with SingleTickerProviderStateMixi
         } : null,
         onHorizontalDragEnd: isExtended ? (data) {
           //To change slide direction, change to data.primaryVelocity! < -1500
-          if (data.primaryVelocity! > 1500)
+          if (data.primaryVelocity! > 1500) {
             _controller.animateTo(.0); //close menu on fast swipe in the right direction
-          //To change slide direction, change to data.primaryVelocity! > 1500
-          else if (_controller.value >= .5 || data.primaryVelocity! < -1500)
+          } else if (_controller.value >= .5 || data.primaryVelocity! < -1500) {
             _controller.animateTo(1.0); // fully open if dragged a lot to left or on fast swipe to left
-          else // close if none of above
+          } else {
             _controller.animateTo(.0);
+          }
         } : null,
         onTap: isExtended ? () {
           _controller.animateTo(.0);

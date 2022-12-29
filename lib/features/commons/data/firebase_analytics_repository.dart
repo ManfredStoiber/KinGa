@@ -83,7 +83,7 @@ class FirebaseAnalyticsRepository implements AnalyticsRepository {
       rows.add(row);
     }
 
-    String csv = ListToCsvConverter().convert(rows);
+    String csv = const ListToCsvConverter().convert(rows);
 
     FirebaseStorage.instance.ref().child("analytics.csv").putString(csv);
   }

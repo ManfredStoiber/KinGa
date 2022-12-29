@@ -42,7 +42,7 @@ class FirebaseRestStudentRepository implements StudentRepository {
         yield students;
       }
 
-      await Future.delayed(Duration(seconds: 60));
+      await Future.delayed(const Duration(seconds: 60));
     }
   }
 

@@ -2,7 +2,6 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:collection/collection.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
@@ -12,7 +11,7 @@ import 'package:kinga/constants/strings.dart';
 import 'package:kinga/features/commons/domain/analytics_service.dart';
 import 'package:kinga/features/connectivity_indicator/ui/connectivity_indicator.dart';
 import 'package:kinga/features/observations/domain/observation_service.dart';
-import 'package:kinga/features/observations/ui/ObservationStudentDto.dart';
+import 'package:kinga/features/observations/ui/observation_student_dto.dart';
 import 'package:kinga/features/observations/ui/bloc/observation_of_the_week_cubit.dart';
 import 'package:kinga/ui/bloc/students_cubit.dart';
 import 'package:kinga/ui/widgets/loading_indicator.dart';
@@ -28,7 +27,7 @@ class AnswerObservationScreen extends StatefulWidget {
 
 class _AnswerObservationScreenState extends State<AnswerObservationScreen> {
 
-  ScrollController _scrollController = ScrollController();
+  final ScrollController _scrollController = ScrollController();
   final _listViewKey = GlobalKey();
 
   ValueNotifier<bool> scrollingNotifier = ValueNotifier(false);
@@ -46,12 +45,12 @@ class _AnswerObservationScreenState extends State<AnswerObservationScreen> {
         var to = _scrollController.offset - moveDistance;
         to = (to < 0) ? 0 : to;
         _scrollController.jumpTo(to);
-        await Future.delayed(Duration(milliseconds: 5));
+        await Future.delayed(const Duration(milliseconds: 5));
       }
       while (_isScrollingDown && scrollingNotifier.value) {
         // code to scroll down
         _scrollController.jumpTo(_scrollController.offset + moveDistance);
-        await Future.delayed(Duration(milliseconds: 5));
+        await Future.delayed(const Duration(milliseconds: 5));
       }
     });
   }
@@ -72,17 +71,17 @@ class _AnswerObservationScreenState extends State<AnswerObservationScreen> {
       return ConnectivityIndicator(
         child: Scaffold(
           appBar: AppBar(
-            title: Text("Frage der Woche"), // TODO
+            title: const Text("Frage der Woche"), // TODO
             elevation: 0,
           ),
           body: Column(
             children: [
-              Container(width: double.infinity, padding: EdgeInsets.all(5), color: ColorSchemes.kingacolor, child: Text(textAlign: TextAlign.center, '"${state.question.text.replaceAll('"', "'")}"', style: Theme.of(context).textTheme.titleMedium,)),
-              Spacer(),
+              Container(width: double.infinity, padding: const EdgeInsets.all(5), color: ColorSchemes.kingacolor, child: Text(textAlign: TextAlign.center, '"${state.question.text.replaceAll('"', "'")}"', style: Theme.of(context).textTheme.titleMedium,)),
+              const Spacer(),
               Container(margin: const EdgeInsets.all(30), width: 100, child: SimpleShadow(child: Opacity(opacity: 0.4, child: Image.asset('assets/images/no_results.png')))),
               Text(Strings.noObservationsYet, style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.black54), textAlign: TextAlign.center,),
               Container(margin: const EdgeInsets.all(20), child: Text(Strings.noObservationsYetDescription, style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.black54), textAlign: TextAlign.center,)),
-              Spacer(flex: 2)
+              const Spacer(flex: 2)
             ],
           ),
         ),
@@ -90,7 +89,7 @@ class _AnswerObservationScreenState extends State<AnswerObservationScreen> {
     } else if (state is ObservationOfTheWeekLoaded) {
       return Scaffold(
         appBar: AppBar(
-          title: Text("Frage der Woche"), // TODO
+          title: const Text("Frage der Woche"), // TODO
           elevation: 0,
         ),
         floatingActionButton: FloatingActionButton(
@@ -99,15 +98,15 @@ class _AnswerObservationScreenState extends State<AnswerObservationScreen> {
               GetIt.I<AnalyticsService>().logEvent(name: Keys.analyticsAnswerObservationOfTheWeek);
               Navigator.of(context).pop();
             },
-          child: Icon(Icons.check),
+          child: const Icon(Icons.check),
         ),
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Container(padding: EdgeInsets.all(5), color: ColorSchemes.kingacolor, child: Text(textAlign: TextAlign.center, '"${state.question.text}"', style: Theme.of(context).textTheme.titleMedium,)),
+            Container(padding: const EdgeInsets.all(5), color: ColorSchemes.kingacolor, child: Text(textAlign: TextAlign.center, '"${state.question.text}"', style: Theme.of(context).textTheme.titleMedium,)),
             Expanded(
               child: _createListener(ListView.builder(
-                padding: EdgeInsets.only(bottom: 100),
+                padding: const EdgeInsets.only(bottom: 100),
                   key: _listViewKey,
                   controller: _scrollController,
                   shrinkWrap: true, itemCount: state.answers.keys.length, itemBuilder: (context, answerIndex) {
@@ -115,7 +114,7 @@ class _AnswerObservationScreenState extends State<AnswerObservationScreen> {
                   return Card(
                     margin: answerIndex == 0 ? EdgeInsets.zero : null,
                     elevation: answerIndex == 0 ? 0 : null,
-                    shape: answerIndex == 0 ? RoundedRectangleBorder(borderRadius: BorderRadius.zero) : null,
+                    shape: answerIndex == 0 ? const RoundedRectangleBorder(borderRadius: BorderRadius.zero) : null,
                     child: DragTarget<String>(
                       builder: (context, candidateData, rejectedData) {
                         return Container(
@@ -123,18 +122,18 @@ class _AnswerObservationScreenState extends State<AnswerObservationScreen> {
                           child: Column(
                             children: [
                               Text(answerText ?? "TODO", style: Theme.of(context).textTheme.titleLarge,),
-                              GridView.builder(physics: NeverScrollableScrollPhysics(), shrinkWrap: true, gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 4),
+                              GridView.builder(physics: const NeverScrollableScrollPhysics(), shrinkWrap: true, gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 4),
                                 itemCount: state.answers[state.answers.keys.elementAt(answerIndex)]?.length ?? 0,
                                 itemBuilder: (context, index) {
-                                  var widget = Container(height: 100, width: 100, child: ObservationItem(studentId: state.answers[state.answers.keys.elementAt(answerIndex)]?.elementAt(index) ?? "", cubit: BlocProvider.of(context)));
+                                  var widget = SizedBox(height: 100, width: 100, child: ObservationItem(studentId: state.answers[state.answers.keys.elementAt(answerIndex)]?.elementAt(index) ?? "", cubit: BlocProvider.of(context)));
                                   var student = state.getStudent(state.answers[state.answers.keys.elementAt(answerIndex)]?.elementAt(index) ?? "");
                                   return LongPressDraggable<String>(
                                     onDragStarted: () => _isDragging = true,
                                       onDragEnd: (details) => _isDragging = false,
                                       onDraggableCanceled: (velocity, offset) => _isDragging = false,
                                       data: state.answers[state.answers.keys.elementAt(answerIndex)]?.elementAt(index),
-                                      childWhenDragging: ObservationItemDisabled(),
-                                      feedback: Container(height: 100, width: 100, child: ObservationItemDragged(student)),
+                                      childWhenDragging: const ObservationItemDisabled(),
+                                      feedback: SizedBox(height: 100, width: 100, child: ObservationItemDragged(student)),
                                       child: widget
                                   );
                                 }),
@@ -154,7 +153,7 @@ class _AnswerObservationScreenState extends State<AnswerObservationScreen> {
         ),
       );
     } else { // TODO: error state
-      return Scaffold(
+      return const Scaffold(
         body: LoadingIndicator(),
       );
     }
@@ -238,7 +237,7 @@ class ObservationItemState extends State<ObservationItem> {
                           onPressed: () {
                           },
                           style: TextButton.styleFrom(
-                            padding: EdgeInsets.all(5),
+                            padding: const EdgeInsets.all(5),
                               shape: ContinuousRectangleBorder(
                                   borderRadius: BorderRadius.circular(64.0),
                               ),
@@ -299,7 +298,7 @@ class ObservationItemDisabled extends StatelessWidget {
               backgroundColor: Colors.transparent,
             ),
             child: Column(
-                children: [
+                children: const [
                   Spacer(),
                 ]
             )
@@ -325,7 +324,7 @@ class ObservationItemDragged extends StatelessWidget {
                   onPressed: () {
                   },
                   style: TextButton.styleFrom(
-                    padding: EdgeInsets.all(5),
+                    padding: const EdgeInsets.all(5),
                     shape: ContinuousRectangleBorder(
                       borderRadius: BorderRadius.circular(64.0),
                     ),

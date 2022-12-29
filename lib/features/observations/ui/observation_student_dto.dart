@@ -1,7 +1,6 @@
 import 'dart:typed_data';
 
 import 'package:kinga/features/observations/domain/entity/observation.dart';
-import 'package:kinga/features/observations/ui/ObservationStudentDto.dart';
 
 class ObservationStudentDto {
 
@@ -19,7 +18,6 @@ class ObservationStudentDto {
         this.observations = const []]
       );
 
-  @override
   int compareTo(ObservationStudentDto other) {
     return "$firstname $lastname $studentId".toLowerCase().compareTo("${other.firstname} ${other.lastname} ${other.studentId}".toLowerCase());
   }

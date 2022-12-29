@@ -63,7 +63,7 @@ class EmergencyBottomSheet extends StatelessWidget {
                             ),
                           ),
                           Container(
-                            padding: EdgeInsets.only(left: 10),
+                            padding: const EdgeInsets.only(left: 10),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.end,
                               children: [

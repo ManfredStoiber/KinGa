@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:get_it/get_it.dart';
 import 'package:kinga/domain/entity/absence.dart';
 import 'package:kinga/domain/student_service.dart';

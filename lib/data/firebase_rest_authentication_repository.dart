@@ -23,9 +23,7 @@ class FirebaseRestAuthenticationRepository implements AuthenticationRepository {
 
   @override
   Stream<User?> authStateChanges() {
-    if (streamController == null) {
-      streamController = StreamController<User?>();
-    }
+    streamController ??= StreamController<User?>();
     return streamController!.stream;
   }
 
@@ -44,6 +42,8 @@ class FirebaseRestAuthenticationRepository implements AuthenticationRepository {
     } else {
       return "Error <TODO>"; // TODO
     }
+
+    return null;
   }
 
   @override

@@ -1,5 +1,3 @@
-import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:kinga/constants/colors.dart';
 import 'package:kinga/constants/strings.dart';
@@ -12,9 +10,7 @@ class ConnectivityIndicator extends StatefulWidget {
 
   ConnectivityIndicator({Key? key, required Widget this.child}) {
     //super(key: key);
-    if (key == null) {
-      key = UniqueKey();
-    }
+    key ??= UniqueKey();
   }
 
   @override
@@ -61,7 +57,7 @@ class _ConnectivityIndicatorState extends State<ConnectivityIndicator> {
   @override
   Widget build(BuildContext context) {
     return DefaultTextStyle(
-      style: TextStyle(),
+      style: const TextStyle(),
       child: Stack(
         alignment: Alignment.topCenter,
         children: [
@@ -69,7 +65,7 @@ class _ConnectivityIndicatorState extends State<ConnectivityIndicator> {
           if (isOffline) SimpleShadow(
             opacity: 0.2,
             child: Container(
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 borderRadius: BorderRadius.all(Radius.circular(15.0)),
                 color: ColorSchemes.errorColor,
               ),
@@ -81,7 +77,7 @@ class _ConnectivityIndicatorState extends State<ConnectivityIndicator> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Container(padding: EdgeInsets.only(right: 8.0), child: Icon(Icons.signal_wifi_bad, color: Colors.white,)),
+                    Container(padding: const EdgeInsets.only(right: 8.0), child: const Icon(Icons.signal_wifi_bad, color: Colors.white,)),
                     Text(
                       Strings.errorConnectivity,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.white),

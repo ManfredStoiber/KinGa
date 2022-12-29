@@ -6,7 +6,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cryptography/cryptography.dart';
 import 'package:encrypt/encrypt.dart';
 import 'package:get_it/get_it.dart';
-import 'package:injectable/injectable.dart';
 import 'package:kinga/constants/keys.dart';
 import 'package:kinga/domain/institution_repository.dart';
 import 'package:kinga/util/crypto_utils.dart';

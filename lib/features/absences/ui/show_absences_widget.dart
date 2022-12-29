@@ -242,7 +242,7 @@ class ShowAbsencesWidgetState extends State<ShowAbsencesWidget> {
               )
           ],);
         } else if (state is AbsencesError) {
-          return Text("TODO"); // TODO
+          return const Text("TODO"); // TODO
         } else {
           return const LoadingIndicator();
         }

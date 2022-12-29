@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 class AnalyticsItem {
 
   DateTime timestamp;

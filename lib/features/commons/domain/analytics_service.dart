@@ -5,8 +5,7 @@ class AnalyticsService {
 
   final AnalyticsRepository _analyticsRepository = GetIt.I<AnalyticsRepository>();
 
-  AnalyticsService() {
-  }
+  AnalyticsService();
 
   Future<void> logEvent({required String name, Map<String, Object?>? parameters}) async {
     _analyticsRepository.logEvent(name: name, parameters: parameters);

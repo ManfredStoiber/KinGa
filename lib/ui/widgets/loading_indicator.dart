@@ -7,10 +7,10 @@ class LoadingIndicator extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Container(
-        margin: EdgeInsets.all(50),
+        margin: const EdgeInsets.all(50),
         width: 75,
-        child: FittedBox(
-            child: const CircularProgressIndicator()
+        child: const FittedBox(
+            child: CircularProgressIndicator()
         ),
       ),
     );

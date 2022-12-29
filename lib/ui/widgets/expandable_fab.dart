@@ -130,7 +130,7 @@ class ExpandableFabState extends State<ExpandableFab>
   List<Widget> _buildExpandingActionButtons() {
     final children = <Widget>[];
     final count = widget.children.length;
-    final step = 70;
+    const step = 70;
     for (var i = 0, distance = step;
     i < count;
     i++, distance += step) {

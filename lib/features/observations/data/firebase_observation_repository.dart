@@ -1,30 +1,18 @@
 import 'dart:io';
-import 'dart:typed_data';
 
-import 'dart:convert';
-
-import 'package:async/async.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:collection/collection.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:kinga/constants/keys.dart';
-import 'package:kinga/data/firebase_utils.dart';
-import 'package:flutter/services.dart';
-import 'package:kinga/domain/entity/absence.dart';
-import 'package:kinga/domain/entity/attendance.dart';
-import 'package:kinga/domain/student_repository.dart';
-import 'package:kinga/domain/entity/caregiver.dart';
 import 'package:kinga/domain/entity/student.dart';
-import 'package:kinga/domain/student_service.dart';
 import 'package:kinga/features/observations/domain/entity/observation.dart';
 import 'package:kinga/features/observations/domain/entity/observation_form.dart';
 import 'package:kinga/features/observations/domain/entity/observation_form_part.dart';
 import 'package:kinga/features/observations/domain/entity/observation_form_part_section.dart';
 import 'package:kinga/features/observations/domain/entity/question.dart';
 import 'package:kinga/features/observations/domain/observation_repository.dart';
-import 'package:kinga/features/observations/domain/observation_service.dart';
 import 'package:streaming_shared_preferences/streaming_shared_preferences.dart';
 
 class FirebaseObservationRepository implements ObservationRepository {
@@ -238,11 +226,14 @@ class FirebaseObservationRepository implements ObservationRepository {
   @override
   Future<Map<String, List<Observation>>> getAllObservations() {
     throw UnimplementedError();
+    /*
     FirebaseFirestore db = FirebaseFirestore.instance;
     db.collectionGroup('Observation').get().then((value) {
       print("Test");
     });
     //var doc = db.collection('Institution').doc(currentInstitutionId).coll
+
+     */
   }
 
 }

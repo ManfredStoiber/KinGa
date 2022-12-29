@@ -51,11 +51,11 @@ class _AnimatedTabBar extends State<AnimatedTabBar> {
                 }()),
 
                  */
-                child: AlignTransition(alignment: Tween(begin: Alignment(-1, 0), end: Alignment(- 1 / (widget.tabs.length - 1), 0)).animate(widget.controller.animation!), child: Container(
+                child: AlignTransition(alignment: Tween(begin: const Alignment(-1, 0), end: Alignment(- 1 / (widget.tabs.length - 1), 0)).animate(widget.controller.animation!), child: Container(
                   height: tabHeight,
                   color: Colors.transparent,
                   child: Container(
-                    padding: EdgeInsets.only(top: 20.0),
+                    padding: const EdgeInsets.only(top: 20.0),
                     width: (){
                       var s = (constraints.maxWidth - (widget.tabs.length * 50)) / (widget.tabs.length + 1);
                       return 50 + 2*s;
@@ -102,7 +102,7 @@ class _AnimatedTabBar extends State<AnimatedTabBar> {
                     height: tabHeight,
                     child: FadeTransition(
                       opacity: Tween(begin: .25, end: 1.0).animate(ShiftingAnimation(widget.controller, i)),
-                      child: SlideTransition(position: Tween(begin: Offset(0, 0), end: Offset(0, -0.15)).animate(ShiftingAnimation(widget.controller, i)),
+                      child: SlideTransition(position: Tween(begin: const Offset(0, 0), end: const Offset(0, -0.15)).animate(ShiftingAnimation(widget.controller, i)),
                           child: tab.icon ?? const Icon(CupertinoIcons.home)),
                       ),
                 ),
@@ -141,26 +141,28 @@ double _indexChangeProgress(TabController controller, int index) {
   /// simplified!
 
   if (index != currentIndex && index != previousIndex) {
-    if (controller.indexIsChanging)
+    if (controller.indexIsChanging) {
       return 0.0;
-    else if (controller.offset < 0 && index == controller.index - 1)
+    } else if (controller.offset < 0 && index == controller.index - 1) {
       return controller.offset.abs().clamp(0.0, 1.0);
-    else if (controller.offset > 0 && index == controller.index + 1)
+    } else if (controller.offset > 0 && index == controller.index + 1) {
       return controller.offset.abs().clamp(0.0, 1.0);
-    else
+    } else {
       return 0.0;
+    }
   }
 
   // The controller's offset is changing because the user is dragging the
   // TabBarView's PageView to the left or right.
   if (!controller.indexIsChanging) {
-    if (index == currentIndex)
+    if (index == currentIndex) {
       return 1.0 - controller.offset.abs().clamp(0.0, 1.0);
-    else
+    } else {
       return (controller.index + 1 == previousIndex && controller.offset > 0) ||
           (controller.index - 1 == previousIndex && controller.offset < 0)
           ? controller.offset.abs().clamp(0.0, 1.0)
           : 0.0;
+    }
   }
 
   // The TabController animation's value is changing from previousIndex to currentIndex.

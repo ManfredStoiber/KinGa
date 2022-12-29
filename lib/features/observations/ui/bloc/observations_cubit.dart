@@ -31,10 +31,6 @@ class ObservationsCubit extends Cubit<ObservationsState> {
 
   }
 
-  @override
-  Future<void> close() async {
-    super.close();
-  }
 
   void updateUi({ObservationForm? selectedObservationForm, ObservationFormPart? selectedPart}) {
     selectedObservationForm ??= (state as ObservationsLoaded).selectedObservationForm;

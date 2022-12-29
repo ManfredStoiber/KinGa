@@ -288,15 +288,15 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                         if (state is StudentsInitial || state is StudentsLoading) {
                           return const LoadingIndicator();
                         } else if (state is StudentsEmpty) {
-                          return Text("No Children");
+                          return const Text("No Children");
                         } else if (state is StudentsLoaded) {
                           return Column(
                             children: [
-                              ObservationOfTheWeekBar(),
+                              const ObservationOfTheWeekBar(),
                               Expanded(
                                 child: SafeArea(
                                   child: GridView(
-                                    padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
+                                    padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
                                     // TODO: maybe move sorting to state or repository for better performance;
                                     gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                                       crossAxisCount: 3,
@@ -557,7 +557,7 @@ class AttendanceItemState extends State<AttendanceItem> {
                       style: TextButton.styleFrom(
                           shape: ContinuousRectangleBorder(
                             borderRadius: BorderRadius.circular(64.0),
-                            side: cubit.isAbsent(widget.studentId) && false ? BorderSide() : BorderSide.none
+                            side: cubit.isAbsent(widget.studentId) && false ? const BorderSide() : BorderSide.none
                           ),
                           //shadowColor: Colors.transparent,
                           backgroundColor: (){

@@ -1,12 +1,9 @@
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'dart:convert';
 
 import 'package:async/async.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:collection/collection.dart';
-import 'package:crypto/crypto.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
@@ -21,9 +18,7 @@ import 'package:kinga/domain/student_repository.dart';
 import 'package:kinga/domain/entity/caregiver.dart';
 import 'package:kinga/domain/entity/student.dart';
 import 'package:kinga/domain/student_service.dart';
-import 'package:kinga/features/observations/domain/observation_service.dart';
 import 'package:kinga/util/crypto_utils.dart';
-import 'package:kinga/util/date_utils.dart';
 import 'package:streaming_shared_preferences/streaming_shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 
@@ -38,7 +33,7 @@ class FirebaseStudentRepository implements StudentRepository {
   final Directory _applicationDocumentsDirectory = GetIt.I<Directory>(instanceName: Keys.applicationDocumentsDirectory);
 
   final Map<String, Uint8List> _profileImagesCache = GetIt.I<Map<String, Uint8List>>(instanceName: Keys.profileImagesCache);
-  final Map<String, DateTime> _observationsTimestamps = {};
+  //final Map<String, DateTime> _observationsTimestamps = {};
 
   FirebaseStudentRepository() {
     currentInstitutionId = GetIt.I<StreamingSharedPreferences>().getString(Keys.institutionId, defaultValue: "").getValue();
@@ -86,9 +81,9 @@ class FirebaseStudentRepository implements StudentRepository {
                 Student student = decrypted['student'];
                 late Uint8List profileImage;
                 String? profileImageHash = decrypted['profileImage'];
-                DateTime observationsTimestamp = DateTime.now();
+                //DateTime observationsTimestamp = DateTime.now();
                 if (decrypted['observationsTimestamp'] != null) {
-                  observationsTimestamp = DateTime.parse(decrypted['observationsTimestamp']);
+                  //observationsTimestamp = DateTime.parse(decrypted['observationsTimestamp']);
                 }
 
                 // load profileImage

@@ -19,8 +19,9 @@ class ShowStudentDataWidget extends StatefulWidget {
 class _ShowStudentDataWidgetState extends State<ShowStudentDataWidget> with AutomaticKeepAliveClientMixin {
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Container(
-      padding: EdgeInsets.only(bottom: kToolbarHeight),
+      padding: const EdgeInsets.only(bottom: kToolbarHeight),
       child: Column(children: [
         Card(
           margin: const EdgeInsets.fromLTRB(10, 5, 10, 5),
@@ -98,7 +99,7 @@ class _ShowStudentDataWidgetState extends State<ShowStudentDataWidget> with Auto
                 ListView.separated(
                   padding: EdgeInsets.zero,
                   shrinkWrap: true,
-                  physics: NeverScrollableScrollPhysics(),
+                  physics: const NeverScrollableScrollPhysics(),
                   itemBuilder: (context, index) {
                     return ListTile(
                       title: Text(widget.student.permissions.elementAt(index)),

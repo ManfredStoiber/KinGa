@@ -58,8 +58,8 @@ class _PermissionItemState extends State<PermissionItem> {
                                 padding: const EdgeInsets.fromLTRB(0, 0, 0, 5),
                                 child: Column(
                                   children: [
-                                    Text(overflow: TextOverflow.ellipsis, textAlign: TextAlign.center, "${student.firstname}", style: const TextStyle(color: Colors.black),),
-                                    Text(overflow: TextOverflow.ellipsis, textAlign: TextAlign.center, "${student.lastname}", style: const TextStyle(color: Colors.black),),
+                                    Text(overflow: TextOverflow.ellipsis, textAlign: TextAlign.center, student.firstname, style: const TextStyle(color: Colors.black),),
+                                    Text(overflow: TextOverflow.ellipsis, textAlign: TextAlign.center, student.lastname, style: const TextStyle(color: Colors.black),),
                                   ],
                                 ),
                               )

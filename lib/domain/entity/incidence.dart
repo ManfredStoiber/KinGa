@@ -1,7 +1,3 @@
-import 'dart:typed_data';
-
-import 'package:kinga/util/date_utils.dart';
-
 class Incidence implements Comparable<Incidence> {
 
   String dateTime; // ISO-String for date and time

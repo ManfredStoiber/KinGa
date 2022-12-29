@@ -129,9 +129,9 @@ class ObservationsBottomSheet extends StatelessWidget {
               )
           );
         } else if (state is ObservationsLoading) {
-          return LoadingIndicator();
+          return const LoadingIndicator();
         } else {
-          return Text("TODO"); // TODO
+          return const Text("TODO"); // TODO
         }
   },
 );

@@ -51,7 +51,6 @@ class _ShowStudentScreenState extends State<ShowStudentScreen>
   final SliverOverlapAbsorberHandle tabBarHandle = SliverOverlapAbsorberHandle();
 
   final _studentService = GetIt.I<StudentService>();
-  late final ScrollController _scrollController;
   bool isScrollable = false;
   final _confettiController = ConfettiController(duration: const Duration(seconds: 5));
   BuildContext? showStudentContext;
@@ -66,7 +65,6 @@ class _ShowStudentScreenState extends State<ShowStudentScreen>
   @override
   void initState() {
     super.initState();
-    _scrollController = ScrollController();
     _confettiController.play();
 
     _tabController = TabController(length: 4, vsync: this);
@@ -570,84 +568,82 @@ class _SliverHeaderDelegate extends SliverPersistentHeaderDelegate {
                       padding: EdgeInsets.only(left: progress * 35),
                       child: Text(softWrap: false, overflow: TextOverflow.fade, "${student.firstname}${student.middlename.isNotEmpty ? " ${student.middlename}" : ""} ${student.lastname}"),
                     ),
-                    actions: [
+                    actions: const [
                     ],
                   ),
                 ),
-                Container(
-                  child: Stack(
-                    children: [
-                      Align(
-                        alignment: AlignmentGeometry.lerp(Alignment.center, Alignment.topLeft, progress)!,
-                        child: Container(
-                          padding: EdgeInsets.only(bottom: 10 * (1 - progress) + 5, top: kToolbarHeight * (1 - progress) + viewPaddingTop + 5, left: 50, right: 50),
-                          child: InkWell(
-                            onTap: () {},// => debugPickImage(context, true, student.studentId), // TOOD: remove
-                            child: Hero(
-                                tag: "hero${student.studentId}",
-                                child: () {
-                                  if (student.profileImage == null) {
-                                    return Image.asset(
-                                      'assets${Platform.pathSeparator}images${Platform.pathSeparator}squirrel.png',);
-                                  } else {
-                                    return SimpleShadow(
-                                      child: Container(
-                                        clipBehavior: Clip.antiAlias,
-                                        decoration: ShapeDecoration(
-                                          shape: ContinuousRectangleBorder(borderRadius: BorderRadius.circular(30 + (1 - progress) * 100))),
-                                          child: Image.memory(student.profileImage!
-                                        )
-                                      ),
-                                    );
-                                  }
-                                } ()
-                            ),
+                Stack(
+                  children: [
+                    Align(
+                      alignment: AlignmentGeometry.lerp(Alignment.center, Alignment.topLeft, progress)!,
+                      child: Container(
+                        padding: EdgeInsets.only(bottom: 10 * (1 - progress) + 5, top: kToolbarHeight * (1 - progress) + viewPaddingTop + 5, left: 50, right: 50),
+                        child: InkWell(
+                          onTap: () {},// => debugPickImage(context, true, student.studentId), // TOOD: remove
+                          child: Hero(
+                              tag: "hero${student.studentId}",
+                              child: () {
+                                if (student.profileImage == null) {
+                                  return Image.asset(
+                                    'assets${Platform.pathSeparator}images${Platform.pathSeparator}squirrel.png',);
+                                } else {
+                                  return SimpleShadow(
+                                    child: Container(
+                                      clipBehavior: Clip.antiAlias,
+                                      decoration: ShapeDecoration(
+                                        shape: ContinuousRectangleBorder(borderRadius: BorderRadius.circular(30 + (1 - progress) * 100))),
+                                        child: Image.memory(student.profileImage!
+                                      )
+                                    ),
+                                  );
+                                }
+                              } ()
                           ),
                         ),
                       ),
-                      ClipRect(
-                        child: Visibility(
-                          visible: GetIt.I<StudentService>().hasBirthday(student.studentId),
-                          child: Align(
-                            alignment: Alignment.topLeft,
-                            child: ConfettiWidget(
-                              blastDirection: 0,
-                              gravity: 0.05,
-                              shouldLoop: true,
-                              maxBlastForce: 5, minBlastForce: 2, numberOfParticles: 2, emissionFrequency: 0.02, confettiController: _confettiController, blastDirectionality: BlastDirectionality.directional,
-                            ),
-                          ),
-                        ),
-                      ),
-                      ClipRect(
-                        child: Visibility(
-                          visible: GetIt.I<StudentService>().hasBirthday(student.studentId),
-                          child: Align(
-                            alignment: Alignment.topRight,
-                            child: ConfettiWidget(
-                              blastDirection: pi,
-                              gravity: 0.05,
-                              maxBlastForce: 5, minBlastForce: 2, numberOfParticles: 2, emissionFrequency: 0.02, confettiController: _confettiController, blastDirectionality: BlastDirectionality.directional,
-                            ),
-                          ),
-                        ),
-                      ),
-                      Container(
-                        margin: EdgeInsets.only(right: 15.0),
+                    ),
+                    ClipRect(
+                      child: Visibility(
+                        visible: GetIt.I<StudentService>().hasBirthday(student.studentId),
                         child: Align(
-                          alignment: Alignment.bottomRight,
-                          child: Visibility(
-                            visible: GetIt.I<StudentService>().hasBirthday(student.studentId),
-                            child: InkWell(onTap: () {
-                              _confettiController.play();
-                              Future.delayed(const Duration(seconds: 1)).then((value) => _confettiController.stop());
-                            },
-                                child: SimpleShadow(opacity: 0.4, child: Image.asset('assets${Platform.pathSeparator}images${Platform.pathSeparator}cupcake.png', height: (progress * (kToolbarHeight - 5) + ((1 - progress) * 60))))),
+                          alignment: Alignment.topLeft,
+                          child: ConfettiWidget(
+                            blastDirection: 0,
+                            gravity: 0.05,
+                            shouldLoop: true,
+                            maxBlastForce: 5, minBlastForce: 2, numberOfParticles: 2, emissionFrequency: 0.02, confettiController: _confettiController, blastDirectionality: BlastDirectionality.directional,
                           ),
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                    ClipRect(
+                      child: Visibility(
+                        visible: GetIt.I<StudentService>().hasBirthday(student.studentId),
+                        child: Align(
+                          alignment: Alignment.topRight,
+                          child: ConfettiWidget(
+                            blastDirection: pi,
+                            gravity: 0.05,
+                            maxBlastForce: 5, minBlastForce: 2, numberOfParticles: 2, emissionFrequency: 0.02, confettiController: _confettiController, blastDirectionality: BlastDirectionality.directional,
+                          ),
+                        ),
+                      ),
+                    ),
+                    Container(
+                      margin: const EdgeInsets.only(right: 15.0),
+                      child: Align(
+                        alignment: Alignment.bottomRight,
+                        child: Visibility(
+                          visible: GetIt.I<StudentService>().hasBirthday(student.studentId),
+                          child: InkWell(onTap: () {
+                            _confettiController.play();
+                            Future.delayed(const Duration(seconds: 1)).then((value) => _confettiController.stop());
+                          },
+                              child: SimpleShadow(opacity: 0.4, child: Image.asset('assets${Platform.pathSeparator}images${Platform.pathSeparator}cupcake.png', height: (progress * (kToolbarHeight - 5) + ((1 - progress) * 60))))),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -685,12 +681,12 @@ class _SliverTabBarDelegate extends SliverPersistentHeaderDelegate {
       BuildContext context, double shrinkOffset, bool overlapsContent) {
     return Stack(
       children: [
-        Container(margin: EdgeInsets.only(bottom: 10), color: _backgroundColor),
+        Container(margin: const EdgeInsets.only(bottom: 10), color: _backgroundColor),
         Material(
           color: Colors.transparent,
           elevation: shrinkOffset > maxExtent - minExtent ? 1 : 0,
           child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 5),
+            padding: const EdgeInsets.symmetric(horizontal: 5),
             decoration: const BoxDecoration(
               color: ColorSchemes.backgroundColor,
               borderRadius: BorderRadius.vertical(

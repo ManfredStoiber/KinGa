@@ -9,8 +9,6 @@ class ObservationsInitial extends ObservationsState {}
 class ObservationsLoading extends ObservationsState {}
 class ObservationsLoaded extends ObservationsState {
 
-  final StudentService _studentService = GetIt.I<StudentService>();
-
   final Student student;
   late final List<Observation> observations;
   late final ObservationForm selectedObservationForm;
