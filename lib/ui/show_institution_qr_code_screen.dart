@@ -35,15 +35,15 @@ class ShowInstitutionQrCodeScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Expanded(flex: 2, child: Container()),
-            Container(padding: EdgeInsets.all(8.0), child: Text(textAlign: TextAlign.center, Strings.institutionCredentialsHint)),
+            Container(padding: const EdgeInsets.all(8.0), child: Text(textAlign: TextAlign.center, Strings.institutionCredentialsHint)),
             Expanded(flex: 1, child: Container()),
             Container(
-              margin: EdgeInsets.all(32),
+              margin: const EdgeInsets.all(32),
               color: Colors.white,
-              padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 32.0),
+              padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 32.0),
               child: Column(
                 children: [
-                  Container(padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0), child: QrImage(data: json.encode({Keys.institutionId: _institutionId, Keys.institutionPassword: _institutionPassword}))),
+                  Container(padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0), child: QrImage(data: json.encode({Keys.institutionId: _institutionId, Keys.institutionPassword: _institutionPassword}))),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Row(
@@ -54,7 +54,7 @@ class ShowInstitutionQrCodeScreen extends StatelessWidget {
                             "${Strings.institutionId}: ",
                         ),
                         Text(
-                          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                           _institutionId,
                         ),
                       ],
@@ -70,7 +70,7 @@ class ShowInstitutionQrCodeScreen extends StatelessWidget {
                             "${Strings.password}: ",
                         ),
                         Text(
-                          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                           _institutionPassword,
                         ),
                       ],
@@ -80,9 +80,31 @@ class ShowInstitutionQrCodeScreen extends StatelessWidget {
               ),
             ),
             Expanded(flex: 1, child: Container()),
-            Container(padding: EdgeInsets.all(8.0), child: Text(textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold), Strings.institutionCredentialsWarning)),
-            Expanded(flex: 2, child: Container()),
+            Container(padding: const EdgeInsets.all(8.0), child: Text(textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold), Strings.institutionCredentialsWarning)),
+            Expanded(flex: 1, child: Container()),
           ]
+        ),
+        bottomNavigationBar: ButtonBar(
+          alignment: MainAxisAlignment.end,
+          children: [
+            TextButton(
+              onPressed: () async {
+                await showDialog(context: context, builder: (context) => AlertDialog(
+                  title: const Text(Strings.institutionCredentialsConfirm),
+                  actions: [
+                    TextButton(onPressed: () => Navigator.of(context).pop(false), child: const Text(Strings.cancel)),
+                    TextButton(onPressed: () => Navigator.of(context).pop(true), child: const Text(Strings.next)),
+                  ],
+                ),).then((confirmed) {
+                  if (confirmed == true) {
+                    Navigator.of(context).pop();
+                  }
+                  return null;
+                });
+              },
+              child: const Text(Strings.next),
+            ),
+          ],
         ),
       ),
     );
