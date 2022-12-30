@@ -10,8 +10,7 @@ import 'package:kinga/domain/entity/incidence.dart';
 import 'package:kinga/domain/student_service.dart';
 import 'package:kinga/features/incidences/ui/bloc/incidences_cubit.dart';
 import 'package:kinga/features/incidences/ui/edit_incidence_dialog.dart';
-import 'package:kinga/features/incidences/ui/show_incidences_widget.dart';
-import 'package:kinga/features/incidences/ui/show_incidences_widget.dart';
+import 'package:kinga/ui/widgets/slide_menu.dart';
 import 'package:simple_shadow/simple_shadow.dart';
 
 import 'incidence_item.dart';
@@ -128,6 +127,7 @@ class ShowIncidencesWidgetState extends State<ShowIncidencesWidget> with Automat
                               child: Container(
                                 decoration: ShapeDecoration(shape: OutlineInputBorder(borderRadius: BorderRadius.circular(50), borderSide: const BorderSide(color: ColorSchemes.kingacolor, width: 0)), color: ColorSchemes.kingacolor),
                                 child: DropdownButtonFormField<String>(
+                                  style: const TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.w500),
                                   decoration: InputDecoration (
                                     isDense: true,
                                     prefixIcon: Container(padding: const EdgeInsets.fromLTRB(10, 5, 5, 5), child: Icon(size: 20, Icons.category_outlined, color: Colors.black)),
@@ -157,6 +157,7 @@ class ShowIncidencesWidgetState extends State<ShowIncidencesWidget> with Automat
                               child: Container(
                                 decoration: ShapeDecoration(shape: OutlineInputBorder(borderRadius: BorderRadius.circular(50), borderSide: const BorderSide(color: ColorSchemes.kingacolor, width: 0)), color: ColorSchemes.kingacolor),
                                 child: DropdownButtonFormField<String>(
+                                  style: const TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.w500),
                                   decoration: InputDecoration (
                                       isDense: true,
                                       prefixIcon: Container(padding: const EdgeInsets.fromLTRB(10, 5, 5, 5), child: Icon(size: 20, Icons.calendar_today, color: Colors.black)),

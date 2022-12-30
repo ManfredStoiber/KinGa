@@ -22,19 +22,24 @@ class _PermissionItemState extends State<PermissionItem> {
     return BlocBuilder<StudentsCubit, StudentsState>(
       builder: (context, state) {
         if (state is StudentsLoaded) {
+          var student = state.getStudent(widget.studentId);
           return Stack(
               children: [
                 Container(
-                    margin: const EdgeInsets.all(10),
+                    //margin: const EdgeInsets.all(10),
+                    //margin: const EdgeInsets.symmetric(vertical: 10),
                     child: ElevatedButton(
                         onPressed: widget.onPressed,
                         style: TextButton.styleFrom(
                           elevation: 0,
+                          /*
                           side: const BorderSide(color: Colors.black54),
                           shape: ContinuousRectangleBorder(
                             borderRadius: BorderRadius.circular(64.0),
                           ),
+                           */
                           backgroundColor: Colors.transparent,
+
                         ),
                         child: Column(
                             children: [
@@ -44,13 +49,19 @@ class _PermissionItemState extends State<PermissionItem> {
                                   if (profileImage == null) {
                                     return Image.asset('assets/images/squirrel.png',);
                                   } else {
-                                    return Container(margin: const EdgeInsets.only(top: 5), clipBehavior: Clip.antiAlias, decoration: ShapeDecoration(shape: ContinuousRectangleBorder(borderRadius: BorderRadius.circular(44))), child: Image.memory(fit: BoxFit.fitHeight, profileImage));
+                                    return Container(margin: const EdgeInsets.only(top: 5, left: 0, right: 0), clipBehavior: Clip.antiAlias, decoration: ShapeDecoration(shape: ContinuousRectangleBorder(borderRadius: BorderRadius.circular(44))), child: Image.memory(fit: BoxFit.fitHeight, profileImage));
                                   }
                                 } (),
                               ),
                               Container(
+                                width: double.infinity,
                                 padding: const EdgeInsets.fromLTRB(0, 0, 0, 5),
-                                child: Text(state.getStudent(widget.studentId).firstname, style: const TextStyle(color: Colors.black),),
+                                child: Column(
+                                  children: [
+                                    Text(overflow: TextOverflow.ellipsis, textAlign: TextAlign.center, "${student.firstname}", style: const TextStyle(color: Colors.black),),
+                                    Text(overflow: TextOverflow.ellipsis, textAlign: TextAlign.center, "${student.lastname}", style: const TextStyle(color: Colors.black),),
+                                  ],
+                                ),
                               )
                             ]
                         )

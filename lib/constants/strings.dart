@@ -135,7 +135,7 @@ class Strings {
   static const String confirmDeletePermission = 'Soll die Berechtigung wirklich gelöscht werden?';
   static const String confirmDiscardNewPermission = 'Soll die neue Berechtigung wirklich verworfen werden?';
   static const String createNewPermission = 'Neue Berechtigung anlegen?';
-  static const String filterAttendant = 'Anwesend';
+  static const String filterAttendant = 'Nur Anwesende';
   static const String newPermissionHint = 'Neue Berechtigung';
   static const String noPermissionsFiltered = 'Keine Berechtigung für diese Auswahl';
   static const String noPermissionsFilteredDescription = 'Oben kannst du die Filter anpassen, um andere Berechtigungen zu sehen';

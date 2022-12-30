@@ -29,8 +29,8 @@ class _ShowPermissionScreenState extends State<ShowPermissionScreen> {
 
   List<Student> students = [];
   Map<String, bool> groupSelection = {};
-  bool permitted = false;
-  bool onlyAttendantStudents = true;
+  bool permitted = true;
+  bool onlyAttendantStudents = false;
 
   @override
   void initState() {
@@ -80,11 +80,14 @@ class _ShowPermissionScreenState extends State<ShowPermissionScreen> {
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           child: Row(children: (){
-            List<Widget> chips = [];
+            List<Widget> selectedChips = [];
+            List<Widget> unselectedChips = [];
             for (var group in groupSelection.keys.toList()..sort()) {
-              chips.add(Container(
+              var chip = Container(
                 margin: const EdgeInsets.symmetric(horizontal: 5),
                 child: FilterChip(
+                  showCheckmark: false,
+                  avatar: groupSelection[group] ?? false ? const CircleAvatar(backgroundColor: Colors.transparent, foregroundColor: Colors.black, child: Icon(Icons.check)) : null,
                   selectedColor: ColorSchemes.kingacolor,
                   label: Text(group),
                   selected: groupSelection[group] ?? false,
@@ -94,9 +97,14 @@ class _ShowPermissionScreenState extends State<ShowPermissionScreen> {
                     });
                   },
                 ),
-              ));
+              );
+              if (groupSelection[group] ?? false) {
+                selectedChips.add(chip);
+              } else {
+                unselectedChips.add(chip);
+              }
             }
-            return chips;
+            return selectedChips + unselectedChips;
           }(),),
         ),
         const Divider(height: 1,),
@@ -112,21 +120,37 @@ class _ShowPermissionScreenState extends State<ShowPermissionScreen> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  FilterChip(
-                    avatar: CircleAvatar(backgroundColor: Colors.transparent, foregroundColor: Colors.black, child: permitted ? const Icon(Icons.check) : const Icon(Icons.close),),
-                    label: Text(permitted ? Strings.permitted : Strings.prohibited),
-                    backgroundColor: ColorSchemes.errorColor,
-                    selected: permitted,
-                    selectedColor: ColorSchemes.kingacolor,
-                    showCheckmark: false,
-                    onSelected: (selected) {
-                      setState(() {
-                        permitted = !permitted;
-                      });
-                    },
+                  IntrinsicWidth(
+                    child: Container(
+                      decoration: ShapeDecoration(shape: OutlineInputBorder(borderRadius: BorderRadius.circular(50), borderSide: BorderSide(color: permitted ? ColorSchemes.kingacolor : ColorSchemes.errorColor, width: 0)), color: permitted ? ColorSchemes.kingacolor : ColorSchemes.errorColor),
+                      child: DropdownButtonFormField<bool>(
+                        style: const TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.w500),
+                        decoration: InputDecoration (
+                            isDense: true,
+                            prefixIcon: Container(padding: const EdgeInsets.fromLTRB(4, 3, 2, 5), child: Icon(size: 24, permitted ? Icons.check : Icons.close, color: Colors.black)),
+                            prefixIconConstraints: const BoxConstraints(maxHeight: 30),
+                            enabledBorder: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(16)), borderSide: BorderSide(color: Colors.transparent)),
+                            focusedBorder: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(16)), borderSide: BorderSide(color: Colors.transparent)),
+                            border: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(16)), borderSide: BorderSide(color: Colors.transparent)),
+                            contentPadding: const EdgeInsets.only(left: 0, right: 0, top: 4, bottom: 4)
+                        ),
+                        alignment: Alignment.center,
+                        value: permitted,
+                        items: const [
+                          DropdownMenuItem(value: true, child: Text(Strings.permitted)),
+                          DropdownMenuItem(value: false, child: Text(Strings.prohibited)),
+                        ],
+                        onChanged: (value) {
+                          setState(() {
+                            permitted = value ?? permitted;
+                          });
+                        },
+                      ),
+                    ),
                   ),
                   FilterChip(
-                    //avatar: CircleAvatar(backgroundColor: Colors.transparent, foregroundColor: Colors.black, child: permitted ? Icon(Icons.check) : Icon(Icons.close),),
+                    showCheckmark: false,
+                    avatar: onlyAttendantStudents ? const CircleAvatar(backgroundColor: Colors.transparent, foregroundColor: Colors.black, child: Icon(Icons.check)) : null,
                     label: const Text(Strings.filterAttendant),
                     selected: onlyAttendantStudents,
                     selectedColor: ColorSchemes.kingacolor,
@@ -163,7 +187,7 @@ class _ShowPermissionScreenState extends State<ShowPermissionScreen> {
               );
             }
 
-            return GridView(gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
+            return GridView(gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(mainAxisSpacing: 10, crossAxisCount: 3),
               children: list,
             );
           } (),
