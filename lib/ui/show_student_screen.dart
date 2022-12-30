@@ -24,6 +24,7 @@ import 'package:kinga/features/observations/show_observations_widget.dart';
 import 'package:kinga/ui/bloc/students_cubit.dart';
 import 'package:kinga/ui/edit_student_screen.dart';
 import 'package:kinga/features/observations/ui/observation_screen.dart';
+import 'package:kinga/ui/emergency_bottom_sheet.dart';
 import 'package:kinga/ui/show_student_data_widget.dart';
 import 'package:kinga/ui/widgets/animated_tab_bar.dart';
 import 'package:kinga/ui/widgets/expandable_fab.dart';
@@ -263,7 +264,34 @@ class _ShowStudentScreenState extends State<ShowStudentScreen>
           ),
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-        bottomNavigationBar: BottomAppBar(child: Container(decoration: BoxDecoration(color: ColorSchemes.backgroundColor, boxShadow: [/*if (isScrollable) */BoxShadow(offset: const Offset(0, -1), blurRadius: 0, color: Colors.grey.withAlpha(100))]), height: kToolbarHeight - 10)),
+        bottomNavigationBar: Container(color: ColorSchemes.backgroundColor,
+          child: ClipRRect(borderRadius: const BorderRadius.vertical(top: Radius.circular(30.0)),
+            child: BottomAppBar(color: ColorSchemes.errorColor, shape: const CircularNotchedRectangle(), notchMargin: 5.0, child: SizedBox(height: kToolbarHeight - 10,
+              child: IconButton(
+                icon: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(padding: const EdgeInsets.only(right: 15), child: const Icon(Icons.contact_phone, color: Colors.white,)),
+                    const Text(Strings.contact, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),),
+                  ],
+                ),
+                onPressed: () {
+                  showModalBottomSheet(
+                    context: context,
+                    builder: (context) {
+                      return EmergencyBottomSheet(student.caregivers);
+                    },
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.vertical(
+                        top: Radius.circular(30)
+                      )
+                    ),
+                    isScrollControlled: true,
+                  );
+              },),
+            )),
+          ),
+        ),
         floatingActionButton: FloatingActionButton(
             heroTag: 'fabae',
             onPressed: () {
