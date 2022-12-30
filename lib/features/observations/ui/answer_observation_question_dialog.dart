@@ -10,8 +10,10 @@ import 'package:kinga/ui/widgets/loading_indicator_dialog.dart';
 class AnswerObservationQuestionDialog extends StatefulWidget {
   final String studentId;
   final Question question;
+  final int? selectedAnswerInitial;
+  final String? noteInitial;
 
-  const AnswerObservationQuestionDialog(this.studentId, this.question, {Key? key}) : super(key: key);
+  const AnswerObservationQuestionDialog(this.studentId, this.question, {Key? key, this.selectedAnswerInitial, this.noteInitial}) : super(key: key);
 
   @override
   State<AnswerObservationQuestionDialog> createState() => _AnswerObservationQuestionDialogState();
@@ -25,7 +27,10 @@ class _AnswerObservationQuestionDialogState extends State<AnswerObservationQuest
 
   @override
   void initState() {
-    selectedAnswer = widget.question.possibleAnswers.keys.first;
+    selectedAnswer = widget.selectedAnswerInitial != null ? widget.selectedAnswerInitial! : widget.question.possibleAnswers.keys.first;
+    if (widget.noteInitial != null) {
+      _notesController.text = widget.noteInitial!;
+    }
     super.initState();
   }
 
@@ -38,7 +43,7 @@ class _AnswerObservationQuestionDialogState extends State<AnswerObservationQuest
       titlePadding: EdgeInsets.zero,
       title: Container(
         padding: const EdgeInsets.all(15),
-        color: ColorSchemes.absentColor.withAlpha(50),
+        color: ColorSchemes.kingaGrey.withAlpha(50),
         child: Column(
           children: [
             Text(widget.question.part.title, style: Theme.of(context).textTheme.titleLarge,),

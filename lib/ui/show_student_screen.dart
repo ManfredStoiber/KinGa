@@ -469,7 +469,7 @@ class _SliverHeaderDelegate extends SliverPersistentHeaderDelegate {
 
   @override
   Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
-    double progress = min(max(shrinkOffset / (maxExtent - minExtent), 0), 1);
+    final progress = min(max(shrinkOffset / (maxExtent - minExtent), 0), 1);
     return Container(
       color: _backgroundColor,
       child: LayoutBuilder(

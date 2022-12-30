@@ -71,6 +71,7 @@ class MyApp extends StatelessWidget {
                         backgroundColor: ColorSchemes.backgroundColor,
                         errorColor: ColorSchemes.errorColor,
                         cardTheme: CardTheme.of(context).copyWith(
+                          clipBehavior: Clip.antiAlias,
                           shape: RoundedRectangleBorder(
                             side: const BorderSide(
                               color: ColorSchemes.kingaGrey,
