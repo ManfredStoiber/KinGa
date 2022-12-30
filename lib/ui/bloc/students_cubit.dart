@@ -74,4 +74,8 @@ class StudentsCubit extends Cubit<StudentsState> {
     _studentService.createAbsence(studentId, absence);
   }
 
+  Future<void> updateAbsence(String studentId, Absence oldAbsence, Absence newAbsence) async {
+    _studentService.updateAbsence(studentId, oldAbsence, newAbsence);
+  }
+
 }

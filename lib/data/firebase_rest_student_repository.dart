@@ -88,4 +88,10 @@ class FirebaseRestStudentRepository implements StudentRepository {
     throw UnimplementedError();
   }
 
+  @override
+  Future<void> updateAbsence(String studentId, Absence oldAbsence, Absence newAbsence) {
+    // TODO: implement updateAbsence
+    throw UnimplementedError();
+  }
+
 }

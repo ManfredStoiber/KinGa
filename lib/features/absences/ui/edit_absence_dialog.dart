@@ -3,24 +3,33 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kinga/constants/strings.dart';
 import 'package:kinga/domain/entity/absence.dart';
 import 'package:kinga/ui/bloc/students_cubit.dart';
+import 'package:kinga/ui/widgets/loading_indicator_dialog.dart';
 import 'package:kinga/util/date_utils.dart';
 
-class AbsenceDialog extends StatelessWidget {
+class EditAbsenceDialog extends StatefulWidget {
 
   final String studentId;
-  final DateTime selectedDay;
+  final Absence absence;
 
-  const AbsenceDialog(this.studentId, this.selectedDay, {Key? key}) : super(key: key);
+  const EditAbsenceDialog(this.studentId, this.absence, {Key? key}) : super(key: key);
+
+  @override
+  State<EditAbsenceDialog> createState() => _EditAbsenceDialogState();
+}
+
+class _EditAbsenceDialogState extends State<EditAbsenceDialog> {
+
+  String _selectedReason = Strings.sicknote;
 
   @override
   Widget build(BuildContext context) {
-    DateTime dateFrom = selectedDay;
-    DateTime dateUntil = selectedDay;
+    DateTime dateFrom = DateTime.parse(widget.absence.from);
+    DateTime dateUntil = DateTime.parse(widget.absence.until);
     TextEditingController dateFromController = TextEditingController(text: IsoDateUtils.getGermanDateFromDateTime(dateFrom));
     TextEditingController dateUntilController = TextEditingController(text: IsoDateUtils.getGermanDateFromDateTime(dateUntil));
 
-    DateTime firstDay = selectedDay.subtract(const Duration(days: 365));
-    DateTime lastDay = selectedDay.add(const Duration(days: 365));
+    DateTime firstDay = dateFrom.subtract(const Duration(days: 365));
+    DateTime lastDay = dateFrom.add(const Duration(days: 365));
 
     return AlertDialog(
       title: const Text(Strings.absence),
@@ -31,12 +40,13 @@ class AbsenceDialog extends StatelessWidget {
         ),
         TextButton(
           onPressed: () {
+            LoadingIndicatorDialog.show(context);
             String dateFromFormatted = IsoDateUtils.getIsoDateFromGermanDate(dateFromController.text);
             String dateUntilFormatted = IsoDateUtils.getIsoDateFromGermanDate(dateUntilController.text);
-            BlocProvider.of<StudentsCubit>(context).createAbsence(studentId, Absence(dateFromFormatted, dateUntilFormatted, true)).then((value) {
+            BlocProvider.of<StudentsCubit>(context).updateAbsence(widget.studentId, widget.absence, Absence(dateFromFormatted, dateUntilFormatted, _selectedReason)).then((value) {
               Navigator.of(context).pop();
-            }); // TODO: sickness switch
-            // TODO: What if network connection is slow and you close dialog manually? Will the next element of Navigator be popped then?
+              Navigator.of(context).pop();
+            });
           },
           child: const Text(Strings.enter),
         )
@@ -101,6 +111,20 @@ class AbsenceDialog extends StatelessWidget {
                     ),
                   )),
             ],
+          ),
+          DropdownButtonFormField<String>(
+            value: _selectedReason,
+            items: const [DropdownMenuItem(value: Strings.sicknote, child: Text(Strings.sicknote)), DropdownMenuItem(value: Strings.vacation, child: Text(Strings.vacation)), DropdownMenuItem(value: Strings.other, child: Text(Strings.other))],
+            onChanged: (String? newValue) {
+              setState(() {
+                _selectedReason = newValue!;
+              });
+            },
+            decoration: const InputDecoration(
+                labelText: Strings.reason,
+                floatingLabelBehavior: FloatingLabelBehavior.always,
+                prefixIcon: Icon(Icons.category_outlined)
+            ),
           ),
         ],
       ),

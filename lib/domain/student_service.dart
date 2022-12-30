@@ -203,6 +203,10 @@ class StudentService {
     _studentRepository.createAbsence(studentId, absence);
   }
 
+  Future<void> updateAbsence(String studentId, Absence oldAbsence, Absence newAbsence) async {
+    _studentRepository.updateAbsence(studentId, oldAbsence, newAbsence);
+  }
+
   Future<void> removeAbsence(String studentId, Absence absence) async {
     _studentRepository.deleteAbsence(studentId, absence);
   }

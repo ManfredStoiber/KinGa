@@ -256,6 +256,14 @@ class FirebaseStudentRepository implements StudentRepository {
   }
 
   @override
+  Future<void> updateAbsence(String studentId, Absence oldAbsence, Absence newAbsence) async {
+    Student s = GetIt.I<StudentService>().getStudent(studentId);
+    s.absences.remove(oldAbsence);
+    s.absences.add(newAbsence);
+    updateStudent(s);
+  }
+
+  @override
   Future<void> deleteAbsence(String studentId, Absence absence) async {
     Student s = GetIt.I<StudentService>().getStudent(studentId);
     s.absences.remove(absence);

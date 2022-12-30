@@ -5,8 +5,8 @@ import 'package:kinga/constants/keys.dart';
 import 'package:kinga/constants/strings.dart';
 
 import 'package:kinga/domain/entity/absence.dart';
-import 'package:kinga/features/absences/ui/absence_dialog.dart';
 import 'package:kinga/features/absences/ui/bloc/absences_cubit.dart';
+import 'package:kinga/features/absences/ui/create_absence_dialog.dart';
 import 'package:kinga/features/absences/ui/show_absences_widget.dart';
 import 'package:kinga/ui/widgets/loading_indicator.dart';
 import 'package:kinga/util/date_utils.dart';
@@ -32,7 +32,7 @@ class AbsenceScreen extends StatelessWidget {
               child: const Icon(Icons.add),
               onPressed: () {
                 if (state is AbsencesLoaded) {
-                  showDialog(context: context, builder: (context) => AbsenceDialog(state.student.studentId, state.focusedDay), );
+                  showDialog(context: context, builder: (context) => CreateAbsenceDialog(state.student.studentId, state.focusedDay), );
                 }
               },
             );

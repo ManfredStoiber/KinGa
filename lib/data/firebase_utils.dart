@@ -21,7 +21,7 @@ class FirebaseUtils {
       absences.add(Absence(
         absence['from'],
         absence['until'],
-        absence['sickness'],
+        absence['reason'] ?? "",
       ));
     }
 
@@ -96,7 +96,7 @@ class FirebaseUtils {
       absences.add({
         'from': absence.from,
         'until': absence.until,
-        'sickness': absence.sickness
+        'reason': absence.reason
       });
     }
     map['absences'] = absences;

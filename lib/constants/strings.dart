@@ -65,7 +65,7 @@ class Strings {
   static const String newGroupInfo = 'Neue Gruppe erstellen?';
   static const String newLabelnameInfo = 'Neuen Labelnamen festlegen?';
   static const String next = 'Weiter';
-  static const String noAbsences = 'Keine Abwesenheiten für diesen Tag';
+  static const String noAbsences = 'Keine Abwesenheiten';
   static const String noAbsencesDescription = 'Unten rechts kannst du neue Abwesenheiten hinzufügen';
   static const String noPermissionsCreateStudent = 'Neue Berechtigungen können im Hauptmenü hinzugefügt werden';
   static const String notRegistered = 'Ich benutze KinGa das erste Mal';
@@ -116,6 +116,10 @@ class Strings {
   static const String errorUserDisabled = 'Das angegebene Benutzerkonto wurde vorübergehend deaktiviert. Bitte kontaktiere den Support, damit wir dir weiterhelfen können';
   static const String errorUserNotFound = 'Unter der angegebenen E-Mail-Adresse wurde noch kein Benutzerkonto erstellt';
   static const String errorWeakPassword = 'Das eingegebene Passwort ist zu schwach. Das Passwort muss mindestens 6 Zeichen lang sein und sollte Sonderzeichen sowie Groß- und Kleinbuchstaben enthalten';
+
+  // absences
+  static const String sicknote = 'Krankheit';
+  static const String vacation = 'Urlaub';
 
   // incidences
   static const String confirmDeleteIncidence = 'Soll die Notiz wirklich gelöscht werden?';

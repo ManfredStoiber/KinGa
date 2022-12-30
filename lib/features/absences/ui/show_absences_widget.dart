@@ -4,7 +4,9 @@ import 'package:kinga/constants/colors.dart';
 import 'package:kinga/constants/strings.dart';
 import 'package:kinga/domain/entity/absence.dart';
 import 'package:kinga/features/absences/ui/bloc/absences_cubit.dart';
+import 'package:kinga/features/absences/ui/edit_absence_dialog.dart';
 import 'package:kinga/ui/widgets/loading_indicator.dart';
+import 'package:kinga/ui/widgets/slide_menu.dart';
 import 'package:kinga/util/date_utils.dart';
 import 'package:simple_shadow/simple_shadow.dart';
 
@@ -35,18 +37,86 @@ class _ShowAbsencesWidgetState extends State<ShowAbsencesWidget> {
               ],
             );
           } else {
+            onDelete(index) {
+              showDialog(context: context, builder: (context) => AlertDialog(
+                title: const Text(Strings.removeAbsence),
+                actions: [
+                  TextButton(onPressed: () {
+                    Navigator.of(context).pop(false);
+                  }, child: const Text(Strings.cancel)),
+                  TextButton(onPressed: () {
+                    Navigator.of(context).pop(true);
+                  }, child: const Text(Strings.confirm)),
+                ],
+              ),).then((confirmed) {
+                if (confirmed ?? false) {
+                  cubit.removeAbsence(widget.studentId, state.selectedAbsences.elementAt(index));
+                }
+              });
+            }
+            onEdit(index) {
+              showDialog(context: context, builder: (context) => EditAbsenceDialog(widget.studentId, state.selectedAbsences.elementAt(index)),);
+            }
             return ListView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               padding: const EdgeInsets.all(10),
               itemCount: state.selectedAbsences.length,
-              itemBuilder: (context, index) => Card(
+              itemBuilder: (context, index) => SlideMenu(
+                key: UniqueKey(),
+                menuItems: [
+                  Container(
+                    padding: const EdgeInsets.fromLTRB(0, 5, 5, 5),
+                    margin: Theme
+                        .of(context)
+                        .cardTheme
+                        .margin,
+                    child: ElevatedButton(
+                        clipBehavior: Clip.antiAlias,
+                        style: ButtonStyle(
+                            backgroundColor: MaterialStateProperty.all(
+                                ColorSchemes.kingacolor),
+                            shape: MaterialStateProperty.all(
+                                RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                )
+                            )
+                        ),
+                        onLongPress: () => onEdit(index),
+                        onPressed: () => onEdit(index),
+                        child: const Icon(Icons.edit)
+                    ),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.fromLTRB(0, 5, 5, 5),
+                    margin: Theme
+                        .of(context)
+                        .cardTheme
+                        .margin,
+                    child: ElevatedButton(
+                        clipBehavior: Clip.antiAlias,
+                        style: ButtonStyle(
+                            backgroundColor: MaterialStateProperty.all(
+                                ColorSchemes.errorColor),
+                            shape: MaterialStateProperty.all(
+                                RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                )
+                            )
+                        ),
+                        onLongPress: () => onDelete(index),
+                        onPressed: () => onDelete(index),
+                        child: const Icon(Icons.delete)
+                    ),
+                  ),
+                ],
+                child: Card(
                   child: Container(
-                    padding: const EdgeInsets.only(left: 10),
+                    padding: const EdgeInsets.symmetric(horizontal: 15.0),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        IntrinsicWidth(
+                        Expanded(
                           child: TextField(
                             readOnly: true,
                             controller: TextEditingController(text: IsoDateUtils.getGermanDateFromIsoDate(state.selectedAbsences.elementAt(index).from)),
@@ -57,7 +127,7 @@ class _ShowAbsencesWidgetState extends State<ShowAbsencesWidget> {
                             ),
                           ),
                         ),
-                        IntrinsicWidth(
+                        Expanded(
                           child: TextField(
                             readOnly: true,
                             controller: TextEditingController(text: IsoDateUtils.getGermanDateFromIsoDate(state.selectedAbsences.elementAt(index).until)),
@@ -68,10 +138,10 @@ class _ShowAbsencesWidgetState extends State<ShowAbsencesWidget> {
                             ),
                           ),
                         ),
-                        IntrinsicWidth(
+                        Expanded(
                           child: TextField(
                             readOnly: true,
-                            controller: TextEditingController(text: state.selectedAbsences.elementAt(index).sickness ? "Krankmeldung" : "Urlaub"), // TODO
+                            controller: TextEditingController(text: state.selectedAbsences.elementAt(index).reason),
                             decoration: const InputDecoration(
                               border: InputBorder.none,
                               enabled: false,
@@ -79,30 +149,10 @@ class _ShowAbsencesWidgetState extends State<ShowAbsencesWidget> {
                             ),
                           ),
                         ),
-                        IconButton(onPressed: () {
-                          showDialog(context: context, builder: (context) => AlertDialog(
-                            title: const Text(Strings.removeAbsence),
-                            actions: [
-                              TextButton(onPressed: () {
-                                Navigator.of(context).pop(false);
-                              }, child: const Text(Strings.cancel)),
-                              TextButton(onPressed: () {
-                                Navigator.of(context).pop(true);
-                              }, child: const Text(Strings.confirm)),
-                            ],
-                          ),).then((confirmed) {
-                            if (confirmed ?? false) {
-                              cubit.removeAbsence(widget.studentId, state.selectedAbsences.elementAt(index));
-                            }
-                          });
-                        },
-                            icon: const Icon(
-                              Icons.delete_forever,
-                              color: ColorSchemes.errorColor,
-                            ))
                       ],
                     ),
-                  )
+                  ),
+                ),
               ),
             );
 
@@ -186,4 +236,5 @@ class _ShowAbsencesWidgetState extends State<ShowAbsencesWidget> {
       },
     );
   }
+
 }

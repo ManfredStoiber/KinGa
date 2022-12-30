@@ -40,6 +40,7 @@ class _ShowStudentDataWidgetState extends State<ShowStudentDataWidget> with Auto
             children: [
               if (widget.student.caregivers.isNotEmpty)
                 ListView.separated(
+                    padding: EdgeInsets.zero,
                     physics: const NeverScrollableScrollPhysics(),
                     shrinkWrap: true,
                     itemBuilder: (context, index) {
@@ -82,15 +83,16 @@ class _ShowStudentDataWidgetState extends State<ShowStudentDataWidget> with Auto
               title: const Text(Strings.permission),
               children: [
                 ListView.separated(
-                    shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
-                    itemBuilder: (context, index) {
-                      return ListTile(
-                        title: Text(widget.student.permissions.elementAt(index)),
-                      );
-                    },
-                    separatorBuilder: (context, index) => const Divider(height: 1,),
-                    itemCount: widget.student.permissions.length
+                  padding: EdgeInsets.zero,
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
+                  itemBuilder: (context, index) {
+                    return ListTile(
+                      title: Text(widget.student.permissions.elementAt(index)),
+                    );
+                  },
+                  separatorBuilder: (context, index) => const Divider(height: 1,),
+                  itemCount: widget.student.permissions.length
                 )
               ],
             ),
