@@ -18,7 +18,7 @@ import 'package:kinga/domain/student_service.dart';
 import 'package:kinga/features/absences/ui/absence_screen.dart';
 import 'package:kinga/features/absences/ui/bloc/absences_cubit.dart';
 import 'package:kinga/features/absences/ui/show_absences_widget.dart';
-import 'package:kinga/features/incidences/ui/incidence_dialog.dart';
+import 'package:kinga/features/incidences/ui/create_incidence_dialog.dart';
 import 'package:kinga/features/incidences/ui/show_incidences_widget.dart';
 import 'package:kinga/features/observations/show_observations_widget.dart';
 import 'package:kinga/ui/bloc/students_cubit.dart';
@@ -270,7 +270,7 @@ class _ShowStudentScreenState extends State<ShowStudentScreen>
               switch(_tabIndex) {
                 case 0:
                   showDialog<Incidence>(context: context, builder: (context) =>
-                      IncidenceDialog(
+                      CreateIncidenceDialog(
                           student.studentId
                       ),).then((Incidence? value) {
                         if (value != null) {

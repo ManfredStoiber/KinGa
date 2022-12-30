@@ -9,6 +9,7 @@ import 'package:kinga/constants/strings.dart';
 import 'package:kinga/domain/entity/incidence.dart';
 import 'package:kinga/domain/student_service.dart';
 import 'package:kinga/features/incidences/ui/bloc/incidences_cubit.dart';
+import 'package:kinga/features/incidences/ui/edit_incidence_dialog.dart';
 import 'package:kinga/features/incidences/ui/show_incidences_widget.dart';
 import 'package:kinga/features/incidences/ui/show_incidences_widget.dart';
 import 'package:simple_shadow/simple_shadow.dart';
@@ -272,6 +273,27 @@ class _AnimatedSlideMenuState extends State<AnimatedSlideMenu> with AutomaticKee
               clipBehavior: Clip.antiAlias,
               style: ButtonStyle(
                   backgroundColor: MaterialStateProperty.all(
+                      ColorSchemes.kingacolor),
+                  shape: MaterialStateProperty.all(
+                      RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      )
+                  )
+              ),
+              onLongPress: onEdit,
+              onPressed: onEdit,
+              child: const Icon(Icons.edit)
+          ),
+        ),Container(
+          padding: const EdgeInsets.fromLTRB(0, 5, 5, 5),
+          margin: Theme
+              .of(context)
+              .cardTheme
+              .margin,
+          child: ElevatedButton(
+              clipBehavior: Clip.antiAlias,
+              style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all(
                       ColorSchemes.errorColor),
                   shape: MaterialStateProperty.all(
                       RoundedRectangleBorder(
@@ -288,6 +310,12 @@ class _AnimatedSlideMenuState extends State<AnimatedSlideMenu> with AutomaticKee
           child: IncidenceItem(widget.studentId, (BlocProvider.of<IncidencesCubit>(context).state as IncidencesLoaded).incidences.elementAt(widget.index))
       ),
     );
+  }
+
+  void onEdit() {
+    Incidence incidenceToEdit = (BlocProvider.of<IncidencesCubit>(context).state as IncidencesLoaded).incidences
+        .elementAt(widget.index);
+    showDialog(context: context, builder: (context) => EditIncidenceDialog(widget.studentId, incidenceToEdit));
   }
 
   void onDelete() {

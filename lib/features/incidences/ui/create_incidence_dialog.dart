@@ -5,16 +5,16 @@ import 'package:kinga/domain/entity/incidence.dart';
 import 'package:kinga/domain/student_service.dart';
 import 'package:kinga/util/date_utils.dart';
 
-class IncidenceDialog extends StatefulWidget {
-  const IncidenceDialog(this.studentId, {Key? key}) : super(key: key);
+class CreateIncidenceDialog extends StatefulWidget {
+  const CreateIncidenceDialog(this.studentId, {Key? key}) : super(key: key);
 
   final String studentId;
 
   @override
-  State<IncidenceDialog> createState() => _IncidenceDialogState();
+  State<CreateIncidenceDialog> createState() => _CreateIncidenceDialogState();
 }
 
-class _IncidenceDialogState extends State<IncidenceDialog> {
+class _CreateIncidenceDialogState extends State<CreateIncidenceDialog> {
   final TextEditingController _timeController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   final GlobalKey<FormState> descriptionKey = GlobalKey<FormState>();

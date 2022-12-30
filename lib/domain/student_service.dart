@@ -65,6 +65,10 @@ class StudentService {
     return _studentRepository.createIncidence(studentId, incidence);
   }
 
+  Future<void> updateIncidence(String studentId, Incidence oldIncidence, Incidence newIncidence) async {
+    return _studentRepository.updateIncidence(studentId, oldIncidence, newIncidence);
+  }
+
   Future<void> deleteIncidence(String studentId, Incidence incidence) async {
     return _studentRepository.deleteIncidence(studentId, incidence);
   }

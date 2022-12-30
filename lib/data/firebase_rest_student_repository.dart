@@ -94,4 +94,10 @@ class FirebaseRestStudentRepository implements StudentRepository {
     throw UnimplementedError();
   }
 
+  @override
+  Future<void> updateIncidence(String studentId, Incidence oldIncidence, Incidence newIncidence) {
+    // TODO: implement updateIncidence
+    throw UnimplementedError();
+  }
+
 }

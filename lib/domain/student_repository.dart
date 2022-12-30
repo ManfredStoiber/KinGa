@@ -18,5 +18,6 @@ abstract class StudentRepository {
   Future<void> updateAbsence(String studentId, Absence oldAbsence, Absence newAbsence);
   Future<void> deleteAbsence(String studentId, Absence absence);
   Future<void> createIncidence(String studentId, Incidence incidence);
+  Future<void> updateIncidence(String studentId, Incidence oldIncidence, Incidence newIncidence);
   Future<void> deleteIncidence(String studentId, Incidence incidence);
 }
