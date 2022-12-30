@@ -91,7 +91,7 @@ class _ShowStudentScreenState extends State<ShowStudentScreen>
 
     List<String> finishedShowcases = GetIt.instance.get<StreamingSharedPreferences>().getStringList(Keys.finishedShowcases, defaultValue: []).getValue();
     if (!finishedShowcases.contains('showStudentScreen')) {
-      showcases = [showIncidenceWidgetKey, createIncidenceKey, showAbsencesWidgetKey, createAbsenceKey, showStudentDataKey, editStudentDataKey, showObservationsWidgetKey, editObservationsKey, emergencyContactsKey];
+      showcases = [showIncidenceWidgetKey, createIncidenceKey, showObservationsWidgetKey, editObservationsKey, showAbsencesWidgetKey, createAbsenceKey, showStudentDataKey, editStudentDataKey, emergencyContactsKey];
     }
 
     if (showcases.isNotEmpty) {
@@ -170,6 +170,14 @@ class _ShowStudentScreenState extends State<ShowStudentScreen>
                                 ),
                                 Tab(
                                     icon: Showcase(
+                                        key: showObservationsWidgetKey,
+                                        description: Strings.showObservationsWidgetTooltip,
+                                        targetPadding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+                                        child: const Icon(Icons.auto_graph)),
+                                    text: Strings.tabObservations
+                                ),
+                                Tab(
+                                    icon: Showcase(
                                       key: showAbsencesWidgetKey,
                                       description: Strings.showAbsencesWidgetTooltip,
                                       targetPadding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
@@ -183,14 +191,6 @@ class _ShowStudentScreenState extends State<ShowStudentScreen>
                                       targetPadding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
                                       child: const Icon(Icons.info_outline)),
                                     text: Strings.tabStudentData
-                                ),
-                                Tab(
-                                    icon: Showcase(
-                                      key: showObservationsWidgetKey,
-                                      description: Strings.showObservationsWidgetTooltip,
-                                      targetPadding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
-                                      child: const Icon(Icons.auto_graph)),
-                                    text: Strings.tabObservations
                                 ),
                               ],
                             ),
@@ -218,12 +218,12 @@ class _ShowStudentScreenState extends State<ShowStudentScreen>
 
                             ),
                             //ListView.builder(shrinkWrap: true, physics: NeverScrollableScrollPhysics(), itemCount: 30, itemExtent: 48.0, itemBuilder: (context, index) => Text("Test $index"),),
+                            ShowObservationsWidget(widget.studentId),
                             BlocProvider(
-                      create: (context) => AbsencesCubit(widget.studentId, DateTime.now()),
-                      child: ShowAbsencesWidget(widget.studentId, DateTime.now()),
-                    ),
-                    ShowStudentDataWidget(student),
-                    ShowObservationsWidget(widget.studentId),
+                              create: (context) => AbsencesCubit(widget.studentId, DateTime.now()),
+                              child: ShowAbsencesWidget(widget.studentId, DateTime.now()),
+                            ),
+                            ShowStudentDataWidget(student),
                   ].map((Widget w) {
                     return SafeArea(
                       top: false,
@@ -273,20 +273,20 @@ class _ShowStudentScreenState extends State<ShowStudentScreen>
                       IncidenceDialog(
                           student.studentId
                       ),).then((Incidence? value) {
-                    if (value != null) {
+                        if (value != null) {
 
-                            }
-                          });
-                          break;
-                        case 1:
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => AbsenceScreen(student.studentId)));
-                          break;
-                        case 2:
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => EditStudentScreen(student: student,)));
-                          break;
-                        case 3:
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => ObservationScreen(student.studentId)));
-                          break;
+                          }
+                        });
+                        break;
+                    case 1:
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => ObservationScreen(student.studentId)));
+                      break;
+                    case 2:
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => AbsenceScreen(student.studentId)));
+                      break;
+                    case 3:
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => EditStudentScreen(student: student,)));
+                      break;
                       }
                     },
                     child: Stack(
@@ -306,6 +306,24 @@ class _ShowStudentScreenState extends State<ShowStudentScreen>
                               children: [
                                 Visibility(
                                   visible: _tabIndex == 1,
+                              child: Showcase(
+                                  key: editObservationsKey,
+                                  description: Strings.editObservationsTooltip,
+                                  targetShapeBorder: const CircleBorder(),
+                                  targetPadding: const EdgeInsets.all(15),
+                                  child: const Icon(Icons.edit)
+                                  ),
+                                ),
+                                const Icon(Icons.edit)
+                              ],
+                            )
+                        ),
+                        FadeTransition(
+                            opacity: Tween(begin: 0.0, end: 1.0).animate(ShiftingAnimation(_tabController, 2)),
+                            child: Stack(
+                              children: [
+                                Visibility(
+                                  visible: _tabIndex == 2,
                                   child: Showcase(
                                     key: createAbsenceKey,
                                     description: Strings.createAbsenceTooltip,
@@ -319,32 +337,14 @@ class _ShowStudentScreenState extends State<ShowStudentScreen>
                             )
                         ),
                         FadeTransition(
-                            opacity: Tween(begin: 0.0, end: 1.0).animate(ShiftingAnimation(_tabController, 2)),
-                            child: Stack(
-                              children: [
-                                Visibility(
-                                  visible: _tabIndex == 2,
-                                  child: Showcase(
-                                    key: editStudentDataKey,
-                                    description: Strings.editStudentDataTooltip,
-                                    targetShapeBorder: const CircleBorder(),
-                                    targetPadding: const EdgeInsets.all(15),
-                                    child: const Icon(Icons.edit)
-                                  ),
-                                ),
-                                const Icon(Icons.edit)
-                              ],
-                            )
-                        ),
-                        FadeTransition(
                             opacity: Tween(begin: 0.0, end: 1.0).animate(ShiftingAnimation(_tabController, 3)),
                             child: Stack(
                               children: [
                                 Visibility(
                                   visible: _tabIndex == 3,
                                   child: Showcase(
-                                    key: editObservationsKey,
-                                    description: Strings.editObservationsTooltip,
+                                    key: editStudentDataKey,
+                                    description: Strings.editStudentDataTooltip,
                                     targetShapeBorder: const CircleBorder(),
                                     targetPadding: const EdgeInsets.all(15),
                                     child: const Icon(Icons.edit)
