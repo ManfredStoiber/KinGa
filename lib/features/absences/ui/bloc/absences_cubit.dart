@@ -17,14 +17,14 @@ class AbsencesCubit extends Cubit<AbsencesState> {
 
   String studentId;
 
-  AbsencesCubit(this.studentId) : super(AbsencesInitial()) {
+  AbsencesCubit(this.studentId, selectedDayFrom, [selectedDayUntil]) : super(AbsencesInitial()) {
     emit(AbsencesLoading());
-    emit(AbsencesLoaded(_studentService.students.firstWhere((student) => student.studentId == studentId), DateTime.now()));
+    emit(AbsencesLoaded(_studentService.students.firstWhere((student) => student.studentId == studentId), selectedDayFrom, selectedDayUntil));
     _streamSubscription = _studentService.watchStudents().listen((students) {
       if (state is AbsencesLoaded) {
         Student? student = students.cast<Student?>().firstWhere((student) => student!.studentId == studentId, orElse: () => null);
         if (student != null) {
-          emit(AbsencesLoaded(student, (state as AbsencesLoaded).selectedDay));
+          emit(AbsencesLoaded(student, (state as AbsencesLoaded).selectedDayFrom, (state as AbsencesLoaded).selectedDayUntil));
         } else {
           emit(AbsencesError());
         }
@@ -40,7 +40,7 @@ class AbsencesCubit extends Cubit<AbsencesState> {
 
   void changeSelectedDay(DateTime selectedDay) {
     if (state is AbsencesLoaded) {
-      emit(AbsencesLoaded((state as AbsencesLoaded).student, selectedDay));
+      emit(AbsencesLoaded((state as AbsencesLoaded).student, selectedDay, selectedDay));
     }
   }
 

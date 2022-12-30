@@ -9,9 +9,11 @@ import 'package:kinga/util/date_utils.dart';
 import 'package:simple_shadow/simple_shadow.dart';
 
 class ShowAbsencesWidget extends StatefulWidget {
-  const ShowAbsencesWidget(this.studentId, {Key? key}) : super(key: key);
+  const ShowAbsencesWidget(this.studentId, this.selectedDayFrom, {Key? key, this.selectedDayUntil}) : super(key: key);
 
   final String studentId;
+  final DateTime selectedDayFrom;
+  final DateTime? selectedDayUntil;
 
   @override
   State<ShowAbsencesWidget> createState() => _ShowAbsencesWidgetState();
@@ -20,13 +22,11 @@ class ShowAbsencesWidget extends StatefulWidget {
 class _ShowAbsencesWidgetState extends State<ShowAbsencesWidget> {
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-        create: (context) => AbsencesCubit(widget.studentId),
-    child: BlocBuilder<AbsencesCubit, AbsencesState>(
+    return BlocBuilder<AbsencesCubit, AbsencesState>(
       builder: (context, state) {
         if (state is AbsencesLoaded) {
           AbsencesCubit cubit = BlocProvider.of<AbsencesCubit>(context);
-          if (state.selectedAbsences.value.isEmpty) {
+          if (state.selectedAbsences.isEmpty) {
             return Column(
               children: [
                 Container(margin: const EdgeInsets.all(30), width: 100, child: SimpleShadow(child: Opacity(opacity: 0.4, child: Image.asset('assets/images/no_absences.png')))),
@@ -35,6 +35,78 @@ class _ShowAbsencesWidgetState extends State<ShowAbsencesWidget> {
               ],
             );
           } else {
+            return ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              padding: const EdgeInsets.all(10),
+              itemCount: state.selectedAbsences.length,
+              itemBuilder: (context, index) => Card(
+                  child: Container(
+                    padding: const EdgeInsets.only(left: 10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        IntrinsicWidth(
+                          child: TextField(
+                            readOnly: true,
+                            controller: TextEditingController(text: IsoDateUtils.getGermanDateFromIsoDate(state.selectedAbsences.elementAt(index).from)),
+                            decoration: const InputDecoration(
+                                border: InputBorder.none,
+                                enabled: false,
+                                labelText: Strings.start
+                            ),
+                          ),
+                        ),
+                        IntrinsicWidth(
+                          child: TextField(
+                            readOnly: true,
+                            controller: TextEditingController(text: IsoDateUtils.getGermanDateFromIsoDate(state.selectedAbsences.elementAt(index).until)),
+                            decoration: const InputDecoration(
+                                border: InputBorder.none,
+                                enabled: false,
+                                labelText: Strings.end
+                            ),
+                          ),
+                        ),
+                        IntrinsicWidth(
+                          child: TextField(
+                            readOnly: true,
+                            controller: TextEditingController(text: state.selectedAbsences.elementAt(index).sickness ? "Krankmeldung" : "Urlaub"), // TODO
+                            decoration: const InputDecoration(
+                              border: InputBorder.none,
+                              enabled: false,
+                              labelText: Strings.reason,
+                            ),
+                          ),
+                        ),
+                        IconButton(onPressed: () {
+                          showDialog(context: context, builder: (context) => AlertDialog(
+                            title: const Text(Strings.removeAbsence),
+                            actions: [
+                              TextButton(onPressed: () {
+                                Navigator.of(context).pop(false);
+                              }, child: const Text(Strings.cancel)),
+                              TextButton(onPressed: () {
+                                Navigator.of(context).pop(true);
+                              }, child: const Text(Strings.confirm)),
+                            ],
+                          ),).then((confirmed) {
+                            if (confirmed ?? false) {
+                              cubit.removeAbsence(widget.studentId, state.selectedAbsences.elementAt(index));
+                            }
+                          });
+                        },
+                            icon: const Icon(
+                              Icons.delete_forever,
+                              color: ColorSchemes.errorColor,
+                            ))
+                      ],
+                    ),
+                  )
+              ),
+            );
+
+            /*
             return ValueListenableBuilder<List<Absence>>(valueListenable: state.selectedAbsences, builder: (context, value, child) => ListView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
@@ -105,12 +177,13 @@ class _ShowAbsencesWidgetState extends State<ShowAbsencesWidget> {
                   )
               ),
             ),);
+
+             */
           }
         } else {
           return const LoadingIndicator();
         }
       },
-    )
     );
   }
 }

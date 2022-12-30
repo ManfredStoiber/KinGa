@@ -16,6 +16,7 @@ import 'package:kinga/domain/entity/incidence.dart';
 import 'package:kinga/domain/entity/student.dart';
 import 'package:kinga/domain/student_service.dart';
 import 'package:kinga/features/absences/ui/absence_screen.dart';
+import 'package:kinga/features/absences/ui/bloc/absences_cubit.dart';
 import 'package:kinga/features/absences/ui/show_absences_widget.dart';
 import 'package:kinga/features/incidences/ui/incidence_dialog.dart';
 import 'package:kinga/features/incidences/ui/show_incidences_widget.dart';
@@ -217,59 +218,62 @@ class _ShowStudentScreenState extends State<ShowStudentScreen>
 
                             ),
                             //ListView.builder(shrinkWrap: true, physics: NeverScrollableScrollPhysics(), itemCount: 30, itemExtent: 48.0, itemBuilder: (context, index) => Text("Test $index"),),
-                            ShowAbsencesWidget(widget.studentId),
-                            ShowStudentDataWidget(student),
-                            ShowObservationsWidget(widget.studentId),
-                          ].map((Widget w) {
-                            return SafeArea(
-                              top: false,
-                              bottom: false,
-                              child: Builder(
-                                // This Builder is needed to provide a BuildContext that is
-                                // "inside" the NestedScrollView, so that
-                                // sliverOverlapAbsorberHandleFor() can find the
-                                // NestedScrollView.
-                                builder: (BuildContext context) {
-                                  return CustomScrollView(
-                                    shrinkWrap: true,
-                                    //physics: NeverScrollableScrollPhysics(),
-                                    // The "controller" and "primary" members should be left
-                                    // unset, so that the NestedScrollView can control this
-                                    // inner scroll view.
-                                    // If the "controller" property is set, then this scroll
-                                    // view will not be associated with the NestedScrollView.
-                                    // The PageStorageKey should be unique to this ScrollView;
-                                    // it allows the list to remember its scroll position when
-                                    // the tab view is not on the screen.
-                                    //key: PageStorageKey<Widget>(w),
-                                    slivers: <Widget>[
-                                      SliverOverlapInjector( handle: headerHandle ),
-                                      SliverOverlapInjector( handle: tabBarHandle ),
-                                      SliverToBoxAdapter(child: w,)
-                                    ],
-                                  );
-                                },
-                              ),
-                            );
-                          }).toList(),
-                        ),
+                            BlocProvider(
+                      create: (context) => AbsencesCubit(widget.studentId, DateTime.now()),
+                      child: ShowAbsencesWidget(widget.studentId, DateTime.now()),
+                    ),
+                    ShowStudentDataWidget(student),
+                    ShowObservationsWidget(widget.studentId),
+                  ].map((Widget w) {
+                    return SafeArea(
+                      top: false,
+                      bottom: false,
+                      child: Builder(
+                        // This Builder is needed to provide a BuildContext that is
+                        // "inside" the NestedScrollView, so that
+                        // sliverOverlapAbsorberHandleFor() can find the
+                        // NestedScrollView.
+                        builder: (BuildContext context) {
+                          return CustomScrollView(
+                            shrinkWrap: true,
+                            //physics: NeverScrollableScrollPhysics(),
+                            // The "controller" and "primary" members should be left
+                            // unset, so that the NestedScrollView can control this
+                            // inner scroll view.
+                            // If the "controller" property is set, then this scroll
+                            // view will not be associated with the NestedScrollView.
+                            // The PageStorageKey should be unique to this ScrollView;
+                            // it allows the list to remember its scroll position when
+                            // the tab view is not on the screen.
+                            //key: PageStorageKey<Widget>(w),
+                            slivers: <Widget>[
+                              SliverOverlapInjector( handle: headerHandle ),
+                              SliverOverlapInjector( handle: tabBarHandle ),
+                              SliverToBoxAdapter(child: w,)
+                            ],
+                          );
+                        },
                       ),
-                      Container(height: 20, color: ColorSchemes.kingacolor), // to fill out one pixel gap between AppBar and header sliver
-                    ],
-                  ),
+                    );
+                  }).toList(),
                 ),
-                floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-                bottomNavigationBar: BottomAppBar(child: Container(decoration: BoxDecoration(color: ColorSchemes.backgroundColor, boxShadow: [/*if (isScrollable) */BoxShadow(offset: const Offset(0, -1), blurRadius: 0, color: Colors.grey.withAlpha(100))]), height: kToolbarHeight - 10)),
-                floatingActionButton: FloatingActionButton(
-                    heroTag: 'fabae',
-                    onPressed: () {
-                      switch(_tabIndex) {
-                        case 0:
-                          showDialog<Incidence>(context: context, builder: (context) =>
-                              IncidenceDialog(
-                                  student.studentId
-                              ),).then((Incidence? value) {
-                            if (value != null) {
+              ),
+              Container(height: 20, color: ColorSchemes.kingacolor), // to fill out one pixel gap between AppBar and header sliver
+            ],
+          ),
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
+        bottomNavigationBar: BottomAppBar(child: Container(decoration: BoxDecoration(color: ColorSchemes.backgroundColor, boxShadow: [/*if (isScrollable) */BoxShadow(offset: const Offset(0, -1), blurRadius: 0, color: Colors.grey.withAlpha(100))]), height: kToolbarHeight - 10)),
+        floatingActionButton: FloatingActionButton(
+            heroTag: 'fabae',
+            onPressed: () {
+              switch(_tabIndex) {
+                case 0:
+                  showDialog<Incidence>(context: context, builder: (context) =>
+                      IncidenceDialog(
+                          student.studentId
+                      ),).then((Incidence? value) {
+                    if (value != null) {
 
                             }
                           });

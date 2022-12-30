@@ -140,13 +140,28 @@ class StudentService {
   }
 
   List<Absence> getAbsencesOfDay(List<Absence> absences, DateTime date) {
+    return getAbsencesInRange(absences, date, date);
+  }
+
+  // TODO: test if corner cases correct
+  List<Absence> getAbsencesInRange(List<Absence> absences, DateTime first, [DateTime? last]) {
     List<Absence> absencesOfDay = [];
     for (var absence in absences) {
       DateTime from = DateTime.parse(absence.from);
       DateTime until = DateTime.parse(absence.until);
 
-      if (date.isAfter(from) && date.isBefore(until.add(const Duration(days: 1)))) {
-        absencesOfDay.add(absence);
+      if (last == null) {
+        // get absences for every day starting at [first]
+        if (until.add(const Duration(days: 1)).isAfter(first)) {
+          absencesOfDay.add(absence);
+        }
+      } else {
+        // get everything in range
+        if ((first.isAfter(from) && first.isBefore(until.add(const Duration(days: 1))))
+            || (last.isAfter(from) && last.isBefore(until.add(const Duration(days: 1))))
+        ) {
+          absencesOfDay.add(absence);
+        }
       }
     }
     return absencesOfDay;

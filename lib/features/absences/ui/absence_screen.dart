@@ -7,6 +7,7 @@ import 'package:kinga/constants/strings.dart';
 import 'package:kinga/domain/entity/absence.dart';
 import 'package:kinga/features/absences/ui/absence_dialog.dart';
 import 'package:kinga/features/absences/ui/bloc/absences_cubit.dart';
+import 'package:kinga/features/absences/ui/show_absences_widget.dart';
 import 'package:kinga/ui/widgets/loading_indicator.dart';
 import 'package:kinga/util/date_utils.dart';
 import 'package:simple_shadow/simple_shadow.dart';
@@ -20,7 +21,7 @@ class AbsenceScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => AbsencesCubit(studentId),
+      create: (context) => AbsencesCubit(studentId, DateTime.now(), DateTime.now()),
       child: Scaffold(
         appBar: AppBar(
           title: const Text(Strings.absences),
@@ -31,7 +32,7 @@ class AbsenceScreen extends StatelessWidget {
               child: const Icon(Icons.add),
               onPressed: () {
                 if (state is AbsencesLoaded) {
-                  showDialog(context: context, builder: (context) => AbsenceDialog(state.student.studentId, state.selectedDay), );
+                  showDialog(context: context, builder: (context) => AbsenceDialog(state.student.studentId, state.focusedDay), );
                 }
               },
             );
@@ -50,7 +51,7 @@ class AbsenceScreen extends StatelessWidget {
                     lastDay: state.lastDay,
                     startingDayOfWeek: StartingDayOfWeek.monday,
                     availableCalendarFormats: const {CalendarFormat.month: ''},
-                    selectedDayPredicate: (day) => isSameDay(state.selectedDay, day),
+                    selectedDayPredicate: (day) => isSameDay(state.focusedDay, day),
                     onDaySelected: (selectedDay, focusedDay) {
                       cubit.changeSelectedDay(selectedDay);
                     },
@@ -63,7 +64,7 @@ class AbsenceScreen extends StatelessWidget {
                       markerBuilder: <Absence>(context, day, absences) {
                         if (absences.length > 0) {
                           bool today = normalizeDate(DateTime.now()).isAtSameMomentAs(day);
-                          bool selected = (cubit.state is AbsencesLoaded && normalizeDate((cubit.state as AbsencesLoaded).selectedDay).isAtSameMomentAs(day));
+                          bool selected = (cubit.state is AbsencesLoaded && normalizeDate((cubit.state as AbsencesLoaded).focusedDay).isAtSameMomentAs(day));
                           return Stack(
                             children: [
                               Container(
@@ -116,93 +117,7 @@ class AbsenceScreen extends StatelessWidget {
                     },
                   ),
                   const Divider(),
-                  state.selectedAbsences.value.isEmpty ?
-                  Column(
-                    mainAxisSize: MainAxisSize.max,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Container(margin: const EdgeInsets.all(30), width: 100, child: SimpleShadow(child: Opacity(opacity: 0.4, child: Image.asset('assets/images/no_absences.png')))),
-                      Text(Strings.noAbsences, style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.black54), textAlign: TextAlign.center,),
-                      Container(margin: const EdgeInsets.all(20), child: Text(Strings.noAbsencesDescription, style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.black54), textAlign: TextAlign.center,)),
-                    ],
-                  ) :
-                  Expanded(
-                    child: ValueListenableBuilder<List<Absence>>(valueListenable: state.selectedAbsences, builder: (context, value, child) => Column(
-                      children: [
-                        Expanded(
-                          child: ListView.builder(
-                            padding: const EdgeInsets.all(10),
-                            itemCount: value.length,
-                            itemBuilder: (context, index) => Card(
-                                child: Container(
-                                  padding: const EdgeInsets.only(left: 10),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      IntrinsicWidth(
-                                        child: TextField(
-                                          readOnly: true,
-                                          controller: TextEditingController(text: IsoDateUtils.getGermanDateFromIsoDate(value.elementAt(index).from)),
-                                          decoration: const InputDecoration(
-                                              border: InputBorder.none,
-                                              enabled: false,
-                                              labelText: Strings.start
-                                          ),
-                                        ),
-                                      ),
-                                      IntrinsicWidth(
-                                        child: TextField(
-                                          readOnly: true,
-                                          controller: TextEditingController(text: IsoDateUtils.getGermanDateFromIsoDate(value.elementAt(index).until)),
-                                          decoration: const InputDecoration(
-                                              border: InputBorder.none,
-                                              enabled: false,
-                                              labelText: Strings.end
-                                          ),
-                                        ),
-                                      ),
-                                      IntrinsicWidth(
-                                        child: TextField(
-                                          readOnly: true,
-                                          controller: TextEditingController(text: value.elementAt(index).sickness ? "Krankmeldung" : "Urlaub"), // TODO
-                                          decoration: const InputDecoration(
-                                            border: InputBorder.none,
-                                            enabled: false,
-                                            labelText: Strings.reason,
-                                          ),
-                                        ),
-                                      ),
-                                      IconButton(onPressed: () {
-                                        showDialog(context: context, builder: (context) => AlertDialog(
-                                          title: const Text(Strings.removeAbsence),
-                                          actions: [
-                                            TextButton(onPressed: () {
-                                              Navigator.of(context).pop(false);
-                                            }, child: const Text(Strings.cancel)),
-                                            TextButton(onPressed: () {
-                                              Navigator.of(context).pop(true);
-                                            }, child: const Text(Strings.confirm)),
-                                          ],
-                                        ),).then((confirmed) {
-                                          if (confirmed ?? false) {
-                                            cubit.removeAbsence(studentId, value.elementAt(index));
-                                          }
-                                        });
-                                      },
-                                          icon: const Icon(
-                                            Icons.delete_forever,
-                                            color: ColorSchemes.errorColor,
-                                          ))
-                                    ],
-                                  ),
-                                )
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),),
-                  )
+                  ShowAbsencesWidget(studentId, state.focusedDay, selectedDayUntil: state.focusedDay)
                 ],
               );
             } else if (state is AbsencesError) {
