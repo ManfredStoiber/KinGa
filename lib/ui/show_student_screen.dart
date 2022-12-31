@@ -28,6 +28,7 @@ import 'package:kinga/ui/emergency_bottom_sheet.dart';
 import 'package:kinga/ui/show_student_data_widget.dart';
 import 'package:kinga/ui/widgets/animated_tab_bar.dart';
 import 'package:kinga/ui/widgets/expandable_fab.dart';
+import 'package:kinga/util/shared_prefs_utils.dart';
 import 'package:showcaseview/showcaseview.dart';
 import 'package:simple_shadow/simple_shadow.dart';
 import 'package:streaming_shared_preferences/streaming_shared_preferences.dart';
@@ -99,9 +100,7 @@ class _ShowStudentScreenState extends State<ShowStudentScreen>
       WidgetsBinding.instance.addPostFrameCallback((_) {
         Future.delayed(const Duration(milliseconds: 400), () {
           ShowCaseWidget.of(showStudentContext!).startShowCase(showcases);
-          List<String> finishedShowcases = GetIt.instance.get<StreamingSharedPreferences>().getStringList(Keys.finishedShowcases, defaultValue: []).getValue();
-          finishedShowcases.add('showStudentScreen');
-          GetIt.instance.get<StreamingSharedPreferences>().setStringList(Keys.finishedShowcases, finishedShowcases);
+          SharedPrefsUtils.updateFinishedShowcases('showStudentScreen');
         });
       });
     }

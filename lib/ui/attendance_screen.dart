@@ -19,6 +19,7 @@ import 'package:kinga/constants/strings.dart';
 import 'package:kinga/constants/colors.dart';
 import 'package:kinga/ui/widgets/drop.dart';
 import 'package:kinga/ui/widgets/loading_indicator.dart';
+import 'package:kinga/util/shared_prefs_utils.dart';
 import 'package:showcaseview/showcaseview.dart';
 import 'package:simple_shadow/simple_shadow.dart';
 import 'package:streaming_shared_preferences/streaming_shared_preferences.dart';
@@ -34,13 +35,10 @@ class AttendanceScreen extends StatefulWidget {
 
 class _AttendanceScreenState extends State<AttendanceScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  final GlobalKey attendanceKey = GlobalKey();
-  final GlobalKey createPermissionKey = GlobalKey();
-  final GlobalKey createStudentKey = GlobalKey();
-  final GlobalKey drawerKey = GlobalKey();
-  final GlobalKey filterKey = GlobalKey();
-  final GlobalKey searchKey = GlobalKey();
+  final List<String> allShowcases = [Keys.attendanceKey, Keys.searchKey, Keys.filterKey, Keys.drawerKey, Keys.createStudentKey, Keys.createPermissionKey];
+  Map<String, GlobalKey> showcaseKeys = {};
   List<GlobalKey> showcases = [];
+  List<String> locallyFinishedShowcases = [];
   final _attendanceItemState = GlobalKey<AttendanceItemState>();
   BuildContext? attendanceContext;
 
@@ -51,24 +49,33 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
   @override
   void initState() {
     super.initState();
-
     List<String> finishedShowcases = GetIt.instance.get<StreamingSharedPreferences>().getStringList(Keys.finishedShowcases, defaultValue: []).getValue();
-    if (!finishedShowcases.contains('attendanceScreen')) {
-      showcases = [attendanceKey, searchKey, filterKey, drawerKey, createStudentKey, createPermissionKey];
+    List<String> missingShowcases = List.from(allShowcases.where((element) => !finishedShowcases.contains(element),));
+    for (var showcase in missingShowcases) {
+      showcaseKeys[showcase] = GlobalKey();
+      var key = showcaseKeys[showcase];
+      if (key != null) {
+        showcases.add(key);
+      }
     }
 
     if (showcases.isNotEmpty) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         Future.delayed(const Duration(milliseconds: 400), () {
           ShowCaseWidget.of(attendanceContext!).startShowCase(showcases);
-          List<String> finishedShowcases = GetIt.instance.get<StreamingSharedPreferences>().getStringList(Keys.finishedShowcases, defaultValue: []).getValue();
-          finishedShowcases.add('attendanceScreen');
-          GetIt.instance.get<StreamingSharedPreferences>().setStringList(Keys.finishedShowcases, finishedShowcases);
         });
       });
     }
 
     selected = GetIt.I<StreamingSharedPreferences>().getString(Keys.selectedGroup, defaultValue: Strings.all).getValue();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    List<String> finishedShowcases = GetIt.instance.get<StreamingSharedPreferences>().getStringList(Keys.finishedShowcases, defaultValue: []).getValue();
+    finishedShowcases.addAll(locallyFinishedShowcases);
+    GetIt.instance.get<StreamingSharedPreferences>().setStringList(Keys.finishedShowcases, finishedShowcases);
   }
 
   void debugConvertFirebaseFromKingaLegacy() {
@@ -101,6 +108,9 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
   @override
   Widget build(BuildContext context) {
     return ShowCaseWidget(
+      autoPlay: true,
+      enableAutoPlayLock: true,
+      autoPlayDelay: const Duration(days: 42),
       builder: Builder(
         builder: (context) {
           attendanceContext = context;
@@ -119,18 +129,44 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                 key: _scaffoldKey,
                 appBar: AppBar(
                     leading: Showcase(
-                      key: drawerKey,
+                      key: showcaseKeys[Keys.drawerKey] ?? GlobalKey(),
                       description: Strings.drawerTooltip,
                       disposeOnTap: true,
+                      onToolTipClick: () {
+                        setState(() {
+                          continueShowcase(Keys.drawerKey);
+                        });
+                      },
                       onTargetClick: () {
                         setState(() {
-                          showcases.remove(drawerKey);
+                          ShowCaseWidget.of(attendanceContext!).deactivate();
+                          _scaffoldKey.currentState!.openDrawer();
+                          Future.delayed(const Duration(milliseconds: 100), ).then((value) async {
+                            while (!(_scaffoldKey.currentState?.isDrawerOpen ?? false)) {
+                              await Future.delayed(const Duration(milliseconds: 100));
+                            }
+                            await Future.delayed(const Duration(milliseconds: 400));
+                            continueShowcase(Keys.drawerKey);
+                          },);
                         });
-                        _scaffoldKey.currentState!.openDrawer();
                       },
                       child: IconButton(
                         onPressed: () {
-                          _scaffoldKey.currentState!.openDrawer();
+                          if (showcases.isEmpty) {
+                            _scaffoldKey.currentState!.openDrawer();
+                          } else {
+                            setState(() {
+                              ShowCaseWidget.of(attendanceContext!).deactivate();
+                              _scaffoldKey.currentState!.openDrawer();
+                              Future.delayed(const Duration(milliseconds: 100), ).then((value) async {
+                                while (!(_scaffoldKey.currentState?.isDrawerOpen ?? false)) {
+                                  await Future.delayed(const Duration(milliseconds: 100));
+                                }
+                                await Future.delayed(const Duration(milliseconds: 400));
+                                continueShowcase(Keys.drawerKey);
+                              },);
+                            });
+                          }
                         },
                         icon: const Icon(Icons.menu),
                       ),
@@ -177,13 +213,18 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                                 )
                                 else Expanded(
                                   child: Showcase(
-                                    key: filterKey,
+                                    key: showcaseKeys[Keys.filterKey] ?? GlobalKey(),
                                     description: Strings.filterStudentTooltip,
                                     targetPadding: const EdgeInsets.all(4),
                                     disposeOnTap: true,
+                                    onToolTipClick: () {
+                                      setState(() {
+                                        continueShowcase(Keys.filterKey);
+                                      });
+                                    },
                                     onTargetClick: () {
                                       setState(() {
-                                        showcases.remove(filterKey);
+                                        continueShowcase(Keys.filterKey);
                                       });
                                     },
                                     child: DropdownButton<String>(
@@ -208,15 +249,20 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                                     });
                                   },
                                   icon: Showcase(
-                                    key: searchKey,
+                                    key: showcaseKeys[Keys.searchKey] ?? GlobalKey(),
                                     description: Strings.searchStudentTooltip,
                                     targetShapeBorder: const CircleBorder(),
                                     targetPadding: const EdgeInsets.all(10),
                                     disposeOnTap: true,
+                                    onToolTipClick: () {
+                                      setState(() {
+                                        continueShowcase(Keys.searchKey);
+                                      });
+                                    },
                                     onTargetClick: () {
                                       setState(() {
                                         activeSearch = true;
-                                        showcases.remove(searchKey);
+                                        continueShowcase(Keys.searchKey);
                                       });
                                     },
                                     child: const Icon(Icons.search),
@@ -255,14 +301,18 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
 
                             List<Widget> result = [];
                             result.add(Showcase(
-                                key: attendanceKey,
+                                key: showcaseKeys[Keys.attendanceKey] ?? GlobalKey(),
                                 description: Strings.toggleAttendanceTooltip,
                                 disposeOnTap: true,
-                                onTargetClick: () => Navigator.push(context, MaterialPageRoute(builder: (context) => ShowStudentScreen(studentId: list.first.studentId),)).then((_) {
+                                onToolTipClick: () {
                                   setState(() {
-                                    showcases.remove(attendanceKey);
-                                    ShowCaseWidget.of(attendanceContext!).startShowCase(showcases);
+                                    continueShowcase(Keys.attendanceKey);
                                   });
+                                },
+                                onTargetClick: () => Navigator.push(context, MaterialPageRoute(builder: (context) => ShowStudentScreen(studentId: list.first.studentId),)).then((_) {
+                                    setState(() {
+                                      continueShowcase(Keys.attendanceKey);
+                                    });
                                 }),
                                 onTargetLongPress: () => _attendanceItemState.currentState?.toggleAttendance(),
                                 child: AttendanceItem(key: _attendanceItemState, studentId: list.first.studentId)));
@@ -297,14 +347,18 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                           )
                       ),
                       Showcase(
-                        key: createStudentKey,
+                        key: showcaseKeys[Keys.createStudentKey] ?? GlobalKey(),
                         description: Strings.createStudentTooltip,
                         disposeOnTap: true,
+                        onToolTipClick: () {
+                          setState(() {
+                            continueShowcase(Keys.createStudentKey);
+                          });
+                        },
                         onTargetClick: () {
                           Navigator.push(context, MaterialPageRoute(builder: (context) => const NewStudentScreen())).then((_) {
                             setState(() {
-                              showcases.remove(createStudentKey);
-                              ShowCaseWidget.of(attendanceContext!).startShowCase(showcases);
+                              continueShowcase(Keys.createStudentKey);
                             });
                           });
                         },
@@ -317,14 +371,18 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                         ),
                       ),
                       Showcase(
-                        key: createPermissionKey,
+                        key: showcaseKeys[Keys.createPermissionKey] ?? GlobalKey(),
                         description: Strings.createPermissionTooltip,
                         disposeOnTap: true,
+                        onToolTipClick: () {
+                          setState(() {
+                            continueShowcase(Keys.createPermissionKey);
+                          });
+                        },
                         onTargetClick: () {
                           Navigator.push(context, MaterialPageRoute(builder: (context) => const ListPermissionsScreen(),)).then((_) {
                             setState(() {
-                              showcases.remove(createPermissionKey);
-                              ShowCaseWidget.of(attendanceContext!).startShowCase(showcases);
+                              continueShowcase(Keys.createPermissionKey);
                             });
                           });
                         },
@@ -410,6 +468,15 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
         },
       ),
     );
+  }
+
+  void continueShowcase(String key) {
+    showcases.remove(showcaseKeys[key]);
+    locallyFinishedShowcases.add(key);
+    if (key != Keys.createPermissionKey) {
+      ShowCaseWidget.of(attendanceContext!).startShowCase(showcases);
+    }
+    SharedPrefsUtils.updateFinishedShowcases(key);
   }
 }
 

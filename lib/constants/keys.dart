@@ -20,4 +20,10 @@ class Keys {
 
   // Showcases
   static const String finishedShowcases = "finishedShowcases";
+  static const String attendanceKey = "attendanceKey";
+  static const String createPermissionKey = "createPermissionKey";
+  static const String createStudentKey = "createStudentKey";
+  static const String drawerKey = "drawerKey";
+  static const String filterKey = "filterKey";
+  static const String searchKey = "searchKey";
 }
