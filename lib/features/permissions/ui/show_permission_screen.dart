@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:kinga/constants/colors.dart';
+import 'package:kinga/constants/keys.dart';
 import 'package:kinga/constants/strings.dart';
 import 'package:kinga/domain/entity/student.dart';
 import 'package:kinga/domain/student_service.dart';
@@ -11,6 +12,7 @@ import 'package:kinga/features/permissions/ui/permission_item_widget.dart';
 import 'package:kinga/ui/widgets/loading_indicator_dialog.dart';
 import 'package:kinga/ui/bloc/students_cubit.dart';
 import 'package:simple_shadow/simple_shadow.dart';
+import 'package:streaming_shared_preferences/streaming_shared_preferences.dart';
 
 class ShowPermissionScreen extends StatefulWidget {
 
@@ -35,8 +37,17 @@ class _ShowPermissionScreenState extends State<ShowPermissionScreen> {
   @override
   void initState() {
     super.initState();
-    for (var group in _studentService.groups) {
-      groupSelection[group] = true;
+
+    var selectedGroup = GetIt.I<StreamingSharedPreferences>().getString(Keys.selectedGroup, defaultValue: "").getValue();
+    if (selectedGroup == "" || selectedGroup == Strings.all) {
+      for (var group in _studentService.groups) {
+        groupSelection[group] = true;
+      }
+    } else {
+      for (var group in _studentService.groups) {
+        groupSelection[group] = false;
+      }
+      groupSelection[selectedGroup] = true;
     }
     students = _studentService.students.toList();
   }

@@ -67,6 +67,8 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
         });
       });
     }
+
+    selected = GetIt.I<StreamingSharedPreferences>().getString(Keys.selectedGroup, defaultValue: Strings.all).getValue();
   }
 
   void debugConvertFirebaseFromKingaLegacy() {
@@ -192,6 +194,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                                       onChanged: (String? newValue) {
                                         setState(() {
                                           selected = newValue!;
+                                          GetIt.I<StreamingSharedPreferences>().setString(Keys.selectedGroup, newValue);
                                         });
                                       },
                                     ),
