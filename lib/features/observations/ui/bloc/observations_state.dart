@@ -13,14 +13,21 @@ class ObservationsLoaded extends ObservationsState {
 
   final Student student;
   late final List<Observation> observations;
-  late final ObservationForm? selectedObservationForm;
+  late final ObservationForm selectedObservationForm;
+  late final ObservationFormPart selectedPart;
   final List<ObservationForm> observationForms;
 
-  ObservationsLoaded(this.student, this.observations, String? selectedObservationForm, this.observationForms) {
-    if (selectedObservationForm == null && observationForms.isNotEmpty) {
+  ObservationsLoaded(this.student, this.observations, ObservationForm? selectedObservationForm, this.observationForms, {ObservationFormPart? selectedPart}) {
+    if (selectedObservationForm == null) {
       this.selectedObservationForm = observationForms.first;
     } else {
-      this.selectedObservationForm = observationForms.firstWhere((observationForm) => observationForm.title == selectedObservationForm);
+      this.selectedObservationForm = selectedObservationForm;
+    }
+
+    if (selectedPart == null) {
+      this.selectedPart = this.selectedObservationForm.parts.first;
+    } else {
+      this.selectedPart = selectedPart;
     }
   }
 

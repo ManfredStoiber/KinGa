@@ -13,19 +13,15 @@ import 'package:kinga/domain/entity/caregiver.dart';
 import 'package:kinga/domain/entity/incidence.dart';
 import 'package:kinga/domain/entity/student.dart';
 import 'package:kinga/domain/student_service.dart';
-import 'package:kinga/features/absences/ui/absence_screen.dart';
-import 'package:kinga/features/absences/ui/bloc/absences_cubit.dart';
 import 'package:kinga/features/absences/ui/show_absences_widget.dart';
 import 'package:kinga/features/incidences/ui/create_incidence_dialog.dart';
 import 'package:kinga/features/incidences/ui/show_incidences_widget.dart';
 import 'package:kinga/features/observations/show_observations_widget.dart';
 import 'package:kinga/ui/bloc/students_cubit.dart';
 import 'package:kinga/ui/edit_student_screen.dart';
-import 'package:kinga/features/observations/ui/observation_screen.dart';
 import 'package:kinga/ui/emergency_bottom_sheet.dart';
 import 'package:kinga/ui/show_student_data_widget.dart';
 import 'package:kinga/ui/widgets/animated_tab_bar.dart';
-import 'package:kinga/ui/widgets/expandable_fab.dart';
 import 'package:kinga/util/shared_prefs_utils.dart';
 import 'package:showcaseview/showcaseview.dart';
 import 'package:simple_shadow/simple_shadow.dart';
@@ -55,13 +51,13 @@ class _ShowStudentScreenState extends State<ShowStudentScreen>
   late final ScrollController _scrollController;
   bool isScrollable = false;
   final _confettiController = ConfettiController(duration: const Duration(seconds: 5));
-  final _fabState = GlobalKey<ExpandableFabState>();
   BuildContext? showStudentContext;
 
   int _tabIndex = 0;
   late TabController _tabController;
 
-  final _incidencesListKey = GlobalKey<AnimatedListState>(debugLabel: "Test");
+  final _incidencesListKey = GlobalKey<AnimatedListState>();
+  final _showAbsencesWidgetKey = GlobalKey<ShowAbsencesWidgetState>();
 
   @override
   void initState() {
@@ -131,190 +127,174 @@ class _ShowStudentScreenState extends State<ShowStudentScreen>
         builder: Builder(
           builder: (context) {
             showStudentContext = context;
-            return WillPopScope(
-              onWillPop: () async {
-                if (_fabState.currentState?.open ?? false) {
-                  _fabState.currentState?.toggle();
-                  return false;
-                } else {
-                  return true;
-                }
-              },
-              child: Scaffold(
-                backgroundColor: ColorSchemes.kingacolor,
-                /*
-        appBar: ,
-
-         */
-                body: ExtendedNestedScrollView(
-                  onlyOneScrollInBody: true,
-                  headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-                    // These are the slivers that show up in the "outer" scroll view.
-                    return <Widget>[
-                      SliverOverlapAbsorber(
-                        // This widget takes the overlapping behavior of the SliverAppBar,
-                        // and redirects it to the SliverOverlapInjector below. If it is
-                        // missing, then it is possible for the nested "inner" scroll view
-                        // below to end up under the SliverAppBar even when the inner
-                        // scroll view thinks it has not been scrolled.
-                        // This is not necessary if the "headerSliverBuilder" only builds
-                        // widgets that do not overlap the next sliver.
-                        handle: headerHandle,
-                        sliver: SliverPersistentHeader(pinned: true, floating: false, delegate: _SliverHeaderDelegate(student, _confettiController, color, expandedHeight: 300.0, collapsedHeight: 150.0, viewPaddingTop: MediaQuery.of(context).viewPadding.top)),
-                      ),
-                      SliverOverlapAbsorber(
-                        handle: tabBarHandle,
-                        sliver: SliverPersistentHeader(pinned: true, delegate: _SliverTabBarDelegate(
-                            AnimatedTabBar(
-                              controller: _tabController,
-                              tabs: [
-                                Tab(
-                                    icon: Showcase(
-                                      key: showcaseKeys[Keys.showIncidenceWidgetKey] ?? GlobalKey(),
-                                      description: Strings.showIncidenceWidgetTooltip,
-                                      targetPadding: const EdgeInsets.fromLTRB(20, -10, 20, 10),
-                                      disposeOnTap: true,
-                                      onToolTipClick: () {
-                                        setState(() {
-                                          continueShowcase(Keys.showIncidenceWidgetKey);
-                                        });
-                                      },
-                                      onTargetClick: () {
-                                        setState(() {
-                                          _tabController.animateTo(0);
-                                          continueShowcase(Keys.showIncidenceWidgetKey);
-                                        });
-                                      },
-                                      child: const Icon(Icons.edit_note_rounded)),
-                                    text: Strings.tabIncidences
-                                ),
-                                Tab(
-                                    icon: Showcase(
-                                        key: showcaseKeys[Keys.showObservationsWidgetKey] ?? GlobalKey(),
-                                        description: Strings.showObservationsWidgetTooltip,
-                                        targetPadding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
-                                        disposeOnTap: true,
-                                        onToolTipClick: () {
-                                          setState(() {
-                                            continueShowcase(Keys.showObservationsWidgetKey);
-                                          });
-                                        },
-                                        onTargetClick: () {
-                                          setState(() {
-                                            _tabController.animateTo(1);
-                                            continueShowcase(Keys.showObservationsWidgetKey);
-                                          });
-                                        },
-                                        child: const Icon(Icons.auto_graph)),
-                                    text: Strings.tabObservations
-                                ),
-                                Tab(
-                                    icon: Showcase(
-                                      key: showcaseKeys[Keys.showAbsencesWidgetKey] ?? GlobalKey(),
-                                      description: Strings.showAbsencesWidgetTooltip,
+            return Scaffold(
+              backgroundColor: ColorSchemes.kingacolor,
+              body: ExtendedNestedScrollView(
+                onlyOneScrollInBody: true,
+                headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+                  // These are the slivers that show up in the "outer" scroll view.
+                  return <Widget>[
+                    SliverOverlapAbsorber(
+                      // This widget takes the overlapping behavior of the SliverAppBar,
+                      // and redirects it to the SliverOverlapInjector below. If it is
+                      // missing, then it is possible for the nested "inner" scroll view
+                      // below to end up under the SliverAppBar even when the inner
+                      // scroll view thinks it has not been scrolled.
+                      // This is not necessary if the "headerSliverBuilder" only builds
+                      // widgets that do not overlap the next sliver.
+                      handle: headerHandle,
+                      sliver: SliverPersistentHeader(pinned: true, floating: false, delegate: _SliverHeaderDelegate(student, _confettiController, color, expandedHeight: 280.0, collapsedHeight: 150.0, viewPaddingTop: MediaQuery.of(context).viewPadding.top)),
+                    ),
+                    SliverOverlapAbsorber(
+                      handle: tabBarHandle,
+                      sliver: SliverPersistentHeader(pinned: true, delegate: _SliverTabBarDelegate(
+                          AnimatedTabBar(
+                            controller: _tabController,
+                            tabs: [
+                              Tab(
+                                  icon: Showcase(
+                                    key: showcaseKeys[Keys.showIncidenceWidgetKey] ?? GlobalKey(),
+                                    description: Strings.showIncidenceWidgetTooltip,
+                                    targetPadding: const EdgeInsets.fromLTRB(20, -10, 20, 10),
+                                    disposeOnTap: true,
+                                    onToolTipClick: () {
+                                      setState(() {
+                                        continueShowcase(Keys.showIncidenceWidgetKey);
+                                      });
+                                    },
+                                    onTargetClick: () {
+                                      setState(() {
+                                        _tabController.animateTo(0);
+                                        continueShowcase(Keys.showIncidenceWidgetKey);
+                                      });
+                                    },
+                                    child: const Icon(Icons.edit_note_rounded)),
+                                  text: Strings.tabIncidences
+                              ),
+                              Tab(
+                                  icon: Showcase(
+                                      key: showcaseKeys[Keys.showObservationsWidgetKey] ?? GlobalKey(),
+                                      description: Strings.showObservationsWidgetTooltip,
                                       targetPadding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
                                       disposeOnTap: true,
                                       onToolTipClick: () {
                                         setState(() {
-                                          continueShowcase(Keys.showAbsencesWidgetKey);
+                                          continueShowcase(Keys.showObservationsWidgetKey);
                                         });
                                       },
                                       onTargetClick: () {
                                         setState(() {
-                                          _tabController.animateTo(2);
-                                          continueShowcase(Keys.showAbsencesWidgetKey);
+                                          _tabController.animateTo(1);
+                                          continueShowcase(Keys.showObservationsWidgetKey);
                                         });
                                       },
-                                      child: const Icon(Icons.event_busy)),
-                                    text: Strings.tabAbsences
-                                ),
-                                Tab(
-                                    icon: Showcase(
-                                      key: showcaseKeys[Keys.showStudentDataKey] ?? GlobalKey(),
-                                      description: Strings.showStudentDataTooltip,
-                                      targetPadding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
-                                      disposeOnTap: true,
-                                      onToolTipClick: () {
-                                        setState(() {
-                                          continueShowcase(Keys.showStudentDataKey);
-                                        });
-                                      },
-                                      onTargetClick: () {
-                                        setState(() {
-                                          _tabController.animateTo(3);
-                                          continueShowcase(Keys.showStudentDataKey);
-                                        });
-                                      },
-                                      child: const Icon(Icons.info_outline)),
-                                    text: Strings.tabStudentData
-                                ),
-                              ],
-                            ),
-                            color
-                        )),
-                      ),
-                    ];
-                  },
-                  body: Stack(
-                    children: [
-                      Container(
-                        color: ColorSchemes.backgroundColor,
-                        child: TabBarView(
-                          controller: _tabController,
-                          // These are the contents of the tab views, below the tabs.
-                          children: [
-                            ShowIncidencesWidget(widget.studentId, _incidencesListKey, onIncidencesChanged: () {
-                              // TODO: like other todo in ShowIncidencesScreen (scrollable)
-                              /*
-                                setState(() {
-                                    isScrollable = (_scrollController.position.maxScrollExtent ?? 0) != 0;
-                                });
-                                 */
-                            },
-
-                            ),
-                            //ListView.builder(shrinkWrap: true, physics: NeverScrollableScrollPhysics(), itemCount: 30, itemExtent: 48.0, itemBuilder: (context, index) => Text("Test $index"),),
-                            ShowObservationsWidget(widget.studentId),
-                            BlocProvider(
-                              create: (context) => AbsencesCubit(widget.studentId, DateTime.now()),
-                              child: ShowAbsencesWidget(widget.studentId, DateTime.now()),
-                            ),
-                            ShowStudentDataWidget(student),
-                  ].map((Widget w) {
-                    return SafeArea(
-                      top: false,
-                      bottom: false,
-                      child: Builder(
-                        // This Builder is needed to provide a BuildContext that is
-                        // "inside" the NestedScrollView, so that
-                        // sliverOverlapAbsorberHandleFor() can find the
-                        // NestedScrollView.
-                        builder: (BuildContext context) {
-                          return CustomScrollView(
-                            shrinkWrap: true,
-                            //physics: NeverScrollableScrollPhysics(),
-                            // The "controller" and "primary" members should be left
-                            // unset, so that the NestedScrollView can control this
-                            // inner scroll view.
-                            // If the "controller" property is set, then this scroll
-                            // view will not be associated with the NestedScrollView.
-                            // The PageStorageKey should be unique to this ScrollView;
-                            // it allows the list to remember its scroll position when
-                            // the tab view is not on the screen.
-                            //key: PageStorageKey<Widget>(w),
-                            slivers: <Widget>[
-                              SliverOverlapInjector( handle: headerHandle ),
-                              SliverOverlapInjector( handle: tabBarHandle ),
-                              SliverToBoxAdapter(child: w,)
+                                      child: const Icon(Icons.auto_graph)),
+                                  text: Strings.tabObservations
+                              ),
+                              Tab(
+                                  icon: Showcase(
+                                    key: showcaseKeys[Keys.showAbsencesWidgetKey] ?? GlobalKey(),
+                                    description: Strings.showAbsencesWidgetTooltip,
+                                    targetPadding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+                                    disposeOnTap: true,
+                                    onToolTipClick: () {
+                                      setState(() {
+                                        continueShowcase(Keys.showAbsencesWidgetKey);
+                                      });
+                                    },
+                                    onTargetClick: () {
+                                      setState(() {
+                                        _tabController.animateTo(2);
+                                        continueShowcase(Keys.showAbsencesWidgetKey);
+                                      });
+                                    },
+                                    child: const Icon(Icons.event_busy)),
+                                  text: Strings.tabAbsences
+                              ),
+                              Tab(
+                                  icon: Showcase(
+                                    key: showcaseKeys[Keys.showStudentDataKey] ?? GlobalKey(),
+                                    description: Strings.showStudentDataTooltip,
+                                    targetPadding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+                                    disposeOnTap: true,
+                                    onToolTipClick: () {
+                                      setState(() {
+                                        continueShowcase(Keys.showStudentDataKey);
+                                      });
+                                    },
+                                    onTargetClick: () {
+                                      setState(() {
+                                        _tabController.animateTo(3);
+                                        continueShowcase(Keys.showStudentDataKey);
+                                      });
+                                    },
+                                    child: const Icon(Icons.info_outline)),
+                                  text: Strings.tabStudentData
+                              ),
                             ],
-                          );
-                        },
-                      ),
-                    );
-                  }).toList(),
-                ),
+                          ),
+                          color
+                      )),
+                    ),
+                  ];
+                },
+                body: Stack(
+                  children: [
+                    Container(
+                      color: ColorSchemes.backgroundColor,
+                      child: TabBarView(
+                        controller: _tabController,
+                        // These are the contents of the tab views, below the tabs.
+                        children: [
+                          ShowIncidencesWidget(widget.studentId, _incidencesListKey, onIncidencesChanged: () {
+                            // TODO: like other todo in ShowIncidencesScreen (scrollable)
+                            /*
+                              setState(() {
+                                  isScrollable = (_scrollController.position.maxScrollExtent ?? 0) != 0;
+                              });
+                               */
+                          },
+
+                          ),
+                          //ListView.builder(shrinkWrap: true, physics: NeverScrollableScrollPhysics(), itemCount: 30, itemExtent: 48.0, itemBuilder: (context, index) => Text("Test $index"),),
+                          ShowObservationsWidget(widget.studentId),
+                          ShowAbsencesWidget(key: _showAbsencesWidgetKey, widget.studentId, DateTime.now()),
+                          ShowStudentDataWidget(student),
+                ].map((Widget w) {
+                  return SafeArea(
+                    top: false,
+                    bottom: false,
+                    child: Builder(
+                      // This Builder is needed to provide a BuildContext that is
+                      // "inside" the NestedScrollView, so that
+                      // sliverOverlapAbsorberHandleFor() can find the
+                      // NestedScrollView.
+                      builder: (BuildContext context) {
+                        return CustomScrollView(
+                          shrinkWrap: true,
+                          //physics: NeverScrollableScrollPhysics(),
+                          // The "controller" and "primary" members should be left
+                          // unset, so that the NestedScrollView can control this
+                          // inner scroll view.
+                          // If the "controller" property is set, then this scroll
+                          // view will not be associated with the NestedScrollView.
+                          // The PageStorageKey should be unique to this ScrollView;
+                          // it allows the list to remember its scroll position when
+                          // the tab view is not on the screen.
+                          //key: PageStorageKey<Widget>(w),
+                          slivers: <Widget>[
+                            SliverOverlapInjector( handle: headerHandle ),
+                            SliverOverlapInjector( handle: tabBarHandle ),
+                            SliverToBoxAdapter(child: w,)
+                          ],
+                        );
+                      },
+                    ),
+                  );
+                }).toList(),
               ),
-              Container(height: 20, color: ColorSchemes.kingacolor), // to fill out one pixel gap between AppBar and header sliver
+            ),
+            Container(height: 20, color: ColorSchemes.kingacolor), // to fill out one pixel gap between AppBar and header sliver
             ],
           ),
         ),
@@ -327,194 +307,193 @@ class _ShowStudentScreenState extends State<ShowStudentScreen>
             targetBorderRadius: const BorderRadius.vertical(top: Radius.circular(30.0)),
             disposeOnTap: true,
             onToolTipClick: () {
-              setState(() {
-                continueShowcase(Keys.emergencyContactsKey);
-              });
+            setState(() {
+              continueShowcase(Keys.emergencyContactsKey);
+            });
             },
             onTargetClick: () {
-              setState(() {
-                showModalBottomSheet(
-                  context: context,
-                  builder: (context) {
-                    return EmergencyBottomSheet(caregivers);
-                  },
-                  shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.vertical(
-                          top: Radius.circular(30)
-                      )
-                  ),
-                  isScrollControlled: true,
-                ).then((value) {
-                  continueShowcase(Keys.emergencyContactsKey);
-                });
+            setState(() {
+              showModalBottomSheet(
+                context: context,
+                builder: (context) {
+                  return EmergencyBottomSheet(caregivers);
+                },
+                shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.vertical(
+                        top: Radius.circular(30)
+                    )
+                ),
+                isScrollControlled: true,
+              ).then((value) {
+                continueShowcase(Keys.emergencyContactsKey);
               });
+            });
             },
             child: ClipRRect(borderRadius: const BorderRadius.vertical(top: Radius.circular(30.0)),
-              child: BottomAppBar(color: ColorSchemes.errorColor, shape: const CircularNotchedRectangle(), notchMargin: 5.0, child: SizedBox(height: kToolbarHeight - 10,
-                child: IconButton(
-                  icon: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(padding: const EdgeInsets.only(right: 15), child: const Icon(Icons.contact_phone, color: Colors.white,)),
-                      const Text(Strings.contact, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),),
-                    ],
-                  ),
-                  onPressed: () {
-                    showModalBottomSheet(
-                      context: context,
-                      builder: (context) {
-                        return EmergencyBottomSheet(caregivers);
-                      },
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.vertical(
-                          top: Radius.circular(30)
-                        )
-                      ),
-                      isScrollControlled: true,
-                    );
-                },),
-              )),
+            child: BottomAppBar(color: ColorSchemes.errorColor, shape: const CircularNotchedRectangle(), notchMargin: 5.0, child: SizedBox(height: kToolbarHeight - 10,
+              child: IconButton(
+                icon: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(padding: const EdgeInsets.only(right: 15), child: const Icon(Icons.contact_phone, color: Colors.white,)),
+                    const Text(Strings.contact, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),),
+                  ],
+                ),
+                onPressed: () {
+                  showModalBottomSheet(
+                    context: context,
+                    builder: (context) {
+                      return EmergencyBottomSheet(caregivers);
+                    },
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.vertical(
+                        top: Radius.circular(30)
+                      )
+                    ),
+                    isScrollControlled: true,
+                  );
+              },),
+            )),
             ),
           ),
         ) : null,
         floatingActionButton: FloatingActionButton(
             heroTag: 'fabae',
             onPressed: () {
-              switch(_tabIndex) {
-                case 0:
-                  showDialog<Incidence>(context: context, builder: (context) =>
-                      CreateIncidenceDialog(
-                          student.studentId
-                      ),).then((Incidence? value) {
-                        if (value != null) {
+            switch(_tabIndex) {
+              case 0:
+                showDialog<Incidence>(context: context, builder: (context) =>
+                    CreateIncidenceDialog(
+                        student.studentId
+                    ),).then((Incidence? value) {
+                      if (value != null) {
 
-                          }
-                        });
-                        break;
-                    case 1:
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => ObservationScreen(student.studentId)));
+                        }
+                      });
                       break;
-                    case 2:
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => AbsenceScreen(student.studentId)));
-                      break;
-                    case 3:
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => EditStudentScreen(student: student,)));
-                      break;
-                      }
-                    },
-                    child: Stack(
-                      children: [
-                        FadeTransition(
-                            opacity: Tween(begin: 0.0, end: 1.0).animate(ShiftingAnimation(_tabController, 0)),
+                  case 1:
+                    //Navigator.push(context, MaterialPageRoute(builder: (context) => ObservationScreen(student.studentId)));
+                    break;
+                  case 2:
+                    _showAbsencesWidgetKey.currentState?.onFloatingActionButtonPressed();
+                    break;
+                  case 3:
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => EditStudentScreen(student: student,)));
+                    break;
+                    }
+                  },
+                  child: Stack(
+                    children: [
+                      FadeTransition(
+                          opacity: Tween(begin: 0.0, end: 1.0).animate(ShiftingAnimation(_tabController, 0)),
+                          child: Showcase(
+                            key: showcaseKeys[Keys.createIncidenceKey] ?? GlobalKey(),
+                            description: Strings.createIncidenceTooltip,
+                            targetShapeBorder: const CircleBorder(),
+                            targetPadding: const EdgeInsets.all(15),
+                            disposeOnTap: true,
+                            onToolTipClick: () {
+                              setState(() {
+                                continueShowcase(Keys.createIncidenceKey);
+                              });
+                            },
+                            onTargetClick: () {
+                              setState(() {
+                                continueShowcase(Keys.createIncidenceKey);
+                              });
+                            },
+                            child: const Icon(Icons.add)
+                          )
+                      ),
+                      FadeTransition(
+                          opacity: Tween(begin: 0.0, end: 1.0).animate(ShiftingAnimation(_tabController, 1)),
+                          child: Stack(
+                            children: [
+                              Visibility(
+                                visible: _tabIndex == 1,
                             child: Showcase(
-                              key: showcaseKeys[Keys.createIncidenceKey] ?? GlobalKey(),
-                              description: Strings.createIncidenceTooltip,
-                              targetShapeBorder: const CircleBorder(),
-                              targetPadding: const EdgeInsets.all(15),
-                              disposeOnTap: true,
-                              onToolTipClick: () {
-                                setState(() {
-                                  continueShowcase(Keys.createIncidenceKey);
-                                });
-                              },
-                              onTargetClick: () {
-                                setState(() {
-                                  continueShowcase(Keys.createIncidenceKey);
-                                });
-                              },
-                              child: const Icon(Icons.add)
-                            )
-                        ),
-                        FadeTransition(
-                            opacity: Tween(begin: 0.0, end: 1.0).animate(ShiftingAnimation(_tabController, 1)),
-                            child: Stack(
-                              children: [
-                                Visibility(
-                                  visible: _tabIndex == 1,
-                              child: Showcase(
-                                  key: showcaseKeys[Keys.editObservationsKey] ?? GlobalKey(),
-                                  description: Strings.editObservationsTooltip,
+                                key: showcaseKeys[Keys.editObservationsKey] ?? GlobalKey(),
+                                description: Strings.editObservationsTooltip,
+                                targetShapeBorder: const CircleBorder(),
+                                targetPadding: const EdgeInsets.all(15),
+                                disposeOnTap: true,
+                                onToolTipClick: () {
+                                  setState(() {
+                                    continueShowcase(Keys.editObservationsKey);
+                                  });
+                                },
+                                onTargetClick: () {
+                                  setState(() {
+                                    continueShowcase(Keys.editObservationsKey);
+                                  });
+                                },
+                                child: const Icon(Icons.edit)
+                                ),
+                              ),
+                              const Icon(Icons.edit)
+                            ],
+                          )
+                      ),
+                      FadeTransition(
+                          opacity: Tween(begin: 0.0, end: 1.0).animate(ShiftingAnimation(_tabController, 2)),
+                          child: Stack(
+                            children: [
+                              Visibility(
+                                visible: _tabIndex == 2,
+                                child: Showcase(
+                                  key: showcaseKeys[Keys.createAbsenceKey] ?? GlobalKey(),
+                                  description: Strings.createAbsenceTooltip,
                                   targetShapeBorder: const CircleBorder(),
                                   targetPadding: const EdgeInsets.all(15),
                                   disposeOnTap: true,
                                   onToolTipClick: () {
                                     setState(() {
-                                      continueShowcase(Keys.editObservationsKey);
+                                      continueShowcase(Keys.createAbsenceKey);
                                     });
                                   },
                                   onTargetClick: () {
                                     setState(() {
-                                      continueShowcase(Keys.editObservationsKey);
+                                      continueShowcase(Keys.createAbsenceKey);
+                                    });
+                                  },
+                                  child: const Icon(Icons.add)
+                                ),
+                              ),
+                              const Icon(Icons.add)
+                            ],
+                          )
+                      ),
+                      FadeTransition(
+                          opacity: Tween(begin: 0.0, end: 1.0).animate(ShiftingAnimation(_tabController, 3)),
+                          child: Stack(
+                            children: [
+                              Visibility(
+                                visible: _tabIndex == 3,
+                                child: Showcase(
+                                  key: showcaseKeys[Keys.editStudentDataKey] ?? GlobalKey(),
+                                  description: Strings.editStudentDataTooltip,
+                                  targetShapeBorder: const CircleBorder(),
+                                  targetPadding: const EdgeInsets.all(15),
+                                  disposeOnTap: true,
+                                  onToolTipClick: () {
+                                    setState(() {
+                                      continueShowcase(Keys.editStudentDataKey);
+                                    });
+                                  },
+                                  onTargetClick: () {
+                                    setState(() {
+                                      continueShowcase(Keys.editStudentDataKey);
                                     });
                                   },
                                   child: const Icon(Icons.edit)
-                                  ),
                                 ),
-                                const Icon(Icons.edit)
-                              ],
-                            )
-                        ),
-                        FadeTransition(
-                            opacity: Tween(begin: 0.0, end: 1.0).animate(ShiftingAnimation(_tabController, 2)),
-                            child: Stack(
-                              children: [
-                                Visibility(
-                                  visible: _tabIndex == 2,
-                                  child: Showcase(
-                                    key: showcaseKeys[Keys.createAbsenceKey] ?? GlobalKey(),
-                                    description: Strings.createAbsenceTooltip,
-                                    targetShapeBorder: const CircleBorder(),
-                                    targetPadding: const EdgeInsets.all(15),
-                                    disposeOnTap: true,
-                                    onToolTipClick: () {
-                                      setState(() {
-                                        continueShowcase(Keys.createAbsenceKey);
-                                      });
-                                    },
-                                    onTargetClick: () {
-                                      setState(() {
-                                        continueShowcase(Keys.createAbsenceKey);
-                                      });
-                                    },
-                                    child: const Icon(Icons.calendar_month)
-                                  ),
-                                ),
-                                const Icon(Icons.calendar_month)
-                              ],
-                            )
-                        ),
-                        FadeTransition(
-                            opacity: Tween(begin: 0.0, end: 1.0).animate(ShiftingAnimation(_tabController, 3)),
-                            child: Stack(
-                              children: [
-                                Visibility(
-                                  visible: _tabIndex == 3,
-                                  child: Showcase(
-                                    key: showcaseKeys[Keys.editStudentDataKey] ?? GlobalKey(),
-                                    description: Strings.editStudentDataTooltip,
-                                    targetShapeBorder: const CircleBorder(),
-                                    targetPadding: const EdgeInsets.all(15),
-                                    disposeOnTap: true,
-                                    onToolTipClick: () {
-                                      setState(() {
-                                        continueShowcase(Keys.editStudentDataKey);
-                                      });
-                                    },
-                                    onTargetClick: () {
-                                      setState(() {
-                                        continueShowcase(Keys.editStudentDataKey);
-                                      });
-                                    },
-                                    child: const Icon(Icons.edit)
-                                  ),
-                                ),
-                                const Icon(Icons.edit)
-                              ],
-                            )
-                        ),
-                      ],
-                    )
-                ),
+                              ),
+                              const Icon(Icons.edit)
+                            ],
+                          )
+                      ),
+                    ],
+                  )
               ),
             );
         },
@@ -544,100 +523,110 @@ class _SliverHeaderDelegate extends SliverPersistentHeaderDelegate {
 
   @override
   Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
-    final progress = min(max(shrinkOffset / (maxExtent - minExtent), 0), 1);
+    final double progress = min(max(shrinkOffset / (maxExtent - minExtent), 0), 1);
     return Container(
       color: _backgroundColor,
       child: LayoutBuilder(
         builder: (context, constraints) {
-          return Column(
-            children: [
-              Container(
-                height: kToolbarHeight + viewPaddingTop,
-                child: AppBar(
-                  backgroundColor: _backgroundColor,
-                  elevation: 0,
-                  title: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Text("${student.firstname}${student.middlename.isNotEmpty ? " ${student.middlename}" : ""} ${student.lastname}"),
+          return Align(
+            alignment: AlignmentGeometry.lerp(Alignment.center, Alignment.topLeft, 1 - progress)!,
+            child: Stack(
+              children: [
+                Container(
+                  height: kToolbarHeight + viewPaddingTop,
+                  child: AppBar(
+                    backgroundColor: _backgroundColor,
+                    elevation: 0,
+                    title: Container(
+                      padding: EdgeInsets.only(left: progress * 35),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Text("${student.firstname}${student.middlename.isNotEmpty ? " ${student.middlename}" : ""} ${student.lastname}"),
+                        ],
+                      ),
+                    ),
+                    actions: [
                     ],
                   ),
-                  actions: [
-                  ],
                 ),
-              ),
-              Expanded(
-                child: Stack(
-                  children: [
-                    Center(
-                      child: Container(
-                        padding: EdgeInsets.only(bottom: 10 * (1 - progress) + 10),
-                        child: InkWell(
-                          onTap: () {},// => debugPickImage(context, true, student.studentId), // TOOD: remove
-                          child: Hero(
-                              tag: "hero${student.studentId}",
-                              child: () {
-                                if (student.profileImage == null) {
-                                  return Image.asset(
-                                    'assets${Platform.pathSeparator}images${Platform.pathSeparator}squirrel.png',);
-                                } else {
-                                  return Container(
-                                    margin: const EdgeInsets.only(top: 5),
-                                    clipBehavior: Clip.antiAlias,
-                                    decoration: ShapeDecoration(
-                                      //shadows: [BoxShadow(color: Colors.black, blurRadius: 10, offset: Offset(0.0, 5.0))],
-                                      shape: ContinuousRectangleBorder(borderRadius: BorderRadius.circular(64 + (1 - progress) * 64))),
-                                      child: Image.memory(student.profileImage!
-                                    )
-                                  );
-                                }
-                              } ()
+                Container(
+                  child: Stack(
+                    children: [
+                      Align(
+                        alignment: AlignmentGeometry.lerp(Alignment.center, Alignment.topLeft, progress)!,
+                        child: Container(
+                          padding: EdgeInsets.only(bottom: 10 * (1 - progress) + 5, top: kToolbarHeight * (1 - progress) + viewPaddingTop + 5, left: 50, right: 50),
+                          child: InkWell(
+                            onTap: () {},// => debugPickImage(context, true, student.studentId), // TOOD: remove
+                            child: Hero(
+                                tag: "hero${student.studentId}",
+                                child: () {
+                                  if (student.profileImage == null) {
+                                    return Image.asset(
+                                      'assets${Platform.pathSeparator}images${Platform.pathSeparator}squirrel.png',);
+                                  } else {
+                                    return SimpleShadow(
+                                      child: Container(
+                                        clipBehavior: Clip.antiAlias,
+                                        decoration: ShapeDecoration(
+                                          shape: ContinuousRectangleBorder(borderRadius: BorderRadius.circular(30 + (1 - progress) * 100))),
+                                          child: Image.memory(student.profileImage!
+                                        )
+                                      ),
+                                    );
+                                  }
+                                } ()
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                    Visibility(
-                      visible: GetIt.I<StudentService>().hasBirthday(student.studentId),
-                      child: Align(
-                        alignment: Alignment.topLeft,
-                        child: ConfettiWidget(
-                          blastDirection: 0,
-                          gravity: 0.05,
-                          canvas: Size(constraints.maxWidth, constraints.maxHeight - kToolbarHeight),
-                          maxBlastForce: 5, minBlastForce: 2, numberOfParticles: 2, emissionFrequency: 0.02, confettiController: _confettiController, blastDirectionality: BlastDirectionality.directional,
-                        ),
-                      ),
-                    ),
-                    Visibility(
-                      visible: GetIt.I<StudentService>().hasBirthday(student.studentId),
-                      child: Align(
-                        alignment: Alignment.topRight,
-                        child: ConfettiWidget(
-                          blastDirection: pi,
-                          gravity: 0.05,
-                          canvas: Size(constraints.maxWidth, constraints.maxHeight - kToolbarHeight),
-                          maxBlastForce: 5, minBlastForce: 2, numberOfParticles: 2, emissionFrequency: 0.02, confettiController: _confettiController, blastDirectionality: BlastDirectionality.directional,
-                        ),
-                      ),
-                    ),
-                    Container(
-                      margin: EdgeInsets.only(right: 15.0),
-                      child: Align(
-                        alignment: Alignment.bottomRight,
+                      ClipRect(
                         child: Visibility(
                           visible: GetIt.I<StudentService>().hasBirthday(student.studentId),
-                          child: InkWell(onTap: () {
-                            _confettiController.play();
-                            Future.delayed(const Duration(seconds: 1)).then((value) => _confettiController.stop());
-                          },
-                              child: SimpleShadow(opacity: 0.4, child: Image.asset('assets${Platform.pathSeparator}images${Platform.pathSeparator}cupcake.png', height: 60))),
+                          child: Align(
+                            alignment: Alignment.topLeft,
+                            child: ConfettiWidget(
+                              blastDirection: 0,
+                              gravity: 0.05,
+                              shouldLoop: true,
+                              maxBlastForce: 5, minBlastForce: 2, numberOfParticles: 2, emissionFrequency: 0.02, confettiController: _confettiController, blastDirectionality: BlastDirectionality.directional,
+                            ),
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                      ClipRect(
+                        child: Visibility(
+                          visible: GetIt.I<StudentService>().hasBirthday(student.studentId),
+                          child: Align(
+                            alignment: Alignment.topRight,
+                            child: ConfettiWidget(
+                              blastDirection: pi,
+                              gravity: 0.05,
+                              maxBlastForce: 5, minBlastForce: 2, numberOfParticles: 2, emissionFrequency: 0.02, confettiController: _confettiController, blastDirectionality: BlastDirectionality.directional,
+                            ),
+                          ),
+                        ),
+                      ),
+                      Container(
+                        margin: EdgeInsets.only(right: 15.0),
+                        child: Align(
+                          alignment: Alignment.bottomRight,
+                          child: Visibility(
+                            visible: GetIt.I<StudentService>().hasBirthday(student.studentId),
+                            child: InkWell(onTap: () {
+                              _confettiController.play();
+                              Future.delayed(const Duration(seconds: 1)).then((value) => _confettiController.stop());
+                            },
+                                child: SimpleShadow(opacity: 0.4, child: Image.asset('assets${Platform.pathSeparator}images${Platform.pathSeparator}cupcake.png', height: (progress * (kToolbarHeight - 5) + ((1 - progress) * 60))))),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           );
         }
       ),
@@ -648,7 +637,7 @@ class _SliverHeaderDelegate extends SliverPersistentHeaderDelegate {
   double get maxExtent => expandedHeight + kToolbarHeight + viewPaddingTop;
 
   @override
-  double get minExtent => collapsedHeight + kToolbarHeight + viewPaddingTop;
+  double get minExtent => kToolbarHeight + viewPaddingTop;
 
   @override
   bool shouldRebuild(covariant SliverPersistentHeaderDelegate oldDelegate) {

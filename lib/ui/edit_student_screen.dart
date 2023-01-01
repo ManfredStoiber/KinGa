@@ -122,7 +122,6 @@ class _EditStudentScreenState extends State<EditStudentScreen>
                     Navigator.pop(context);
                     Navigator.pop(context);
                     Navigator.pop(context);
-                    Navigator.pop(context);
                   },);
                 }
               });

@@ -200,13 +200,15 @@ class ShowIncidencesWidgetState extends State<ShowIncidencesWidget> with Automat
 
               },
             ),
-            AnimatedList(key: widget.listKey,
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              initialItemCount: state.incidences.length,
-              itemBuilder: (context, index, animation) {
-                return AnimatedSlideMenu(key: UniqueKey(), animation: animation, index: index, listKey: widget.listKey, studentId: widget.studentId,);
-            },),
+            Container(
+              child: AnimatedList(key: widget.listKey,
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                initialItemCount: state.incidences.length,
+                itemBuilder: (context, index, animation) {
+                  return AnimatedSlideMenu(key: UniqueKey(), animation: animation, index: index, listKey: widget.listKey, studentId: widget.studentId,);
+              },),
+            ),
             BlocBuilder<IncidencesCubit, IncidencesState>(
               builder: (context, state) {
                 if (state is IncidencesLoaded && state.incidences.isNotEmpty || state is IncidencesLoaded && !state.hasIncidences) {
