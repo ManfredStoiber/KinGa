@@ -261,7 +261,6 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                                     },
                                     onTargetClick: () {
                                       setState(() {
-                                        activeSearch = true;
                                         continueShowcase(Keys.searchKey);
                                       });
                                     },
