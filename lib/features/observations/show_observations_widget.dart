@@ -9,7 +9,6 @@ import 'package:kinga/features/observations/domain/entity/observation.dart';
 import 'package:kinga/features/observations/domain/entity/observation_form.dart';
 import 'package:kinga/features/observations/domain/entity/observation_form_part.dart';
 import 'package:kinga/features/observations/domain/entity/observation_form_part_section.dart';
-import 'package:kinga/features/observations/show_observations_widget.dart';
 import 'package:kinga/features/observations/ui/answer_observation_question_dialog.dart';
 import 'package:kinga/features/observations/ui/bloc/observations_cubit.dart';
 import 'package:kinga/ui/widgets/drop.dart';
@@ -47,17 +46,17 @@ class _ShowObservationsWidgetState extends State<ShowObservationsWidget> with Au
                           IntrinsicWidth(
                             child: Container(
                               margin: EdgeInsets.symmetric(horizontal: 15),
-                              decoration: ShapeDecoration(shape: OutlineInputBorder(borderRadius: BorderRadius.circular(50), borderSide: BorderSide(color: ColorSchemes.kingacolor, width: 0)), color: ColorSchemes.kingacolor),
+                              decoration: ShapeDecoration(shape: OutlineInputBorder(borderRadius: BorderRadius.circular(50), borderSide: const BorderSide(color: ColorSchemes.kingacolor, width: 0)), color: ColorSchemes.kingacolor),
                               child: DropdownButtonFormField<ObservationForm?>(
                                 style: const TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.w500),
                                 decoration: InputDecoration (
                                     isDense: true,
-                                    prefixIcon: Container(padding: const EdgeInsets.fromLTRB(4, 3, 2, 5), child: Icon(size: 24, Icons.edit_note, color: Colors.black)),
+                                    prefixIcon: Container(padding: const EdgeInsets.fromLTRB(10, 5, 5, 5), child: Icon(size: 20, Icons.switch_account_outlined, color: Colors.black)),
                                     prefixIconConstraints: const BoxConstraints(maxHeight: 30),
                                     enabledBorder: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(16)), borderSide: BorderSide(color: Colors.transparent)),
                                     focusedBorder: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(16)), borderSide: BorderSide(color: Colors.transparent)),
                                     border: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(16)), borderSide: BorderSide(color: Colors.transparent)),
-                                    contentPadding: const EdgeInsets.only(left: 0, right: 0, top: 4, bottom: 4)
+                                    contentPadding: const EdgeInsets.only(left: 0, right: 0, top: 5, bottom: 5)
                                 ),
                                 alignment: Alignment.center,
                                 value: state.selectedObservationForm,
@@ -77,7 +76,7 @@ class _ShowObservationsWidgetState extends State<ShowObservationsWidget> with Au
                           Expanded(
                             child: Container(
                               margin: EdgeInsets.only(right: 15),
-                              decoration: ShapeDecoration(shape: OutlineInputBorder(borderRadius: BorderRadius.circular(50), borderSide: BorderSide(color: ColorSchemes.kingacolor, width: 0)), color: ColorSchemes.kingacolor),
+                              decoration: ShapeDecoration(shape: OutlineInputBorder(borderRadius: BorderRadius.circular(50), borderSide: const BorderSide(color: ColorSchemes.kingacolor, width: 0)), color: ColorSchemes.kingacolor),
                               child: DropdownButtonFormField<ObservationFormPart?>(
                                 selectedItemBuilder: (context) => (){
                                   List<DropdownMenuItem<ObservationFormPart?>> dropdownMenuItems = [];
@@ -90,12 +89,12 @@ class _ShowObservationsWidgetState extends State<ShowObservationsWidget> with Au
                                 style: const TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.w500),
                                 decoration: InputDecoration (
                                     isDense: true,
-                                    prefixIcon: Container(padding: const EdgeInsets.fromLTRB(4, 3, 2, 5), child: Icon(size: 24, Icons.format_list_numbered, color: Colors.black)),
+                                    prefixIcon: Container(padding: const EdgeInsets.fromLTRB(10, 5, 5, 5), child: Icon(size: 20, Icons.numbers, color: Colors.black)),
                                     prefixIconConstraints: const BoxConstraints(maxHeight: 30),
                                     enabledBorder: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(16)), borderSide: BorderSide(color: Colors.transparent)),
                                     focusedBorder: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(16)), borderSide: BorderSide(color: Colors.transparent)),
                                     border: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(16)), borderSide: BorderSide(color: Colors.transparent)),
-                                    contentPadding: const EdgeInsets.only(left: 0, right: 0, top: 4, bottom: 4)
+                                    contentPadding: const EdgeInsets.only(left: 0, right: 0, top: 5, bottom: 5)
                                 ),
                                 alignment: Alignment.center,
                                 value: state.selectedPart,
