@@ -6,11 +6,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:get_it/get_it.dart';
-import 'package:image_cropper/image_cropper.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:kinga/constants/colors.dart';
 import 'package:kinga/constants/keys.dart';
 import 'package:kinga/constants/strings.dart';
+import 'package:kinga/domain/entity/caregiver.dart';
 import 'package:kinga/domain/entity/incidence.dart';
 import 'package:kinga/domain/entity/student.dart';
 import 'package:kinga/domain/student_service.dart';
@@ -122,6 +121,8 @@ class _ShowStudentScreenState extends State<ShowStudentScreen>
 
     var cubit = BlocProvider.of<StudentsCubit>(context);
     var color = cubit.isAbsent(student.studentId) ? ColorSchemes.absentColor : cubit.isAttendant(student.studentId) ? ColorSchemes.attendantColor : ColorSchemes.notAttendantColor;
+
+    List<Caregiver> caregivers = List.from(student.caregivers.where((element) => element.phoneNumbers.isNotEmpty));
 
     return ShowCaseWidget(
         autoPlay: true,
@@ -318,7 +319,8 @@ class _ShowStudentScreenState extends State<ShowStudentScreen>
           ),
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-        bottomNavigationBar: Container(color: ColorSchemes.backgroundColor,
+        bottomNavigationBar: caregivers.isNotEmpty ?
+          Container(color: ColorSchemes.backgroundColor,
           child: Showcase(
             key: showcaseKeys[Keys.emergencyContactsKey] ?? GlobalKey(),
             description: Strings.emergencyContactsTooltip,
@@ -334,7 +336,7 @@ class _ShowStudentScreenState extends State<ShowStudentScreen>
                 showModalBottomSheet(
                   context: context,
                   builder: (context) {
-                    return EmergencyBottomSheet(student.caregivers);
+                    return EmergencyBottomSheet(caregivers);
                   },
                   shape: const RoundedRectangleBorder(
                       borderRadius: BorderRadius.vertical(
@@ -361,7 +363,7 @@ class _ShowStudentScreenState extends State<ShowStudentScreen>
                     showModalBottomSheet(
                       context: context,
                       builder: (context) {
-                        return EmergencyBottomSheet(student.caregivers);
+                        return EmergencyBottomSheet(caregivers);
                       },
                       shape: const RoundedRectangleBorder(
                         borderRadius: BorderRadius.vertical(
@@ -374,7 +376,7 @@ class _ShowStudentScreenState extends State<ShowStudentScreen>
               )),
             ),
           ),
-        ),
+        ) : null,
         floatingActionButton: FloatingActionButton(
             heroTag: 'fabae',
             onPressed: () {
@@ -527,64 +529,6 @@ class _ShowStudentScreenState extends State<ShowStudentScreen>
       ShowCaseWidget.of(showStudentContext!).startShowCase(showcases);
     }
     SharedPrefsUtils.updateFinishedShowcases(key);
-  }
-
-  Container buildReadOnlyTextField(String label, String text) {
-    TextEditingController controller = TextEditingController();
-    controller.text = text;
-    if (text.isEmpty) return Container();
-
-    return Container(
-      margin: const EdgeInsets.all(10),
-      child: TextField(
-        enabled: false,
-        readOnly: true,
-        decoration:
-            InputDecoration(border: const OutlineInputBorder(), labelText: label),
-        controller: controller,
-      ),
-    );
-  }
-
-  Future<bool> debugPickImage(BuildContext context, bool camera, String studentId) async {
-    final ImagePicker picker = ImagePicker();
-    final XFile? image = await picker.pickImage(
-        source: camera ? ImageSource.camera : ImageSource.gallery);
-    if (image != null) {
-      CroppedFile? croppedFile = await ImageCropper().cropImage(
-          sourcePath: image.path,
-          aspectRatioPresets: [CropAspectRatioPreset.square],
-          cropStyle: CropStyle.circle,
-          uiSettings: [
-            AndroidUiSettings(
-              lockAspectRatio: true,
-              initAspectRatio: CropAspectRatioPreset.square,
-              hideBottomControls: true,
-              //statusBarColor: Theme.of(context).primaryColor,
-              toolbarColor: Theme
-                  .of(context)
-                  .primaryColor,
-              backgroundColor: Theme
-                  .of(context)
-                  .backgroundColor,
-            ),
-            IOSUiSettings(
-              aspectRatioLockEnabled: true,
-              aspectRatioPickerButtonHidden: true,
-              rectWidth: 1,
-              rectHeight: 1,
-            )
-          ]);
-      if (croppedFile != null) {
-        croppedFile.readAsBytes().then((value) {
-          setState(() {
-            _studentService.setProfileImage(studentId, value);
-          });
-        });
-        return Future(() => true);
-      }
-    }
-    return Future(() => false);
   }
 }
 

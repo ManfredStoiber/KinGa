@@ -44,7 +44,7 @@ class Strings {
   static const String incorrectEmailFormat = 'Bitte gültige E-Mail-Adresse angeben.';
   static const String incorrectPhoneNumberFormat = 'Bitte gültige Telefonnummer angeben.';
   static const String infoGeneral = 'Allgemeines';
-  static const String infoPickup = 'Kontaktpersonen';
+  static const String infoPickup = 'Abholberechtigte';
   static const String infoHealth = 'Gesundheit';
   static const String institutionCredentialsConfirm = "Hast du Id und Passwort und/oder QR-Code an einem sicheren Ort verwahrt? Ohne diese Informationen sind deine Daten aufgrund der sicheren Verschlüsselung unwiderruflich verloren!";
   static const String institutionCredentialsHint = "Bitte verwahre die ID und das Passwort an einem sicheren Ort. Alternativ kannst du auch diesen QR Code speichern oder ausdrucken.";

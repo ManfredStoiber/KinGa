@@ -171,13 +171,10 @@ class _CreateCaregiversState extends State<CreateCaregivers> with AutomaticKeepA
                               const InputDecoration(border: OutlineInputBorder(), labelText: Strings.phoneNumber),
                               validator: (value) {
                                 RegExp phoneNumber = RegExp(r"^[\+]?[0-9]+$"); // TODO: fix regex
-                                if (value == null || value.trim().isEmpty) {
-                                  return '${Strings.phoneNumber} ${Strings.requiredFieldMessage}';
-                                } else if (!phoneNumber.hasMatch(value)){
+                                if (value != null && !phoneNumber.hasMatch(value)){
                                   Strings.incorrectPhoneNumberFormat;
-                                } else {
-                                  return null;
                                 }
+                                return null;
                               },
                             ),
                           ),
@@ -185,19 +182,8 @@ class _CreateCaregiversState extends State<CreateCaregivers> with AutomaticKeepA
                         IconButton(
                             onPressed: () {
                               setState(() {
-                                if (widget.caregivers[i]['phoneNumbers'].length > 1) {
-                                  FocusScope.of(context).unfocus();
-                                  widget.caregivers[i]['phoneNumbers'].remove(phoneNumber);
-                                } else {
-                                  showDialog(context: context, builder: (context) => AlertDialog(
-                                    title: const Text(Strings.requiredPhoneNumber),
-                                    actions: [
-                                      TextButton(onPressed: () {
-                                        Navigator.of(context).pop();
-                                      }, child: const Text(Strings.okay)),
-                                    ],
-                                  ));
-                                }
+                                FocusScope.of(context).unfocus();
+                                widget.caregivers[i]['phoneNumbers'].remove(phoneNumber);
                               });
                             },
                             icon: const Icon(
@@ -226,7 +212,7 @@ class _CreateCaregiversState extends State<CreateCaregivers> with AutomaticKeepA
                 child: const Icon(Icons.add),
                 onPressed: () {
                   setState(() {
-                    widget.caregivers.add({'phoneNumbers': [['', '']]});
+                    widget.caregivers.add({'phoneNumbers': []});
                   });
                 },
               ),

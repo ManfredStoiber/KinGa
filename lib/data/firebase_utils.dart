@@ -68,7 +68,6 @@ class FirebaseUtils {
       Uint8List(0),
       caregivers.toList(),
       attendances.toList(),
-      [],
       absences,
       [],
       [],
