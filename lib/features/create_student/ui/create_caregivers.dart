@@ -24,7 +24,7 @@ class CreateCaregivers extends StatefulWidget {
   State<CreateCaregivers> createState() => _CreateCaregiversState();
 }
 
-class _CreateCaregiversState extends State<CreateCaregivers> {
+class _CreateCaregiversState extends State<CreateCaregivers> with AutomaticKeepAliveClientMixin {
   @override
   Widget build(BuildContext context) {
 
@@ -271,4 +271,7 @@ class _CreateCaregiversState extends State<CreateCaregivers> {
       ),
     );
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }

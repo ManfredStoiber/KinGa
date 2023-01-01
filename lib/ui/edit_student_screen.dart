@@ -135,18 +135,19 @@ class _EditStudentScreenState extends State<EditStudentScreen>
             Tab(text: Strings.permission),
           ],
             onTap: (index) async {
-              if (index >= _tabController.previousIndex && !(tabKeys[_tabController.previousIndex].currentState?.validate() ?? true)) {
-                _tabController.animateTo(_tabController.previousIndex, duration: const Duration(seconds: 0));
-                await Future.delayed(const Duration(milliseconds: 100));
-                tabKeys[_tabController.index].currentState?.validate();
-              } else if (index == _maxTabIndex) {
+              if (index == _maxTabIndex) {
                 for (var i = 0; i < _maxTabIndex; i++) {
-                  if (!(tabKeys[i].currentState?.validate() ?? false)) {
+                  if (!(tabKeys[i].currentState?.validate() ?? false) && !(tabKeys[i].currentState?.validate() == null && widget.student != null)) {
                     _tabController.animateTo(i, duration: const Duration(seconds: 0));
                     await Future.delayed(const Duration(milliseconds: 100));
                     tabKeys[i].currentState?.validate();
+                    break;
                   }
                 }
+              } else if (index >= _tabController.previousIndex && !(tabKeys[_tabController.previousIndex].currentState?.validate() ?? true)) {
+                _tabController.animateTo(_tabController.previousIndex, duration: const Duration(seconds: 0));
+                await Future.delayed(const Duration(milliseconds: 100));
+                tabKeys[_tabController.index].currentState?.validate();
               }
             },),
         ),
@@ -229,7 +230,6 @@ class _EditStudentScreenState extends State<EditStudentScreen>
                                 s.caregivers = caregivers;
                                 s.permissions = permissions;
                                 BlocProvider.of<StudentsCubit>(context).updateStudent(s, _profileImage).then((_) {
-                                  Navigator.pop(context);
                                   Navigator.pop(context);
                                   Navigator.pop(context);
                                   Navigator.pop(context);

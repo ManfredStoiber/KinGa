@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:kinga/constants/colors.dart';
 import 'package:kinga/constants/strings.dart';
 import 'package:kinga/domain/student_service.dart';
 import 'package:kinga/util/date_utils.dart';
@@ -23,7 +22,7 @@ class CreateBasicInfo extends StatefulWidget {
   State<CreateBasicInfo> createState() => _CreateBasicInfoState();
 }
 
-class _CreateBasicInfoState extends State<CreateBasicInfo> {
+class _CreateBasicInfoState extends State<CreateBasicInfo> with AutomaticKeepAliveClientMixin {
   final GlobalKey<FormState> groupNameKey = GlobalKey<FormState>();
   StudentService studentService = GetIt.I<StudentService>();
   late Set<String> groups;
@@ -293,4 +292,7 @@ class _CreateBasicInfoState extends State<CreateBasicInfo> {
     }
     return Future(() => false);
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }

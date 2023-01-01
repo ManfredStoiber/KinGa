@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:kinga/constants/colors.dart';
 import 'package:kinga/constants/strings.dart';
 import 'package:kinga/features/permissions/domain/permission_service.dart';
 
@@ -13,7 +12,7 @@ class CreatePermissions extends StatefulWidget {
   State<CreatePermissions> createState() => _CreatePermissionsState();
 }
 
-class _CreatePermissionsState extends State<CreatePermissions> {
+class _CreatePermissionsState extends State<CreatePermissions> with AutomaticKeepAliveClientMixin {
   PermissionService permissionService = GetIt.I<PermissionService>();
   List<String> allPermissions = [];
   Map<String, bool> currentPermissions = {};
@@ -86,4 +85,7 @@ class _CreatePermissionsState extends State<CreatePermissions> {
     }
     currentPermissions[allPermissions.elementAt(index)] = !(currentPermissions[allPermissions.elementAt(index)] ?? false);
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }
