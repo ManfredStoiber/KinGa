@@ -119,10 +119,6 @@ class _ShowPermissionScreenState extends State<ShowPermissionScreen> {
               ],
             ),
             body: Column(children: [
-              Row(children: [
-                Container(margin: const EdgeInsets.only(left: 5, top: 5, right: 5), child: const Icon(Icons.groups)),
-                Container(margin: const EdgeInsets.only(left: 5, top: 5), child: const Text(Strings.selectGroups))
-              ],),
               Showcase(
                 key: filterPermissionKey,
                 description: Strings.filterPermissionsTooltip,
@@ -141,96 +137,104 @@ class _ShowPermissionScreenState extends State<ShowPermissionScreen> {
                     SharedPrefsUtils.updateFinishedShowcases(Keys.filterPermissionKey);
                   });
                 },
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(children: (){
-                    List<Widget> selectedChips = [];
-                    List<Widget> unselectedChips = [];
-                    for (var group in groupSelection.keys.toList()..sort()) {
-                      var chip = Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 5),
-                        child: FilterChip(
-                          showCheckmark: false,
-                          avatar: groupSelection[group] ?? false ? const CircleAvatar(backgroundColor: Colors.transparent, foregroundColor: Colors.black, child: Icon(Icons.check)) : null,
-                          selectedColor: ColorSchemes.kingacolor,
-                          label: Text(group),
-                          selected: groupSelection[group] ?? false,
-                          onSelected: (selected) {
-                            setState(() {
-                              groupSelection[group] = !(groupSelection[group] ?? false);
-                            });
-                          },
-                        ),
-                      );
-                      if (groupSelection[group] ?? false) {
-                        selectedChips.add(chip);
-                      } else {
-                        unselectedChips.add(chip);
-                      }
-                    }
-                    return selectedChips + unselectedChips;
-                  }(),),
-                ),
-              ),
-              const Divider(height: 1,),
-              Row(
-                children: [
-                  Row(
-                    children: [
-                      Container(margin: const EdgeInsets.all(5), child: const Icon(Icons.filter_alt)),
-                      Container(margin: const EdgeInsets.all(5), child: const Text(Strings.selectFilter)),
-                    ],
-                  ),
-                  Expanded(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        IntrinsicWidth(
-                          child: Container(
-                            decoration: ShapeDecoration(shape: OutlineInputBorder(borderRadius: BorderRadius.circular(50), borderSide: BorderSide(color: permitted ? ColorSchemes.kingacolor : ColorSchemes.errorColor, width: 0)), color: permitted ? ColorSchemes.kingacolor : ColorSchemes.errorColor),
-                            child: DropdownButtonFormField<bool>(
-                              style: const TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.w500),
-                              decoration: InputDecoration (
-                                  isDense: true,
-                                  prefixIcon: Container(padding: const EdgeInsets.fromLTRB(4, 3, 2, 5), child: Icon(size: 24, permitted ? Icons.check : Icons.close, color: Colors.black)),
-                                  prefixIconConstraints: const BoxConstraints(maxHeight: 30),
-                                  enabledBorder: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(16)), borderSide: BorderSide(color: Colors.transparent)),
-                                  focusedBorder: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(16)), borderSide: BorderSide(color: Colors.transparent)),
-                                  border: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(16)), borderSide: BorderSide(color: Colors.transparent)),
-                                  contentPadding: const EdgeInsets.only(left: 0, right: 0, top: 4, bottom: 4)
-                              ),
-                              alignment: Alignment.center,
-                              value: permitted,
-                              items: const [
-                                DropdownMenuItem(value: true, child: Text(Strings.permitted)),
-                                DropdownMenuItem(value: false, child: Text(Strings.prohibited)),
-                              ],
-                              onChanged: (value) {
+                child: Column(
+                  children: [
+                    Row(children: [
+                      Container(margin: const EdgeInsets.only(left: 5, top: 5, right: 5), child: const Icon(Icons.groups)),
+                      Container(margin: const EdgeInsets.only(left: 5, top: 5), child: const Text(Strings.selectGroups))
+                    ],),
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(children: (){
+                        List<Widget> selectedChips = [];
+                        List<Widget> unselectedChips = [];
+                        for (var group in groupSelection.keys.toList()..sort()) {
+                          var chip = Container(
+                            margin: const EdgeInsets.symmetric(horizontal: 5),
+                            child: FilterChip(
+                              showCheckmark: false,
+                              avatar: groupSelection[group] ?? false ? const CircleAvatar(backgroundColor: Colors.transparent, foregroundColor: Colors.black, child: Icon(Icons.check)) : null,
+                              selectedColor: ColorSchemes.kingacolor,
+                              label: Text(group),
+                              selected: groupSelection[group] ?? false,
+                              onSelected: (selected) {
                                 setState(() {
-                                  permitted = value ?? permitted;
+                                  groupSelection[group] = !(groupSelection[group] ?? false);
                                 });
                               },
                             ),
-                          ),
+                          );
+                          if (groupSelection[group] ?? false) {
+                            selectedChips.add(chip);
+                          } else {
+                            unselectedChips.add(chip);
+                          }
+                        }
+                        return selectedChips + unselectedChips;
+                      }(),),
+                    ),
+                    const Divider(height: 1,),
+                    Row(
+                      children: [
+                        Row(
+                          children: [
+                            Container(margin: const EdgeInsets.all(5), child: const Icon(Icons.filter_alt)),
+                            Container(margin: const EdgeInsets.all(5), child: const Text(Strings.selectFilter)),
+                          ],
                         ),
-                        FilterChip(
-                          showCheckmark: false,
-                          avatar: onlyAttendantStudents ? const CircleAvatar(backgroundColor: Colors.transparent, foregroundColor: Colors.black, child: Icon(Icons.check)) : null,
-                          label: const Text(Strings.filterAttendant),
-                          selected: onlyAttendantStudents,
-                          selectedColor: ColorSchemes.kingacolor,
-                          onSelected: (selected) {
-                            setState(() {
-                              onlyAttendantStudents = !onlyAttendantStudents;
-                            });
-                          },
+                        Expanded(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              IntrinsicWidth(
+                                child: Container(
+                                  decoration: ShapeDecoration(shape: OutlineInputBorder(borderRadius: BorderRadius.circular(50), borderSide: BorderSide(color: permitted ? ColorSchemes.kingacolor : ColorSchemes.errorColor, width: 0)), color: permitted ? ColorSchemes.kingacolor : ColorSchemes.errorColor),
+                                  child: DropdownButtonFormField<bool>(
+                                    style: const TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.w500),
+                                    decoration: InputDecoration (
+                                        isDense: true,
+                                        prefixIcon: Container(padding: const EdgeInsets.fromLTRB(4, 3, 2, 5), child: Icon(size: 24, permitted ? Icons.check : Icons.close, color: Colors.black)),
+                                        prefixIconConstraints: const BoxConstraints(maxHeight: 30),
+                                        enabledBorder: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(16)), borderSide: BorderSide(color: Colors.transparent)),
+                                        focusedBorder: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(16)), borderSide: BorderSide(color: Colors.transparent)),
+                                        border: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(16)), borderSide: BorderSide(color: Colors.transparent)),
+                                        contentPadding: const EdgeInsets.only(left: 0, right: 0, top: 4, bottom: 4)
+                                    ),
+                                    alignment: Alignment.center,
+                                    value: permitted,
+                                    items: const [
+                                      DropdownMenuItem(value: true, child: Text(Strings.permitted)),
+                                      DropdownMenuItem(value: false, child: Text(Strings.prohibited)),
+                                    ],
+                                    onChanged: (value) {
+                                      setState(() {
+                                        permitted = value ?? permitted;
+                                      });
+                                    },
+                                  ),
+                                ),
+                              ),
+                              FilterChip(
+                                showCheckmark: false,
+                                avatar: onlyAttendantStudents ? const CircleAvatar(backgroundColor: Colors.transparent, foregroundColor: Colors.black, child: Icon(Icons.check)) : null,
+                                label: const Text(Strings.filterAttendant),
+                                selected: onlyAttendantStudents,
+                                selectedColor: ColorSchemes.kingacolor,
+                                onSelected: (selected) {
+                                  setState(() {
+                                    onlyAttendantStudents = !onlyAttendantStudents;
+                                  });
+                                },
+                              ),
+                            ],
+                          ),
                         ),
                       ],
                     ),
-                  ),
-                ],
+                    const Divider(height: 1,),
+                  ],
+                ),
               ),
-              const Divider(height: 1,),
               Expanded(
                 child: () {
                   var list = (students..sort()).where((student) =>
