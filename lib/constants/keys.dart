@@ -20,6 +20,7 @@ class Keys {
 
   // Showcases
   static const String finishedShowcases = "finishedShowcases";
+  static const String filterPermissionKey = "filterPermissionKey";
   // AttendanceScreen
   static const String attendanceKey = "attendanceKey";
   static const String createPermissionKey = "createPermissionKey";

@@ -157,6 +157,7 @@ class Strings {
   static const String editStudentDataTooltip = 'Tippe hier, um die Stammdaten dieses Kinds zu bearbeiten';
   static const String emergencyContactsTooltip = 'Notfallkontakte kannst du hier anrufen';
   static const String filterStudentTooltip = 'Hier kannst du nach Gruppen filtern';
+  static const String filterPermissionsTooltip = 'Hier kannst du nach Gruppen und Anwesenheits- sowie Berechtigungsstatus filtern';
   static const String incidenceTooltip = 'Hier siehst du, dass heute Ereignisse für das Kind angelegt wurden';
   static const String searchStudentTooltip = 'Hier kannst du nach Kindernamen suchen';
   static const String showHelp = 'Hilfe anzeigen';
