@@ -33,7 +33,6 @@ class _CreateCaregiversState extends State<CreateCaregivers> with AutomaticKeepA
       child: ListView.builder(itemCount: widget.caregivers.length + 1, itemBuilder: (context, i) {
         if (i < widget.caregivers.length) {
           return Card(
-            key: UniqueKey(),
             margin: const EdgeInsets.all(10),
             child: Column(
                 children: [
@@ -83,8 +82,18 @@ class _CreateCaregiversState extends State<CreateCaregivers> with AutomaticKeepA
                           child: Container(
                             margin: const EdgeInsets.all(10),
                             child: DropdownButtonFormField<String>(
+                              isExpanded: true,
                               value: phoneNumber[0].toString().isNotEmpty ? phoneNumber[0] : null,
                               hint: const Text(Strings.phoneLabel),
+                              selectedItemBuilder: (context) => [
+                                for (var label in widget.phoneLabels)
+                                  DropdownMenuItem(
+                                      value: label, child: Text(softWrap: false, overflow: TextOverflow.fade, maxLines: 1, label)),
+                                DropdownMenuItem(
+                                    value: Strings.custom,
+                                    child: Text(Strings.custom, style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold))
+                                )
+                              ],
                               items: [
                                 for (var label in widget.phoneLabels)
                                   DropdownMenuItem(
@@ -160,6 +169,7 @@ class _CreateCaregiversState extends State<CreateCaregivers> with AutomaticKeepA
                           child: Container(
                             margin: const EdgeInsets.fromLTRB(10, 10, 0, 10),
                             child: TextFormField(
+                              key: UniqueKey(),
                               keyboardType: TextInputType.phone,
                               initialValue: phoneNumber[1],
                               textInputAction: TextInputAction.next,
@@ -170,9 +180,9 @@ class _CreateCaregiversState extends State<CreateCaregivers> with AutomaticKeepA
                               decoration:
                               const InputDecoration(border: OutlineInputBorder(), labelText: Strings.phoneNumber),
                               validator: (value) {
-                                RegExp phoneNumber = RegExp(r"^[\+]?[0-9]+$"); // TODO: fix regex
-                                if (value != null && !phoneNumber.hasMatch(value)){
-                                  Strings.incorrectPhoneNumberFormat;
+                                RegExp phoneNumber = RegExp(r"^[\+]?[0-9]+$");
+                                if (value != null && value != "" && !phoneNumber.hasMatch(value)){
+                                  return Strings.incorrectPhoneNumberFormat;
                                 }
                                 return null;
                               },
@@ -227,6 +237,7 @@ class _CreateCaregiversState extends State<CreateCaregivers> with AutomaticKeepA
     return Container(
       margin: const EdgeInsets.all(10),
       child: TextFormField(
+        key: UniqueKey(),
         textCapitalization: TextCapitalization.sentences,
         initialValue: caregiver[property],
         textInputAction: TextInputAction.next,

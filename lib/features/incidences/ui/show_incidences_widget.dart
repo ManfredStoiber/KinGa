@@ -219,7 +219,7 @@ class ShowIncidencesWidgetState extends State<ShowIncidencesWidget> with Automat
                       children: [
                         Container(
                           margin: const EdgeInsets.all(20),
-                          width: 50,
+                          width: 100,
                           child: SimpleShadow(
                             child: Opacity(
                                 opacity: 0.4,

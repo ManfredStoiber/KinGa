@@ -390,6 +390,7 @@ class _ShowStudentScreenState extends State<ShowStudentScreen>
                             key: showcaseKeys[Keys.createIncidenceKey] ?? GlobalKey(),
                             description: Strings.createIncidenceTooltip,
                             targetShapeBorder: const CircleBorder(),
+                            targetBorderRadius: BorderRadius.circular(30),
                             targetPadding: const EdgeInsets.all(15),
                             disposeOnTap: true,
                             onToolTipClick: () {
@@ -415,6 +416,7 @@ class _ShowStudentScreenState extends State<ShowStudentScreen>
                                 key: showcaseKeys[Keys.editObservationsKey] ?? GlobalKey(),
                                 description: Strings.editObservationsTooltip,
                                 targetShapeBorder: const CircleBorder(),
+                                targetBorderRadius: BorderRadius.circular(30),
                                 targetPadding: const EdgeInsets.all(15),
                                 disposeOnTap: true,
                                 onToolTipClick: () {
@@ -444,6 +446,7 @@ class _ShowStudentScreenState extends State<ShowStudentScreen>
                                   key: showcaseKeys[Keys.createAbsenceKey] ?? GlobalKey(),
                                   description: Strings.createAbsenceTooltip,
                                   targetShapeBorder: const CircleBorder(),
+                                  targetBorderRadius: BorderRadius.circular(30),
                                   targetPadding: const EdgeInsets.all(15),
                                   disposeOnTap: true,
                                   onToolTipClick: () {
@@ -473,6 +476,7 @@ class _ShowStudentScreenState extends State<ShowStudentScreen>
                                   key: showcaseKeys[Keys.editStudentDataKey] ?? GlobalKey(),
                                   description: Strings.editStudentDataTooltip,
                                   targetShapeBorder: const CircleBorder(),
+                                  targetBorderRadius: BorderRadius.circular(30),
                                   targetPadding: const EdgeInsets.all(15),
                                   disposeOnTap: true,
                                   onToolTipClick: () {
@@ -539,12 +543,7 @@ class _SliverHeaderDelegate extends SliverPersistentHeaderDelegate {
                     elevation: 0,
                     title: Container(
                       padding: EdgeInsets.only(left: progress * 35),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Text("${student.firstname}${student.middlename.isNotEmpty ? " ${student.middlename}" : ""} ${student.lastname}"),
-                        ],
-                      ),
+                      child: Text(softWrap: false, overflow: TextOverflow.fade, "${student.firstname}${student.middlename.isNotEmpty ? " ${student.middlename}" : ""} ${student.lastname}"),
                     ),
                     actions: [
                     ],

@@ -500,72 +500,77 @@ class AttendanceItemState extends State<AttendanceItem> {
         if (state is StudentsLoaded) {
           StudentsCubit cubit = BlocProvider.of<StudentsCubit>(context);
           return Stack(
-                children: [
-                  Container(
-                      margin: const EdgeInsets.all(10),
-                      child: ElevatedButton(
-                          onPressed: () {
-                            Navigator.push(context, MaterialPageRoute(
-                                builder: (context) =>
-                                    ShowStudentScreen(studentId: widget.studentId,)));
-                          },
-                          onLongPress: () {
-                            toggleAttendance();
-                          },
-                          style: TextButton.styleFrom(
-                              shape: ContinuousRectangleBorder(
-                                borderRadius: BorderRadius.circular(64.0),
-                                side: cubit.isAbsent(widget.studentId) && false ? BorderSide() : BorderSide.none
-                              ),
-                              //shadowColor: Colors.transparent,
-                              backgroundColor: (){
-                                if (cubit.isAbsent(widget.studentId)) {
-                                  return ColorSchemes.absentColor;
-                                } else {
-                                  if (cubit.isAttendant(widget.studentId)) {
-                                    return ColorSchemes.attendantColor;
-                                  } else {
-                                    return ColorSchemes.notAttendantColor;
-                                  }
-                                }
-                              }()
+            fit: StackFit.expand,
+            children: [
+              Container(
+                  margin: const EdgeInsets.all(10),
+                  child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(context, MaterialPageRoute(
+                            builder: (context) =>
+                                ShowStudentScreen(studentId: widget.studentId,)));
+                      },
+                      onLongPress: () {
+                        toggleAttendance();
+                      },
+                      style: TextButton.styleFrom(
+                          shape: ContinuousRectangleBorder(
+                            borderRadius: BorderRadius.circular(64.0),
+                            side: cubit.isAbsent(widget.studentId) && false ? BorderSide() : BorderSide.none
                           ),
-                          child: Column(
-                              children: [
-                                Expanded(
-                                  child: Hero(
-                                      tag: "hero${widget.studentId}",
-                                      child: () {
-                                        Uint8List? profileImage = state.getStudent(widget.studentId).profileImage;
-                                        if (profileImage == null) {
-                                          return Image.asset(
-                                            'assets${Platform.pathSeparator}images${Platform.pathSeparator}squirrel.png',);
-                                        } else {
-                                          return Container(margin: const EdgeInsets.only(top: 5), clipBehavior: Clip.antiAlias, decoration: ShapeDecoration(shape: ContinuousRectangleBorder(borderRadius: BorderRadius.circular(44))), child: Image.memory(fit: BoxFit.fitHeight, profileImage));
-                                        }
-                                      } ()
-                                  ),
-                                ),
-                                Container(
-                                  padding: const EdgeInsets.fromLTRB(0, 0, 0, 5),
-                                  child: Text(state.getStudent(widget.studentId).firstname),
-                                )
-                              ]
-                          )
+                          //shadowColor: Colors.transparent,
+                          backgroundColor: (){
+                            if (cubit.isAbsent(widget.studentId)) {
+                              return ColorSchemes.absentColor;
+                            } else {
+                              if (cubit.isAttendant(widget.studentId)) {
+                                return ColorSchemes.attendantColor;
+                              } else {
+                                return ColorSchemes.notAttendantColor;
+                              }
+                            }
+                          }()
+                      ),
+                      child: Column(
+                          children: [
+                            Expanded(
+                              child: Hero(
+                                  tag: "hero${widget.studentId}",
+                                  child: () {
+                                    Uint8List? profileImage = state.getStudent(widget.studentId).profileImage;
+                                    if (profileImage == null) {
+                                      return Image.asset(
+                                        'assets${Platform.pathSeparator}images${Platform.pathSeparator}squirrel.png',);
+                                    } else {
+                                      // check if image uses alpha channel
+                                      return Container(margin: const EdgeInsets.only(top: 5), clipBehavior: Clip.antiAlias, decoration: ShapeDecoration(shape: ContinuousRectangleBorder(borderRadius: BorderRadius.circular(44))), child: Image.memory(fit: BoxFit.fitHeight, profileImage));
+                                    }
+                                  } ()
+                              ),
+                            ),
+                            Container(
+                              padding: const EdgeInsets.fromLTRB(0, 0, 0, 5),
+                              child: Text(state.getStudent(widget.studentId).firstname),
+                            )
+                          ]
                       )
-                  ),
-                  Visibility(
-                      visible: BlocProvider.of<StudentsCubit>(context).hasBirthday(widget.studentId),
-                      child: Drop(image: Image.asset('assets${Platform.pathSeparator}images${Platform.pathSeparator}cupcake.png'), width: 35.0, height: 35.0, reversed: false,)
-                  ),
-                  Align(
-                      alignment: Alignment.topRight,
-                      child: Visibility(
-                            visible: BlocProvider.of<StudentsCubit>(context).hasIncidences(widget.studentId),
-                            child: Drop(image: Image.asset('assets${Platform.pathSeparator}images${Platform.pathSeparator}notification.png'), width: 35.0, height: 35.0, reversed: true,)
-                        )
                   )
-                ]
+              ),
+              Align(
+                alignment: Alignment.topLeft,
+                child: Visibility(
+                    visible: BlocProvider.of<StudentsCubit>(context).hasBirthday(widget.studentId),
+                    child: Drop(image: Image.asset('assets${Platform.pathSeparator}images${Platform.pathSeparator}cupcake.png'), width: 35.0, height: 35.0, reversed: false,)
+                ),
+              ),
+              Align(
+                  alignment: Alignment.topRight,
+                  child: Visibility(
+                        visible: BlocProvider.of<StudentsCubit>(context).hasIncidences(widget.studentId),
+                        child: Drop(image: Image.asset('assets${Platform.pathSeparator}images${Platform.pathSeparator}notification.png'), width: 35.0, height: 35.0, reversed: true,)
+                    )
+              )
+            ]
             );
         } else {
           throw Exception('Invalid State');

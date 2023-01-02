@@ -9,6 +9,7 @@ import 'package:crypto/crypto.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
+import 'package:image/image.dart';
 import 'package:kinga/constants/keys.dart';
 import 'package:kinga/data/firebase_utils.dart';
 import 'package:flutter/services.dart';
@@ -405,8 +406,22 @@ class FirebaseStudentRepository implements StudentRepository {
         break;
     }
 
+    // add padding to default images to prevent from clipping in AttendanceScreen and ShowStudentScreen
     ByteData bytes = await rootBundle.load(image);
     Uint8List list = bytes.buffer.asUint8List();
+    Image? decodedImage = PngDecoder().decodeImage(list);
+    Image paddedImage = Image(600, 600);
+    paddedImage.fill(Color.fromRgba(0, 0, 0, 0));
+    if (decodedImage != null) {
+      for (int y = 0; y < paddedImage.height; y++) {
+        for (int x = 0; x < paddedImage.width; x++) {
+          if ((x >= 44 && x < 556) && (y >= 44 && y < 556)) {
+            paddedImage.setPixel(x, y, decodedImage.getPixel(x - 44, y - 44));
+          }
+        }
+      }
+    }
+    list = Uint8List.fromList(PngEncoder().encodeImage(paddedImage));
     return list;
   }
 
