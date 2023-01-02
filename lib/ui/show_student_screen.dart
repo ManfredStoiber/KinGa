@@ -17,6 +17,7 @@ import 'package:kinga/features/absences/ui/show_absences_widget.dart';
 import 'package:kinga/features/incidences/ui/create_incidence_dialog.dart';
 import 'package:kinga/features/incidences/ui/show_incidences_widget.dart';
 import 'package:kinga/features/observations/show_observations_widget.dart';
+import 'package:kinga/features/observations/ui/observations_bottom_sheet.dart';
 import 'package:kinga/ui/bloc/students_cubit.dart';
 import 'package:kinga/ui/edit_student_screen.dart';
 import 'package:kinga/ui/emergency_bottom_sheet.dart';
@@ -372,7 +373,16 @@ class _ShowStudentScreenState extends State<ShowStudentScreen>
                       });
                       break;
                   case 1:
-                    //Navigator.push(context, MaterialPageRoute(builder: (context) => ObservationScreen(student.studentId)));
+                    showModalBottomSheet(context: context, builder: (context) {
+                      return ObservationsBottomSheet();
+                    },
+                    shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.vertical(
+                            top: Radius.circular(30)
+                        )
+                    ),
+                    isScrollControlled: true,
+                    );
                     break;
                   case 2:
                     _showAbsencesWidgetKey.currentState?.onFloatingActionButtonPressed();

@@ -122,17 +122,6 @@ class _ShowObservationsWidgetState extends State<ShowObservationsWidget> with Au
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              /*
-                  return Column(
-                    children: [
-                      Container(margin: const EdgeInsets.all(30), width: 100, child: SimpleShadow(child: Opacity(opacity: 0.4, child: Image.asset('assets/images/observations.png')))),
-                      // TODO
-                      Text('Frage des Tages:\n\"Kind bringt von sich aus eigene Beiträge ein\"', style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.black54), textAlign: TextAlign.center,),
-                      Container(margin: const EdgeInsets.all(20), child: Text('13/42 Fragen beantwortet', style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.black54), textAlign: TextAlign.center,)),
-                    ],
-                  );
-
-                   */
                               Container(margin: const EdgeInsets.only(top: 30), child: Text("${state.selectedObservationForm!.title} ${Strings.noObservationFormYet}", style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.black54), textAlign: TextAlign.center,)),
                               Container(margin: const EdgeInsets.all(30), width: 100, child: SimpleShadow(child: Opacity(opacity: 0.4, child: Image.asset('assets/images/observations.png'.replaceAll('/', Platform.pathSeparator))))),
                               ElevatedButton(onPressed: () {

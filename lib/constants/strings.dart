@@ -36,6 +36,7 @@ class Strings {
   static const String feedback = 'Feedback';
   static const String firstname = 'Vorname';
   static const String gallery = 'Galerie';
+  static const String getResults = 'Auswerten';
   static const String greeting = 'Herzlich willkommen bei KinGa!';
   static const String group = 'Gruppe';
   static const String groupName = 'Gruppenname';
@@ -80,6 +81,8 @@ class Strings {
   static const String phoneLabel = 'Label';
   static const String phoneNumber = 'Telefon';
   static const String pickImageOption = 'Option auswählen:';
+  static const String questionsAnswered = 'Fragen beantwortet';
+  static const String questionOfTheWeek = 'Frage der Woche:';
   static const String reason = 'Grund';
   static const String removeAbsence = 'Abwesenheit entfernen?';
   static const String requiredCaregiver = 'Es muss mindestens ein Kontakt angegeben werden.';
@@ -153,7 +156,7 @@ class Strings {
   static const String createPermissionTooltip = 'Tippe hier, um eine neue Berechtigung anzulegen';
   static const String createStudentTooltip = 'Tippe hier, um ein neues Kind anzulegen';
   static const String drawerTooltip = 'Tippe hier, um das Menü zu öffnen';
-  static const String editObservationsTooltip = 'Tippe hier, um die Entwicklungsbögen für das Kind zu bearbeiten';
+  static const String editObservationsTooltip = 'Tippe hier, um die Entwicklungsbögenübersicht für dieses Kind aufzurufen und die Bögen auszuwerten';
   static const String editStudentDataTooltip = 'Tippe hier, um die Stammdaten dieses Kinds zu bearbeiten';
   static const String emergencyContactsTooltip = 'Notfallkontakte kannst du hier anrufen';
   static const String filterStudentTooltip = 'Hier kannst du nach Gruppen filtern';
