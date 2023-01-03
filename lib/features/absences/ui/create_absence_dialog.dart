@@ -20,16 +20,29 @@ class CreateAbsenceDialog extends StatefulWidget {
 class _CreateAbsenceDialogState extends State<CreateAbsenceDialog> {
 
   String _selectedReason = Strings.sicknote;
+  late DateTime dateFrom;
+  late DateTime dateUntil;
+  late TextEditingController dateFromController;
+  late TextEditingController dateUntilController;
+
+  late DateTime firstDay;
+  late DateTime lastDay;
+
+  @override
+  void initState() {
+    super.initState();
+
+    dateFrom = widget.selectedDay;
+    dateUntil = widget.selectedDay;
+    dateFromController = TextEditingController(text: IsoDateUtils.getGermanDateFromDateTime(dateFrom));
+    dateUntilController = TextEditingController(text: IsoDateUtils.getGermanDateFromDateTime(dateUntil));
+
+    firstDay = widget.selectedDay.subtract(const Duration(days: 365));
+    lastDay = widget.selectedDay.add(const Duration(days: 365));
+  }
 
   @override
   Widget build(BuildContext context) {
-    DateTime dateFrom = widget.selectedDay;
-    DateTime dateUntil = widget.selectedDay;
-    TextEditingController dateFromController = TextEditingController(text: IsoDateUtils.getGermanDateFromDateTime(dateFrom));
-    TextEditingController dateUntilController = TextEditingController(text: IsoDateUtils.getGermanDateFromDateTime(dateUntil));
-
-    DateTime firstDay = widget.selectedDay.subtract(const Duration(days: 365));
-    DateTime lastDay = widget.selectedDay.add(const Duration(days: 365));
 
     return AlertDialog(
       title: const Text(Strings.absence),
@@ -116,9 +129,7 @@ class _CreateAbsenceDialogState extends State<CreateAbsenceDialog> {
             value: _selectedReason,
             items: const [DropdownMenuItem(value: Strings.sicknote, child: Text(Strings.sicknote)), DropdownMenuItem(value: Strings.vacation, child: Text(Strings.vacation)), DropdownMenuItem(value: Strings.other, child: Text(Strings.other))],
             onChanged: (String? newValue) {
-              setState(() {
-                _selectedReason = newValue!;
-              });
+              _selectedReason = newValue!;
             },
             decoration: const InputDecoration(
                 labelText: Strings.reason,
