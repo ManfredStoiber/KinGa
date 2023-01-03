@@ -17,15 +17,17 @@ import 'package:kinga/ui/widgets/loading_indicator_dialog.dart';
 import 'package:simple_shadow/simple_shadow.dart';
 
 class ShowObservationsWidget extends StatefulWidget {
-  const ShowObservationsWidget(this.studentId, {Key? key}) : super(key: key);
+  ShowObservationsWidget(this.studentId, {Key? key}) : super(key: key);
 
   final String studentId;
 
   @override
-  State<ShowObservationsWidget> createState() => _ShowObservationsWidgetState();
+  State<ShowObservationsWidget> createState() => ShowObservationsWidgetState();
 }
 
-class _ShowObservationsWidgetState extends State<ShowObservationsWidget> with AutomaticKeepAliveClientMixin<ShowObservationsWidget> {
+class ShowObservationsWidgetState extends State<ShowObservationsWidget> with AutomaticKeepAliveClientMixin<ShowObservationsWidget> {
+
+  ObservationsCubit? cubit;
 
   @override
   Widget build(BuildContext context) {
@@ -33,6 +35,7 @@ class _ShowObservationsWidgetState extends State<ShowObservationsWidget> with Au
         create: (context) => ObservationsCubit(widget.studentId),
         child: BlocBuilder<ObservationsCubit, ObservationsState>(
           builder: (context, state) {
+            cubit = BlocProvider.of(context);
             if (state is ObservationsLoaded) {
               ObservationsCubit cubit = BlocProvider.of<ObservationsCubit>(context);
               return Scrollbar(

@@ -59,6 +59,7 @@ class _ShowStudentScreenState extends State<ShowStudentScreen>
 
   final _incidencesListKey = GlobalKey<AnimatedListState>();
   final _showAbsencesWidgetKey = GlobalKey<ShowAbsencesWidgetState>();
+  final _showObservationsWidgetKey = GlobalKey<ShowObservationsWidgetState>();
 
   @override
   void initState() {
@@ -258,7 +259,7 @@ class _ShowStudentScreenState extends State<ShowStudentScreen>
 
                           ),
                           //ListView.builder(shrinkWrap: true, physics: NeverScrollableScrollPhysics(), itemCount: 30, itemExtent: 48.0, itemBuilder: (context, index) => Text("Test $index"),),
-                          ShowObservationsWidget(widget.studentId),
+                          ShowObservationsWidget(key: _showObservationsWidgetKey, widget.studentId),
                           ShowAbsencesWidget(key: _showAbsencesWidgetKey, widget.studentId, DateTime.now()),
                           ShowStudentDataWidget(student),
                 ].map((Widget w) {
@@ -373,16 +374,21 @@ class _ShowStudentScreenState extends State<ShowStudentScreen>
                       });
                       break;
                   case 1:
-                    showModalBottomSheet(context: context, builder: (context) {
-                      return ObservationsBottomSheet();
-                    },
-                    shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.vertical(
-                            top: Radius.circular(30)
-                        )
-                    ),
-                    isScrollControlled: true,
-                    );
+                    var cubit = _showObservationsWidgetKey.currentState?.cubit;
+                    if (cubit != null) {
+                      showModalBottomSheet(
+                        context: context,
+                        builder: (context) {
+                          return ObservationsBottomSheet(cubit);
+                        },
+                        shape: const RoundedRectangleBorder(
+                            borderRadius: BorderRadius.vertical(
+                                top: Radius.circular(30)
+                            )
+                        ),
+                        isScrollControlled: true,
+                      );
+                    }
                     break;
                   case 2:
                     _showAbsencesWidgetKey.currentState?.onFloatingActionButtonPressed();
