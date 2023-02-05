@@ -53,7 +53,7 @@ class Student extends Person implements Comparable<Student> {
   @override
   int compareTo(Student other) {
     // TODO: compare all properties
-    return "$firstname $lastname".compareTo("${other.firstname} ${other.lastname}");
+    return "$firstname $lastname".toLowerCase().compareTo("${other.firstname} ${other.lastname}".toLowerCase());
   }
 }
 

@@ -10,6 +10,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:kinga/constants/keys.dart';
 import 'package:kinga/domain/entity/caregiver.dart';
+import 'package:kinga/features/observations/ui/observation_of_the_week_bar.dart';
 import 'package:kinga/features/permissions/ui/list_permissions_screen.dart';
 import 'package:kinga/ui/widgets/loading_indicator_dialog.dart';
 import 'package:kinga/ui/new_student_screen.dart';
@@ -273,7 +274,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                           return const Text("Exception"); // TODO
                         }
                       },
-                    )
+                    ),
 
                 ),
                 body: BlocBuilder<StudentsCubit, StudentsState>(
@@ -281,46 +282,53 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                       if (state is StudentsInitial || state is StudentsLoading) {
                         return const LoadingIndicator();
                       } else if (state is StudentsLoaded) {
-                        return GridView(
-                          padding: const EdgeInsets.all(10),
-                          // TODO: maybe move sorting to state or repository for better performance;
-                          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 3,
-                          ),
-                          children: () {
-                            var list = state.students
-                                .where((student) =>
-                            (selected == Strings.all ||
-                                student.group == selected) && (!activeSearch ||
-                                "${student.firstname} ${student.lastname}"
-                                    .toLowerCase()
-                                    .contains(search.toLowerCase()))).toList();
+                        return Column(
+                          children: [
+                            ObservationOfTheWeekBar(),
+                            Expanded(
+                              child: GridView(
+                                padding: const EdgeInsets.all(10),
+                                // TODO: maybe move sorting to state or repository for better performance;
+                                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 3,
+                                ),
+                                children: () {
+                                  var list = state.students
+                                      .where((student) =>
+                                  (selected == Strings.all ||
+                                      student.group == selected) && (!activeSearch ||
+                                      "${student.firstname} ${student.lastname}"
+                                          .toLowerCase()
+                                          .contains(search.toLowerCase()))).toList();
 
-                            list.sort((a, b) => state.getStudent(a.studentId).compareTo(state.getStudent(b.studentId)));
+                                  list.sort((a, b) => state.getStudent(a.studentId).compareTo(state.getStudent(b.studentId)));
 
-                            List<Widget> result = [];
-                            result.add(Showcase(
-                                key: showcaseKeys[Keys.attendanceKey] ?? GlobalKey(),
-                                description: Strings.toggleAttendanceTooltip,
-                                disposeOnTap: true,
-                                onToolTipClick: () {
-                                  setState(() {
-                                    continueShowcase(Keys.attendanceKey);
-                                  });
-                                },
-                                onTargetClick: () => Navigator.push(context, MaterialPageRoute(builder: (context) => ShowStudentScreen(studentId: list.first.studentId),)).then((_) {
-                                    setState(() {
-                                      continueShowcase(Keys.attendanceKey);
-                                    });
-                                }),
-                                onTargetLongPress: () => _attendanceItemState.currentState?.toggleAttendance(),
-                                child: AttendanceItem(key: _attendanceItemState, studentId: list.first.studentId)));
-                            list.removeAt(0);
-                            for (var student in list) {
-                              result.add(AttendanceItem(studentId: student.studentId));
-                            }
-                            return result;
-                          } (),
+                                  List<Widget> result = [];
+                                  result.add(Showcase(
+                                      key: showcaseKeys[Keys.attendanceKey] ?? GlobalKey(),
+                                      description: Strings.toggleAttendanceTooltip,
+                                      disposeOnTap: true,
+                                      onToolTipClick: () {
+                                        setState(() {
+                                          continueShowcase(Keys.attendanceKey);
+                                        });
+                                      },
+                                      onTargetClick: () => Navigator.push(context, MaterialPageRoute(builder: (context) => ShowStudentScreen(studentId: list.first.studentId),)).then((_) {
+                                        setState(() {
+                                          continueShowcase(Keys.attendanceKey);
+                                        });
+                                      }),
+                                      onTargetLongPress: () => _attendanceItemState.currentState?.toggleAttendance(),
+                                      child: AttendanceItem(key: _attendanceItemState, studentId: list.first.studentId)));
+                                  list.removeAt(0);
+                                  for (var student in list) {
+                                    result.add(AttendanceItem(studentId: student.studentId));
+                                  }
+                                  return result;
+                                } (),
+                              ),
+                            ),
+                          ],
                         );
                       } else {
                         return const Text("Exception"); // TODO

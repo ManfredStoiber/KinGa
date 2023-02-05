@@ -5,6 +5,7 @@ import 'dart:convert';
 
 import 'package:async/async.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:collection/collection.dart';
 import 'package:crypto/crypto.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
@@ -20,7 +21,9 @@ import 'package:kinga/domain/student_repository.dart';
 import 'package:kinga/domain/entity/caregiver.dart';
 import 'package:kinga/domain/entity/student.dart';
 import 'package:kinga/domain/student_service.dart';
+import 'package:kinga/features/observations/domain/observation_service.dart';
 import 'package:kinga/util/crypto_utils.dart';
+import 'package:kinga/util/date_utils.dart';
 import 'package:streaming_shared_preferences/streaming_shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 
@@ -35,6 +38,7 @@ class FirebaseStudentRepository implements StudentRepository {
   final Directory _applicationDocumentsDirectory = GetIt.I<Directory>(instanceName: Keys.applicationDocumentsDirectory);
 
   final Map<String, Uint8List> _profileImagesCache = GetIt.I<Map<String, Uint8List>>(instanceName: Keys.profileImagesCache);
+  final Map<String, DateTime> _observationsTimestamps = {};
 
   FirebaseStudentRepository() {
     currentInstitutionId = GetIt.I<StreamingSharedPreferences>().getString(Keys.institutionId, defaultValue: "").getValue();
@@ -78,10 +82,16 @@ class FirebaseStudentRepository implements StudentRepository {
             if (currentInstitutionId != "") {
               Set<Student> students = {};
               for (var doc in event.docs) {
-                List tmp = FirebaseUtils.decryptStudent(doc.data()['value']);
-                Student student = tmp[0];
+                Map<String, dynamic> decrypted = FirebaseUtils.decryptStudent(doc.data()['value']);
+                Student student = decrypted['student'];
                 late Uint8List profileImage;
-                String? profileImageHash = tmp[1];
+                String? profileImageHash = decrypted['profileImage'];
+                DateTime observationsTimestamp = DateTime.now();
+                if (decrypted['observationsTimestamp'] != null) {
+                  observationsTimestamp = DateTime.parse(decrypted['observationsTimestamp']);
+                }
+
+                // load profileImage
                 if (profileImageHash != null) {
                   // get profileImage from cache if exists
                   Uint8List? profileImageCache = (getProfileImageFromCache(student.studentId));
@@ -112,6 +122,16 @@ class FirebaseStudentRepository implements StudentRepository {
                   setProfileImage(student.studentId, profileImage);
                 }
                 student.profileImage = profileImage;
+
+                /* TODO
+                // load observations if out of date
+                if (_observationsTimestamps[student.studentId]?.isBefore(observationsTimestamp) ?? true) {
+                  var observations = await GetIt.I<ObservationService>().getObservations(student.studentId);
+                  student.observations = observations;
+                }
+
+                 */
+
                 students.add(student);
               }
               if (event.docs.isEmpty) {

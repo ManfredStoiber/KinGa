@@ -132,6 +132,8 @@ class Strings {
   // observations
   static const String createObservationForm = 'Beobachtungsbogen anlegen';
   static const String noObservationFormYet = 'noch nicht angelegt';
+  static const String noObservationsYet = 'Frage auf kein Kind zutreffend';
+  static const String noObservationsYetDescription = 'Bisher wurde der zugehörige Entwicklungsbogen noch für keines der Kinder angelegt';
   static const String note = 'Notiz';
 
   // permissions

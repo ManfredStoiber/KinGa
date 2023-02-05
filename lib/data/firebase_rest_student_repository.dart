@@ -34,9 +34,9 @@ class FirebaseRestStudentRepository implements StudentRepository {
         Set<Student> students = {};
         var result = json.decode(response.body);
         for (var doc in result['documents']) {
-          List tmp = FirebaseUtils.decryptStudent(doc['fields']['value']['stringValue']);
+          Map<String, dynamic> decrypted = FirebaseUtils.decryptStudent(doc['fields']['value']['stringValue']);
           // TODO: fetch profileImage
-          Student s = tmp[0];
+          Student s = decrypted['student'];
           students.add(s);
         }
         yield students;

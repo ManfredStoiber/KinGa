@@ -35,6 +35,8 @@ class FirebaseObservationRepository implements ObservationRepository {
   late String currentInstitutionId;
   Set<Student>? currentStudents;
 
+  List<ObservationForm>? _observationForms; // TODO: currently only updates after app restart
+
   final Directory _applicationDocumentsDirectory = GetIt.I<Directory>(
       instanceName: Keys.applicationDocumentsDirectory);
 
@@ -213,17 +215,30 @@ class FirebaseObservationRepository implements ObservationRepository {
   @override
   Future<List<ObservationForm>> getObservationForms() async {
 
-    List<ObservationForm> observationForms = [];
+    if (_observationForms == null) {
+      List<ObservationForm> observationForms = [];
 
+      FirebaseFirestore db = FirebaseFirestore.instance;
+      await db.collection('ObservationForm').get().then((querySnapshot) {
+        for (var doc in querySnapshot.docs) {
+          observationForms.add(mapToObservationForm(doc.data()));
+        }
+      }); // TODO: error handling
+      _observationForms = observationForms;
+    }
+
+    return _observationForms!;
+
+  }
+
+  @override
+  Future<Map<String, List<Observation>>> getAllObservations() {
+    throw UnimplementedError();
     FirebaseFirestore db = FirebaseFirestore.instance;
-    await db.collection('ObservationForm').get().then((querySnapshot) {
-      for (var doc in querySnapshot.docs) {
-        observationForms.add(mapToObservationForm(doc.data()));
-      }
-    }); // TODO: error handling
-
-    return observationForms;
-
+    db.collectionGroup('Observation').get().then((value) {
+      print("Test");
+    });
+    //var doc = db.collection('Institution').doc(currentInstitutionId).coll
   }
 
 }

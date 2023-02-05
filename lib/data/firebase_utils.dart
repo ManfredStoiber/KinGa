@@ -11,7 +11,7 @@ import 'package:kinga/util/crypto_utils.dart';
 
 class FirebaseUtils {
 
-  static List decryptStudent(String encrypted) {
+  static Map<String, dynamic> decryptStudent(String encrypted) {
 
     Map map = json.decode(CryptoUtils.decrypt(encrypted));
 
@@ -57,7 +57,7 @@ class FirebaseUtils {
     }
 
     // decrypt and return student
-    return [Student(
+    return {'student': Student(
       map['studentId'],
       map['firstname'],
       map['middlename'],
@@ -75,7 +75,9 @@ class FirebaseUtils {
       [],
       incidences,
       Set<String>.from(map['permissions'] ?? [])
-    ), map['profileImage']];
+    ),
+    'profileImage': map['profileImage'],
+    'observationsTimestamp': map['observationsTimestamp']};
   }
 
   static Map<String, dynamic> studentToMap(Student student) {
