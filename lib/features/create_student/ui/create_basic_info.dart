@@ -40,191 +40,191 @@ class _CreateBasicInfoState extends State<CreateBasicInfo> with AutomaticKeepAli
     TextEditingController birthdayController = TextEditingController();
     birthdayController.text = widget.student['birthday'] != null ? IsoDateUtils.getGermanDateFromIsoDate(widget.student['birthday']) : '';
 
-    return ListView(children: [
-      Wrap(children: [
-        Card(
-          margin: const EdgeInsets.all(10),
-          child: Form(
-            key: widget.formKeyTab,
-            child: Column(
-              children: [
-                Center(
-                  child: GestureDetector(
-                    onTap: () {
-                      showDialog(context: context, builder: (context) {
-                        return SimpleDialog(
-                          alignment: Alignment.center,
+    return ListView(padding: EdgeInsets.only(bottom: 80.0), children: [
+    Wrap(children: [
+    Card(
+      margin: const EdgeInsets.all(10),
+      child: Form(
+        key: widget.formKeyTab,
+        child: Column(
+          children: [
+            Center(
+              child: GestureDetector(
+                onTap: () {
+                  showDialog(context: context, builder: (context) {
+                    return SimpleDialog(
+                      alignment: Alignment.center,
+                      children: [
+                        Column(
                           children: [
-                            Column(
-                              children: [
-                                Container(
-                                    padding: const EdgeInsets.fromLTRB(5, 5, 5, 15),
-                                    child: const Text(Strings.pickImageOption, style: TextStyle(fontSize: 16))
-                                ),
-                                IntrinsicHeight(
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                    children: [
-                                      SimpleDialogOption(child: Column(
-                                        children: const [
-                                          Icon(Icons.camera_alt),
-                                          Text(Strings.camera),
-                                        ],
-                                      ), onPressed: () {
-                                        pickImage(context, true).then((success) {if (success) {Navigator.pop(context);}});
-                                      },),
-                                      const VerticalDivider(),
-                                      SimpleDialogOption(child: Column(
-                                        children: const [
-                                          Icon(Icons.image),
-                                          Text(Strings.gallery),
-                                        ],
-                                      ), onPressed: () {
-                                        pickImage(context, false).then((success) {if (success) {Navigator.pop(context);}});
-                                      },),
+                            Container(
+                                padding: const EdgeInsets.fromLTRB(5, 5, 5, 15),
+                                child: const Text(Strings.pickImageOption, style: TextStyle(fontSize: 16))
+                            ),
+                            IntrinsicHeight(
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  SimpleDialogOption(child: Column(
+                                    children: const [
+                                      Icon(Icons.camera_alt),
+                                      Text(Strings.camera),
                                     ],
-                                  ),
-                                ),
-                              ],
-                            )
+                                  ), onPressed: () {
+                                    pickImage(context, true).then((success) {if (success) {Navigator.pop(context);}});
+                                  },),
+                                  const VerticalDivider(),
+                                  SimpleDialogOption(child: Column(
+                                    children: const [
+                                      Icon(Icons.image),
+                                      Text(Strings.gallery),
+                                    ],
+                                  ), onPressed: () {
+                                    pickImage(context, false).then((success) {if (success) {Navigator.pop(context);}});
+                                  },),
+                                ],
+                              ),
+                            ),
                           ],
-                        );
-                      },);
-                    },
-                    child: Container(
-                        margin: const EdgeInsets.all(15),
-                        height: 150,
-                        width: 150,
-                        child: () {
-                          if (widget._profileImage.isEmpty) {
-                            return Stack(children: [
-                              Center(
-                                  child: Container(
-                                    height: 150,
-                                    width: 150,
-                                    decoration: ShapeDecoration(
-                                      color: Colors.grey,
-                                      shape: ContinuousRectangleBorder(
-                                        borderRadius: BorderRadius.circular(64)
-                                      )
-                                    ),
-                                  )),
-                              const Center(
-                                  child: Icon(
-                                    color: Colors.white,
-                                    Icons.add_a_photo,
-                                    size: 80,
-                                  )),
-                            ]);
-                          } else {
-                            return Container(
+                        )
+                      ],
+                    );
+                  },);
+                },
+                child: Container(
+                    margin: const EdgeInsets.all(15),
+                    height: 150,
+                    width: 150,
+                    child: () {
+                      if (widget._profileImage.isEmpty) {
+                        return Stack(children: [
+                          Center(
+                              child: Container(
                                 height: 150,
                                 width: 150,
                                 decoration: ShapeDecoration(
-                                    shape: ContinuousRectangleBorder(
-                                        borderRadius: BorderRadius.circular(128)
-                                    )
+                                  color: Colors.grey,
+                                  shape: ContinuousRectangleBorder(
+                                    borderRadius: BorderRadius.circular(64)
+                                  )
                                 ),
-                                clipBehavior: Clip.antiAlias,
-                                child: Image.memory(widget._profileImage)
-                            );
-                          }
-                        }()),
-                  ),
-                ),
-                IntrinsicWidth(
-                  child: DropdownButtonFormField<String>(
-                      value: selectedGroup,
-                      hint: const Text(Strings.selectGroup),
-                      items: [
-                        for (var group in groups)
-                          DropdownMenuItem(
-                              value: group, child: Text(group)),
-                        DropdownMenuItem(
-                          value: Strings.newGroup,
-                          child: Text(Strings.newGroup, style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold)),
-                        )
-                      ],
-                      onChanged: (String? value) {
-                        setState(() {
-                          String? previousGroup = selectedGroup;
-                          selectedGroup = value!;
-                          widget.student['group'] = value;
+                              )),
+                          const Center(
+                              child: Icon(
+                                color: Colors.white,
+                                Icons.add_a_photo,
+                                size: 80,
+                              )),
+                        ]);
+                      } else {
+                        return Container(
+                            height: 150,
+                            width: 150,
+                            decoration: ShapeDecoration(
+                                shape: ContinuousRectangleBorder(
+                                    borderRadius: BorderRadius.circular(128)
+                                )
+                            ),
+                            clipBehavior: Clip.antiAlias,
+                            child: Image.memory(widget._profileImage)
+                        );
+                      }
+                    }()),
+              ),
+            ),
+            IntrinsicWidth(
+              child: DropdownButtonFormField<String>(
+                  value: selectedGroup,
+                  hint: const Text(Strings.selectGroup),
+                  items: [
+                    for (var group in groups)
+                      DropdownMenuItem(
+                          value: group, child: Text(group)),
+                    DropdownMenuItem(
+                      value: Strings.newGroup,
+                      child: Text(Strings.newGroup, style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold)),
+                    )
+                  ],
+                  onChanged: (String? value) {
+                    setState(() {
+                      String? previousGroup = selectedGroup;
+                      selectedGroup = value!;
+                      widget.student['group'] = value;
 
-                          if (value == Strings.newGroup) {
-                            showDialog(context: context, builder: (context) {
-                              TextEditingController groupNameController = TextEditingController();
+                      if (value == Strings.newGroup) {
+                        showDialog(context: context, builder: (context) {
+                          TextEditingController groupNameController = TextEditingController();
 
-                              return AlertDialog(
-                                title: const Text(Strings.newGroupInfo),
-                                actions: [
-                                  TextButton(onPressed: () {
-                                    setState(() {
-                                      selectedGroup = previousGroup;
-                                    });
-                                    Navigator.of(context).pop();
-                                  }, child: const Text(Strings.cancel)),
-                                  TextButton(onPressed: () {
-                                    if (groupNameKey.currentState?.validate() ?? false) {
-                                      Navigator.of(context).pop(groupNameController.text);
-                                    }
-                                  }, child: const Text(Strings.confirm))
-                                ],
-                                content: Form(
-                                  key: groupNameKey,
-                                  child: TextFormField(
-                                    controller: groupNameController,
-                                    textCapitalization: TextCapitalization.sentences,
-                                    decoration: const InputDecoration(border: OutlineInputBorder(), labelText: Strings.groupName),
-                                    validator: (value) {
-                                      if (value == null || value.trim().isEmpty) {
-                                        return '${Strings.groupName} ${Strings.requiredFieldMessage}';
-                                      } else {
-                                        return null;
-                                      }
-                                    },
-                                  ),
-                                ),
-                            );},
-                            ).then((result) {
-                              if (result != null) {
+                          return AlertDialog(
+                            title: const Text(Strings.newGroupInfo),
+                            actions: [
+                              TextButton(onPressed: () {
                                 setState(() {
-                                  String value = result.trim();
-                                  widget.student['group'] = value;
-                                  groups.add(value);
-                                  selectedGroup = value;
+                                  selectedGroup = previousGroup;
                                 });
-                              }
+                                Navigator.of(context).pop();
+                              }, child: const Text(Strings.cancel)),
+                              TextButton(onPressed: () {
+                                if (groupNameKey.currentState?.validate() ?? false) {
+                                  Navigator.of(context).pop(groupNameController.text);
+                                }
+                              }, child: const Text(Strings.confirm))
+                            ],
+                            content: Form(
+                              key: groupNameKey,
+                              child: TextFormField(
+                                controller: groupNameController,
+                                textCapitalization: TextCapitalization.sentences,
+                                decoration: const InputDecoration(border: OutlineInputBorder(), labelText: Strings.groupName),
+                                validator: (value) {
+                                  if (value == null || value.trim().isEmpty) {
+                                    return '${Strings.groupName} ${Strings.requiredFieldMessage}';
+                                  } else {
+                                    return null;
+                                  }
+                                },
+                              ),
+                            ),
+                        );},
+                        ).then((result) {
+                          if (result != null) {
+                            setState(() {
+                              String value = result.trim();
+                              widget.student['group'] = value;
+                              groups.add(value);
+                              selectedGroup = value;
                             });
                           }
                         });
-                      },
-                      validator: (value) {
-                        if (value == null) {
-                          return '${Strings.group} ${Strings.requiredFieldMessage}';
-                        } else {
-                          return null;
-                        }
-                      }),
-                ),
-                buildTextField(Strings.firstname, 'firstname'),
-                buildTextField(Strings.middlename, 'middlename'),
-                buildTextField(Strings.lastname, 'lastname'),
-                InkWell(
-                    child: buildTextField(Strings.birthday, 'birthday', true,
-                            () => showDatePicker(context: context, initialDate: DateTime(DateTime.now().year - 3, 1, 1), firstDate: DateTime(DateTime.now().year - 10, 1, 1), lastDate: DateTime.now()).then((value) {
-                          if (value != null) {
-                            birthdayController.text = IsoDateUtils.getGermanDateFromDateTime(value);
-                            widget.student['birthday'] = IsoDateUtils.getIsoDateFromIsoDateTime(value.toIso8601String());
-                          }
-                        }), birthdayController)
-                ),
-                buildTextField(Strings.address, 'address'),
-              ],
+                      }
+                    });
+                  },
+                  validator: (value) {
+                    if (value == null) {
+                      return '${Strings.group} ${Strings.requiredFieldMessage}';
+                    } else {
+                      return null;
+                    }
+                  }),
             ),
-          ),
+            buildTextField(Strings.firstname, 'firstname'),
+            buildTextField(Strings.middlename, 'middlename'),
+            buildTextField(Strings.lastname, 'lastname'),
+            InkWell(
+                child: buildTextField(Strings.birthday, 'birthday', true,
+                        () => showDatePicker(context: context, initialDate: DateTime(DateTime.now().year - 3, 1, 1), firstDate: DateTime(DateTime.now().year - 10, 1, 1), lastDate: DateTime.now()).then((value) {
+                      if (value != null) {
+                        birthdayController.text = IsoDateUtils.getGermanDateFromDateTime(value);
+                        widget.student['birthday'] = IsoDateUtils.getIsoDateFromIsoDateTime(value.toIso8601String());
+                      }
+                    }), birthdayController)
+            ),
+            buildTextField(Strings.address, 'address'),
+          ],
         ),
+      ),
+    ),
       ]),
     ]);
   }

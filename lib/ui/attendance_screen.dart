@@ -231,7 +231,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                                     child: DropdownButton<String>(
                                       underline: Container(height: 1, color: Colors.black38,),
                                       isExpanded: true,
-                                      value: selected,
+                                      value: state.groups.contains(selected)? selected : Strings.all,
                                       items: [const DropdownMenuItem(value: Strings.all, child: Text(Strings.all))] + state.groups.map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
                                       onChanged: (String? newValue) {
                                         setState(() {
@@ -281,51 +281,59 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                     builder: (context, state) {
                       if (state is StudentsInitial || state is StudentsLoading) {
                         return const LoadingIndicator();
+                      } else if (state is StudentsEmpty) {
+                        return Text("No Children");
                       } else if (state is StudentsLoaded) {
                         return Column(
                           children: [
                             ObservationOfTheWeekBar(),
                             Expanded(
-                              child: GridView(
-                                padding: const EdgeInsets.all(10),
-                                // TODO: maybe move sorting to state or repository for better performance;
-                                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 3,
+                              child: SafeArea(
+                                child: GridView(
+                                  padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
+                                  // TODO: maybe move sorting to state or repository for better performance;
+                                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                                    crossAxisCount: 3,
+                                  ),
+                                  children: () {
+                                    var list = state.students
+                                        .where((student) =>
+                                    (selected == Strings.all ||
+                                        student.group == selected) && (!activeSearch ||
+                                        "${student.firstname} ${student.lastname}"
+                                            .toLowerCase()
+                                            .contains(search.toLowerCase()))).toList();
+
+                                    list.sort((a, b) => state.getStudent(a.studentId).compareTo(state.getStudent(b.studentId)));
+
+                                    List<Widget> result = [];
+                                    if (list.isNotEmpty) {
+                                      result.add(Showcase(
+                                          key: showcaseKeys[Keys.attendanceKey] ?? GlobalKey(),
+                                          description: Strings.toggleAttendanceTooltip,
+                                          disposeOnTap: true,
+                                          onToolTipClick: () {
+                                            setState(() {
+                                              continueShowcase(Keys.attendanceKey);
+                                            });
+                                          },
+                                          onTargetClick: () => Navigator.push(context, MaterialPageRoute(builder: (context) => ShowStudentScreen(studentId: list.first.studentId),)).then((_) {
+                                            setState(() {
+                                              continueShowcase(Keys.attendanceKey);
+                                            });
+                                          }),
+                                          onTargetLongPress: () => _attendanceItemState.currentState?.toggleAttendance(),
+                                          child: AttendanceItem(key: _attendanceItemState, studentId: list.first.studentId)));
+                                      list.removeAt(0);
+
+                                      for (var student in list) {
+                                        result.add(AttendanceItem(studentId: student.studentId));
+                                      }
+                                    }
+
+                                    return result;
+                                  } (),
                                 ),
-                                children: () {
-                                  var list = state.students
-                                      .where((student) =>
-                                  (selected == Strings.all ||
-                                      student.group == selected) && (!activeSearch ||
-                                      "${student.firstname} ${student.lastname}"
-                                          .toLowerCase()
-                                          .contains(search.toLowerCase()))).toList();
-
-                                  list.sort((a, b) => state.getStudent(a.studentId).compareTo(state.getStudent(b.studentId)));
-
-                                  List<Widget> result = [];
-                                  result.add(Showcase(
-                                      key: showcaseKeys[Keys.attendanceKey] ?? GlobalKey(),
-                                      description: Strings.toggleAttendanceTooltip,
-                                      disposeOnTap: true,
-                                      onToolTipClick: () {
-                                        setState(() {
-                                          continueShowcase(Keys.attendanceKey);
-                                        });
-                                      },
-                                      onTargetClick: () => Navigator.push(context, MaterialPageRoute(builder: (context) => ShowStudentScreen(studentId: list.first.studentId),)).then((_) {
-                                        setState(() {
-                                          continueShowcase(Keys.attendanceKey);
-                                        });
-                                      }),
-                                      onTargetLongPress: () => _attendanceItemState.currentState?.toggleAttendance(),
-                                      child: AttendanceItem(key: _attendanceItemState, studentId: list.first.studentId)));
-                                  list.removeAt(0);
-                                  for (var student in list) {
-                                    result.add(AttendanceItem(studentId: student.studentId));
-                                  }
-                                  return result;
-                                } (),
                               ),
                             ),
                           ],
@@ -401,6 +409,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                           leading: const Icon(Icons.checklist),
                         ),
                       ),
+                      /*
                       const Divider(),
                       ListTile(
                         title: const Text(Strings.support),
@@ -423,6 +432,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                         },
                         leading: const Icon(Icons.domain),
                       ),
+                       */
                       const Divider(),
                       ListTile(
                         title: const Text(Strings.showHelp),
@@ -434,6 +444,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                         },
                         leading: const Icon(Icons.help_outline),
                       ),
+                      /*
                       ListTile(
                         title: const Text(Strings.settings),
                         onTap: () {
@@ -441,6 +452,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                         },
                         leading: const Icon(Icons.settings),
                       ),
+                       */
                       ListTile(
                         title: const Text(Strings.logout),
                         onTap: () {

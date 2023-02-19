@@ -69,52 +69,54 @@ class _SetupInstitutionScreenState extends State<SetupInstitutionScreen> with Ti
           return true;
         }
       },
-      child: Scaffold(
-          bottomNavigationBar: ButtonBar(
-            alignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Visibility(
-                visible: _tabIndex > 0,
-                child: TextButton(
-                  onPressed: () {
-                    if (_tabIndex > 0) {
-                      _tabController.animateTo(_tabIndex -1);
-                    }
-                  },
-                  child: const Text(Strings.back),
-                ),
-              ),
-              TextButton(
-                  onPressed: () async {
-                    if (_tabIndex == 0) {
-                      _tabController.animateTo(_tabIndex +1);
-                    } else if (_tabIndex == 1) {
-                      if (_alreadyRegistered) {
-                        submitLoginForm();
-                      } else {
-                        submitCreateInstitutionForm();
+      child: SafeArea(
+        child: Scaffold(
+            bottomNavigationBar: ButtonBar(
+              alignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Visibility(
+                  visible: _tabIndex > 0,
+                  child: TextButton(
+                    onPressed: () {
+                      if (_tabIndex > 0) {
+                        _tabController.animateTo(_tabIndex -1);
                       }
-                    }
-                  },
-                  child: Text((){
-                    if (_tabIndex == 1 && _alreadyRegistered) {
-                      return Strings.signIn;
-                    } else if (_tabIndex == 1 && !_alreadyRegistered) {
-                      return Strings.signUp;
-                    } else {
-                      return Strings.next;
-                    }
-                  }())
-              )
-            ],
+                    },
+                    child: const Text(Strings.back),
+                  ),
+                ),
+                TextButton(
+                    onPressed: () async {
+                      if (_tabIndex == 0) {
+                        _tabController.animateTo(_tabIndex +1);
+                      } else if (_tabIndex == 1) {
+                        if (_alreadyRegistered) {
+                          submitLoginForm();
+                        } else {
+                          submitCreateInstitutionForm();
+                        }
+                      }
+                    },
+                    child: Text((){
+                      if (_tabIndex == 1 && _alreadyRegistered) {
+                        return Strings.signIn;
+                      } else if (_tabIndex == 1 && !_alreadyRegistered) {
+                        return Strings.signUp;
+                      } else {
+                        return Strings.next;
+                      }
+                    }())
+                )
+              ],
+            ),
+            body: TabBarView(controller: _tabController, children: [
+              tab1(),
+              ..._alreadyRegistered
+                  ? tabsJoinInstitution()
+                  : tabsCreateInstitution()
+            ])
           ),
-          body: TabBarView(controller: _tabController, children: [
-            tab1(),
-            ..._alreadyRegistered
-                ? tabsJoinInstitution()
-                : tabsCreateInstitution()
-          ])
-        ),
+      ),
     );
   }
 

@@ -332,7 +332,8 @@ class _ShowStudentScreenState extends State<ShowStudentScreen>
             });
             },
             child: ClipRRect(borderRadius: const BorderRadius.vertical(top: Radius.circular(30.0)),
-            child: BottomAppBar(color: ColorSchemes.errorColor, shape: const CircularNotchedRectangle(), notchMargin: 5.0, child: SizedBox(height: kToolbarHeight - 10,
+            //child: BottomAppBar(color: ColorSchemes.errorColor, shape: const CircularNotchedRectangle(), notchMargin: 5.0, child: SizedBox(height: kToolbarHeight - 10,
+            child: BottomAppBar(color: ColorSchemes.errorColor, notchMargin: 5.0, child: SizedBox(height: kToolbarHeight - 10,
               child: IconButton(
                 icon: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -359,162 +360,165 @@ class _ShowStudentScreenState extends State<ShowStudentScreen>
             ),
           ),
         ) : null,
-        floatingActionButton: FloatingActionButton(
-            heroTag: 'fabae',
-            onPressed: () {
-            switch(_tabIndex) {
-              case 0:
-                showDialog<Incidence>(context: context, builder: (context) =>
-                    CreateIncidenceDialog(
-                        student.studentId
-                    ),).then((Incidence? value) {
-                      if (value != null) {
+        floatingActionButton: FadeTransition(
+          opacity: Tween(begin: 1.0, end: 0.0).animate(ShiftingAnimation(_tabController, 1)),
+          child: FloatingActionButton(
+              heroTag: 'fabae',
+              onPressed: () {
+              switch(_tabIndex) {
+                case 0:
+                  showDialog<Incidence>(context: context, builder: (context) =>
+                      CreateIncidenceDialog(
+                          student.studentId
+                      ),).then((Incidence? value) {
+                        if (value != null) {
 
-                        }
-                      });
+                          }
+                        });
+                        break;
+                    case 1:
+                      var cubit = _showObservationsWidgetKey.currentState?.cubit;
+                      if (cubit != null) {
+                        showModalBottomSheet(
+                          context: context,
+                          builder: (context) {
+                            return ObservationsBottomSheet(cubit);
+                          },
+                          shape: const RoundedRectangleBorder(
+                              borderRadius: BorderRadius.vertical(
+                                  top: Radius.circular(30)
+                              )
+                          ),
+                          isScrollControlled: true,
+                        );
+                      }
                       break;
-                  case 1:
-                    var cubit = _showObservationsWidgetKey.currentState?.cubit;
-                    if (cubit != null) {
-                      showModalBottomSheet(
-                        context: context,
-                        builder: (context) {
-                          return ObservationsBottomSheet(cubit);
-                        },
-                        shape: const RoundedRectangleBorder(
-                            borderRadius: BorderRadius.vertical(
-                                top: Radius.circular(30)
+                    case 2:
+                      _showAbsencesWidgetKey.currentState?.onFloatingActionButtonPressed();
+                      break;
+                    case 3:
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => EditStudentScreen(student: student,)));
+                      break;
+                      }
+                    },
+                    child: Stack(
+                      children: [
+                        FadeTransition(
+                            opacity: Tween(begin: 0.0, end: 1.0).animate(ShiftingAnimation(_tabController, 0)),
+                            child: Showcase(
+                              key: showcaseKeys[Keys.createIncidenceKey] ?? GlobalKey(),
+                              description: Strings.createIncidenceTooltip,
+                              targetShapeBorder: const CircleBorder(),
+                              targetBorderRadius: BorderRadius.circular(30),
+                              targetPadding: const EdgeInsets.all(15),
+                              disposeOnTap: true,
+                              onToolTipClick: () {
+                                setState(() {
+                                  continueShowcase(Keys.createIncidenceKey);
+                                });
+                              },
+                              onTargetClick: () {
+                                setState(() {
+                                  continueShowcase(Keys.createIncidenceKey);
+                                });
+                              },
+                              child: const Icon(Icons.add)
                             )
                         ),
-                        isScrollControlled: true,
-                      );
-                    }
-                    break;
-                  case 2:
-                    _showAbsencesWidgetKey.currentState?.onFloatingActionButtonPressed();
-                    break;
-                  case 3:
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => EditStudentScreen(student: student,)));
-                    break;
-                    }
-                  },
-                  child: Stack(
-                    children: [
-                      FadeTransition(
-                          opacity: Tween(begin: 0.0, end: 1.0).animate(ShiftingAnimation(_tabController, 0)),
-                          child: Showcase(
-                            key: showcaseKeys[Keys.createIncidenceKey] ?? GlobalKey(),
-                            description: Strings.createIncidenceTooltip,
-                            targetShapeBorder: const CircleBorder(),
-                            targetBorderRadius: BorderRadius.circular(30),
-                            targetPadding: const EdgeInsets.all(15),
-                            disposeOnTap: true,
-                            onToolTipClick: () {
-                              setState(() {
-                                continueShowcase(Keys.createIncidenceKey);
-                              });
-                            },
-                            onTargetClick: () {
-                              setState(() {
-                                continueShowcase(Keys.createIncidenceKey);
-                              });
-                            },
-                            child: const Icon(Icons.add)
-                          )
-                      ),
-                      FadeTransition(
-                          opacity: Tween(begin: 0.0, end: 1.0).animate(ShiftingAnimation(_tabController, 1)),
-                          child: Stack(
-                            children: [
-                              Visibility(
-                                visible: _tabIndex == 1,
-                            child: Showcase(
-                                key: showcaseKeys[Keys.editObservationsKey] ?? GlobalKey(),
-                                description: Strings.editObservationsTooltip,
-                                targetShapeBorder: const CircleBorder(),
-                                targetBorderRadius: BorderRadius.circular(30),
-                                targetPadding: const EdgeInsets.all(15),
-                                disposeOnTap: true,
-                                onToolTipClick: () {
-                                  setState(() {
-                                    continueShowcase(Keys.editObservationsKey);
-                                  });
-                                },
-                                onTargetClick: () {
-                                  setState(() {
-                                    continueShowcase(Keys.editObservationsKey);
-                                  });
-                                },
-                                child: const Icon(Icons.edit)
-                                ),
-                              ),
-                              const Icon(Icons.edit)
-                            ],
-                          )
-                      ),
-                      FadeTransition(
-                          opacity: Tween(begin: 0.0, end: 1.0).animate(ShiftingAnimation(_tabController, 2)),
-                          child: Stack(
-                            children: [
-                              Visibility(
-                                visible: _tabIndex == 2,
-                                child: Showcase(
-                                  key: showcaseKeys[Keys.createAbsenceKey] ?? GlobalKey(),
-                                  description: Strings.createAbsenceTooltip,
+                        FadeTransition(
+                            opacity: Tween(begin: 0.0, end: 1.0).animate(ShiftingAnimation(_tabController, 1)),
+                            child: Stack(
+                              children: [
+                                Visibility(
+                                  visible: _tabIndex == 1,
+                              child: Showcase(
+                                  key: showcaseKeys[Keys.editObservationsKey] ?? GlobalKey(),
+                                  description: Strings.editObservationsTooltip,
                                   targetShapeBorder: const CircleBorder(),
                                   targetBorderRadius: BorderRadius.circular(30),
                                   targetPadding: const EdgeInsets.all(15),
                                   disposeOnTap: true,
                                   onToolTipClick: () {
                                     setState(() {
-                                      continueShowcase(Keys.createAbsenceKey);
+                                      continueShowcase(Keys.editObservationsKey);
                                     });
                                   },
                                   onTargetClick: () {
                                     setState(() {
-                                      continueShowcase(Keys.createAbsenceKey);
-                                    });
-                                  },
-                                  child: const Icon(Icons.add)
-                                ),
-                              ),
-                              const Icon(Icons.add)
-                            ],
-                          )
-                      ),
-                      FadeTransition(
-                          opacity: Tween(begin: 0.0, end: 1.0).animate(ShiftingAnimation(_tabController, 3)),
-                          child: Stack(
-                            children: [
-                              Visibility(
-                                visible: _tabIndex == 3,
-                                child: Showcase(
-                                  key: showcaseKeys[Keys.editStudentDataKey] ?? GlobalKey(),
-                                  description: Strings.editStudentDataTooltip,
-                                  targetShapeBorder: const CircleBorder(),
-                                  targetBorderRadius: BorderRadius.circular(30),
-                                  targetPadding: const EdgeInsets.all(15),
-                                  disposeOnTap: true,
-                                  onToolTipClick: () {
-                                    setState(() {
-                                      continueShowcase(Keys.editStudentDataKey);
-                                    });
-                                  },
-                                  onTargetClick: () {
-                                    setState(() {
-                                      continueShowcase(Keys.editStudentDataKey);
+                                      continueShowcase(Keys.editObservationsKey);
                                     });
                                   },
                                   child: const Icon(Icons.edit)
+                                  ),
                                 ),
-                              ),
-                              const Icon(Icons.edit)
-                            ],
-                          )
-                      ),
-                    ],
-                  )
-              ),
+                                const Icon(Icons.edit)
+                              ],
+                            )
+                        ),
+                        FadeTransition(
+                            opacity: Tween(begin: 0.0, end: 1.0).animate(ShiftingAnimation(_tabController, 2)),
+                            child: Stack(
+                              children: [
+                                Visibility(
+                                  visible: _tabIndex == 2,
+                                  child: Showcase(
+                                    key: showcaseKeys[Keys.createAbsenceKey] ?? GlobalKey(),
+                                    description: Strings.createAbsenceTooltip,
+                                    targetShapeBorder: const CircleBorder(),
+                                    targetBorderRadius: BorderRadius.circular(30),
+                                    targetPadding: const EdgeInsets.all(15),
+                                    disposeOnTap: true,
+                                    onToolTipClick: () {
+                                      setState(() {
+                                        continueShowcase(Keys.createAbsenceKey);
+                                      });
+                                    },
+                                    onTargetClick: () {
+                                      setState(() {
+                                        continueShowcase(Keys.createAbsenceKey);
+                                      });
+                                    },
+                                    child: const Icon(Icons.add)
+                                  ),
+                                ),
+                                const Icon(Icons.add)
+                              ],
+                            )
+                        ),
+                        FadeTransition(
+                            opacity: Tween(begin: 0.0, end: 1.0).animate(ShiftingAnimation(_tabController, 3)),
+                            child: Stack(
+                              children: [
+                                Visibility(
+                                  visible: _tabIndex == 3,
+                                  child: Showcase(
+                                    key: showcaseKeys[Keys.editStudentDataKey] ?? GlobalKey(),
+                                    description: Strings.editStudentDataTooltip,
+                                    targetShapeBorder: const CircleBorder(),
+                                    targetBorderRadius: BorderRadius.circular(30),
+                                    targetPadding: const EdgeInsets.all(15),
+                                    disposeOnTap: true,
+                                    onToolTipClick: () {
+                                      setState(() {
+                                        continueShowcase(Keys.editStudentDataKey);
+                                      });
+                                    },
+                                    onTargetClick: () {
+                                      setState(() {
+                                        continueShowcase(Keys.editStudentDataKey);
+                                      });
+                                    },
+                                    child: const Icon(Icons.edit)
+                                  ),
+                                ),
+                                const Icon(Icons.edit)
+                              ],
+                            )
+                        ),
+                      ],
+                    )
+                ),
+        ),
             );
         },
       )

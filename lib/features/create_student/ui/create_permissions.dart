@@ -33,36 +33,39 @@ class _CreatePermissionsState extends State<CreatePermissions> with AutomaticKee
   @override
   Widget build(BuildContext context) {
     return allPermissions.isNotEmpty ?
-    Column(
-      children: [
-        Card(
-          margin: const EdgeInsets.all(10),
-          child: ListView.separated(
-              shrinkWrap: true,
-              itemBuilder: (context, permissionIndex) {
-                return ListTile(
-                  title: Text(allPermissions.elementAt(permissionIndex)),
-                  onTap: () {
-                    setState(() {
-                      _togglePermission(currentPermissions[allPermissions.elementAt(permissionIndex)] ?? false, permissionIndex);
-                    });
-                  },
-                  trailing: Switch(
-                    value: currentPermissions[allPermissions.elementAt(permissionIndex)] ?? false,
-                    onChanged: (bool value) {
+    Container(
+      padding: EdgeInsets.only(bottom: 80.0),
+      child: Column(
+        children: [
+          Card(
+            margin: const EdgeInsets.all(10),
+            child: ListView.separated(
+                shrinkWrap: true,
+                itemBuilder: (context, permissionIndex) {
+                  return ListTile(
+                    title: Text(allPermissions.elementAt(permissionIndex)),
+                    onTap: () {
                       setState(() {
-                        _togglePermission(!value, permissionIndex);
+                        _togglePermission(currentPermissions[allPermissions.elementAt(permissionIndex)] ?? false, permissionIndex);
                       });
                     },
-                  ),
-                );
-              },
-              separatorBuilder: (context, index) => const Divider(height: 1,),
-              itemCount: allPermissions.length
+                    trailing: Switch(
+                      value: currentPermissions[allPermissions.elementAt(permissionIndex)] ?? false,
+                      onChanged: (bool value) {
+                        setState(() {
+                          _togglePermission(!value, permissionIndex);
+                        });
+                      },
+                    ),
+                  );
+                },
+                separatorBuilder: (context, index) => const Divider(height: 1,),
+                itemCount: allPermissions.length
+            ),
           ),
-        ),
-        const Spacer()
-      ],
+          const Spacer()
+        ],
+      ),
     ) :
     Column(
       mainAxisSize: MainAxisSize.max,
