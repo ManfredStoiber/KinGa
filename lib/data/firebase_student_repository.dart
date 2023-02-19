@@ -92,8 +92,16 @@ class FirebaseStudentRepository implements StudentRepository {
                   } else {
                     Uint8List? profileImageDownload = await storage.ref().child('$currentInstitutionId/${student.studentId}').getData().catchError((e) => null);
                     if (profileImageDownload != null) {
-                      profileImage = profileImageDownload;
-                      cacheProfileImage(student.studentId, profileImageDownload); // store image in cache
+                      // decrypt profileImage
+                      try {
+                        profileImage =
+                            Uint8List.fromList(base64.decode(CryptoUtils.decrypt(
+                                utf8.decode(profileImageDownload))));
+                      } catch (e) {
+                        // if decryption failed, image is stored unencrypted // TODO: remove when everything is encrypted
+                        profileImage = profileImageDownload;
+                      }
+                      cacheProfileImage(student.studentId, profileImage); // store image in cache
                     } else {
                       profileImage = await randomImage(student.studentId);
                       setProfileImage(student.studentId, profileImage);
@@ -240,8 +248,9 @@ class FirebaseStudentRepository implements StudentRepository {
   Future<void> setProfileImage(String studentId, Uint8List image) async {
     // store in cache
     cacheProfileImage(studentId, image);
-    // store in firebase storage
-    storage.ref().child('$currentInstitutionId/$studentId').putData(image);
+    // encrypt and store in firebase storage
+    var encrypted = Uint8List.fromList(utf8.encode(CryptoUtils.encrypt(base64.encode(image))));
+    storage.ref().child('$currentInstitutionId/$studentId').putData(encrypted);
     // update student
     StudentService studentService = GetIt.I<StudentService>();
     return studentService.updateStudent(studentService.getStudent(studentId)..profileImage = image);

@@ -17,7 +17,11 @@ class StudentsCubit extends Cubit<StudentsState> {
   StudentsCubit(this._studentService) : super(StudentsInitial()) {
     emit(StudentsLoading());
     _streamSubscription = _studentService.watchStudents().listen((students) {
-      emit(StudentsLoaded(students, null));
+      if (students.isEmpty) {
+        emit(StudentsEmpty());
+      } else {
+        emit(StudentsLoaded(students, null));
+      }
     });
   }
 
