@@ -23,4 +23,8 @@ class AuthenticationService {
     return _authenticationRepository.authStateChanges();
   }
 
+  User? getCurrentUser() {
+    return _authenticationRepository.getCurrentUser();
+  }
+
 }

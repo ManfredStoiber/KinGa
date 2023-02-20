@@ -16,6 +16,9 @@ import 'package:kinga/domain/authentication_service.dart';
 import 'package:kinga/domain/institution_repository.dart';
 import 'package:kinga/domain/student_repository.dart';
 import 'package:kinga/domain/student_service.dart';
+import 'package:kinga/features/commons/data/firebase_analytics_repository.dart';
+import 'package:kinga/features/commons/domain/analytics_repository.dart';
+import 'package:kinga/features/commons/domain/analytics_service.dart';
 import 'package:kinga/features/observations/data/firebase_observation_repository.dart';
 import 'package:kinga/features/observations/domain/observation_repository.dart';
 import 'package:kinga/features/observations/domain/observation_service.dart';
@@ -70,5 +73,9 @@ Future<void> configureDependencies() async {
   // permissions
   GetIt.I.registerSingleton<PermissionRepository>(FirebasePermissionRepository());
   GetIt.I.registerSingleton<PermissionService>(PermissionService());
+
+  // analytics
+  GetIt.I.registerSingleton<AnalyticsRepository>(FirebaseAnalyticsRepository());
+  GetIt.I.registerSingleton<AnalyticsService>(AnalyticsService());
 
 }

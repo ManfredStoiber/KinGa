@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
+import 'package:kinga/constants/keys.dart';
 import 'package:kinga/constants/strings.dart';
 import 'package:kinga/domain/entity/absence.dart';
+import 'package:kinga/features/commons/domain/analytics_service.dart';
 import 'package:kinga/ui/bloc/students_cubit.dart';
 import 'package:kinga/ui/widgets/loading_indicator_dialog.dart';
 import 'package:kinga/util/date_utils.dart';
@@ -57,6 +60,7 @@ class _CreateAbsenceDialogState extends State<CreateAbsenceDialog> {
             String dateFromFormatted = IsoDateUtils.getIsoDateFromGermanDate(dateFromController.text);
             String dateUntilFormatted = IsoDateUtils.getIsoDateFromGermanDate(dateUntilController.text);
             BlocProvider.of<StudentsCubit>(context).createAbsence(widget.studentId, Absence(dateFromFormatted, dateUntilFormatted, _selectedReason)).then((value) {
+              GetIt.I<AnalyticsService>().logEvent(name: Keys.analyticsCreateAbsence);
               Navigator.of(context).pop();
               Navigator.of(context).pop();
             });

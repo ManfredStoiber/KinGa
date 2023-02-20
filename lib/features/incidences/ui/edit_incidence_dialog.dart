@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:kinga/constants/keys.dart';
 import 'package:kinga/constants/strings.dart';
 import 'package:kinga/domain/entity/incidence.dart';
 import 'package:kinga/domain/student_service.dart';
+import 'package:kinga/features/commons/domain/analytics_service.dart';
 import 'package:kinga/ui/widgets/loading_indicator_dialog.dart';
 import 'package:kinga/util/date_utils.dart';
 
@@ -46,6 +48,7 @@ class _EditIncidenceDialogState extends State<EditIncidenceDialog> {
               String dateTime = "${IsoDateUtils.getIsoDateFromIsoDateTime(widget.incidence.dateTime)}T${_timeController.text}";
               Incidence incidence = Incidence(dateTime, _descriptionController.text.trim(), _selectedCategory);
               GetIt.I<StudentService>().updateIncidence(widget.studentId, widget.incidence, incidence).then((value) {
+                GetIt.I<AnalyticsService>().logEvent(name: Keys.analyticsEditIncidence);
                 Navigator.of(context).pop();
                 Navigator.of(context).pop();
               });

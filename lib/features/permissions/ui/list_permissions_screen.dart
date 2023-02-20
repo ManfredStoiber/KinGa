@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:kinga/constants/keys.dart';
 import 'package:kinga/constants/strings.dart';
+import 'package:kinga/features/commons/domain/analytics_service.dart';
 import 'package:kinga/features/permissions/domain/permission_service.dart';
 import 'package:kinga/features/permissions/ui/create_permission_screen.dart';
 import 'package:kinga/features/permissions/ui/show_permission_screen.dart';
 import 'package:simple_shadow/simple_shadow.dart';
 
 class ListPermissionsScreen extends StatelessWidget {
+
   const ListPermissionsScreen({Key? key}) : super(key: key);
 
   @override
@@ -36,6 +39,7 @@ class ListPermissionsScreen extends StatelessWidget {
       ListView.separated(itemCount: permissions.length, itemBuilder: (context, permissionIndex) {
         return ListTile(
           onTap: () {
+            GetIt.I<AnalyticsService>().logEvent(name: Keys.analyticsListPermissions);
             Navigator.of(context).push(MaterialPageRoute(builder: (context) => ShowPermissionScreen(permissions.elementAt(permissionIndex)),));
           },
             trailing: const Icon(Icons.arrow_forward),

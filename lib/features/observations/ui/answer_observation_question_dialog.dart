@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:kinga/constants/colors.dart';
+import 'package:kinga/constants/keys.dart';
 import 'package:kinga/constants/strings.dart';
+import 'package:kinga/features/commons/domain/analytics_service.dart';
 import 'package:kinga/features/observations/domain/entity/observation.dart';
 import 'package:kinga/features/observations/domain/entity/question.dart';
 import 'package:kinga/features/observations/domain/observation_service.dart';
@@ -60,6 +62,7 @@ class _AnswerObservationQuestionDialogState extends State<AnswerObservationQuest
           onPressed: () {
             LoadingIndicatorDialog.show(context);
             _observationService.updateObservation(widget.studentId, Observation(widget.question, "TODO", selectedAnswer, _notesController.text.isNotEmpty ? _notesController.text : null)).then((value) { // TODO: timespan
+              GetIt.I<AnalyticsService>().logEvent(name: Keys.analyticsAnswerObservation);
               Navigator.of(context).pop(); // pop LoadingIndicatorDialog
               Navigator.of(context).pop(true); // pop CreateObservationDialog with success = true
             });

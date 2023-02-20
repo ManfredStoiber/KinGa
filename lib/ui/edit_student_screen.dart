@@ -3,10 +3,13 @@ import 'dart:typed_data';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
+import 'package:kinga/constants/keys.dart';
 
 import 'package:kinga/constants/strings.dart';
 import 'package:kinga/domain/entity/caregiver.dart';
 import 'package:kinga/domain/entity/student.dart';
+import 'package:kinga/features/commons/domain/analytics_service.dart';
 import 'package:kinga/features/create_student/ui/create_basic_info.dart';
 import 'package:kinga/features/create_student/ui/create_caregivers.dart';
 import 'package:kinga/features/create_student/ui/create_permissions.dart';
@@ -212,6 +215,7 @@ class _EditStudentScreenState extends State<EditStudentScreen>
 
                               if (widget.student == null) {
                                 BlocProvider.of<StudentsCubit>(context).createStudent(student, _profileImage).then((_) {
+                                  GetIt.I<AnalyticsService>().logEvent(name: Keys.analyticsCreateStudent);
                                   Navigator.of(context).pop();
                                   Navigator.of(context).pop();
                                 },).catchError((e) {
@@ -230,6 +234,7 @@ class _EditStudentScreenState extends State<EditStudentScreen>
                                   s.caregivers = caregivers;
                                   s.permissions = permissions;
                                   BlocProvider.of<StudentsCubit>(context).updateStudent(s, _profileImage).then((_) {
+                                    GetIt.I<AnalyticsService>().logEvent(name: Keys.analyticsEditStudent);
                                     Navigator.pop(context);
                                     Navigator.pop(context);
                                     Navigator.pop(context);

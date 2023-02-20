@@ -14,6 +14,7 @@ import 'package:kinga/domain/entity/incidence.dart';
 import 'package:kinga/domain/entity/student.dart';
 import 'package:kinga/domain/student_service.dart';
 import 'package:kinga/features/absences/ui/show_absences_widget.dart';
+import 'package:kinga/features/commons/domain/analytics_service.dart';
 import 'package:kinga/features/incidences/ui/create_incidence_dialog.dart';
 import 'package:kinga/features/incidences/ui/show_incidences_widget.dart';
 import 'package:kinga/features/observations/show_observations_widget.dart';
@@ -343,6 +344,7 @@ class _ShowStudentScreenState extends State<ShowStudentScreen>
                   ],
                 ),
                 onPressed: () {
+                  GetIt.I<AnalyticsService>().logEvent(name: Keys.analyticsShowContacts);
                   showModalBottomSheet(
                     context: context,
                     builder: (context) {

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
+import 'package:kinga/constants/keys.dart';
 import 'package:kinga/constants/strings.dart';
 import 'package:kinga/domain/entity/student.dart';
+import 'package:kinga/features/commons/domain/analytics_service.dart';
 import 'package:kinga/util/date_utils.dart';
 
 class ShowStudentDataWidget extends StatefulWidget {
@@ -22,13 +25,17 @@ class _ShowStudentDataWidgetState extends State<ShowStudentDataWidget> with Auto
         Card(
           margin: const EdgeInsets.fromLTRB(10, 5, 10, 5),
           child: ExpansionTile(
-
+            onExpansionChanged: (expanded) {
+              if (expanded)  {
+                GetIt.I<AnalyticsService>().logEvent(name: Keys.analyticsShowInfoGeneral);
+              }
+            },
             title: const Text(Strings.infoGeneral),
             children: [
               buildReadOnlyTextField(Strings.firstname, widget.student.firstname),
               buildReadOnlyTextField(Strings.middlename, widget.student.middlename),
               buildReadOnlyTextField(Strings.lastname, widget.student.lastname),
-              buildReadOnlyTextField(Strings.birthday, IsoDateUtils.getGermanDateFromIsoDate(widget.student.birthday)),
+              if (widget.student.birthday != "") buildReadOnlyTextField(Strings.birthday, IsoDateUtils.getGermanDateFromIsoDate(widget.student.birthday)),
               buildReadOnlyTextField(Strings.address, widget.student.address)
             ],
           ),
@@ -36,6 +43,9 @@ class _ShowStudentDataWidgetState extends State<ShowStudentDataWidget> with Auto
         Card(
           margin: const EdgeInsets.fromLTRB(10, 5, 10, 5),
           child: ExpansionTile(
+            onExpansionChanged: (value) {
+              GetIt.I<AnalyticsService>().logEvent(name: Keys.analyticsShowInfoPickup);
+            },
             title: const Text(Strings.infoPickup),
             children: [
               if (widget.student.caregivers.isNotEmpty)
@@ -80,6 +90,9 @@ class _ShowStudentDataWidgetState extends State<ShowStudentDataWidget> with Auto
           Card(
             margin: const EdgeInsets.fromLTRB(10, 5, 10, 5),
             child: ExpansionTile(
+              onExpansionChanged: (value) {
+                GetIt.I<AnalyticsService>().logEvent(name: Keys.analyticsShowInfoPermissions);
+              },
               title: const Text(Strings.permission),
               children: [
                 ListView.separated(

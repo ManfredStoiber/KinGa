@@ -52,4 +52,10 @@ class FirebaseRestAuthenticationRepository implements AuthenticationRepository {
     throw UnimplementedError();
   }
 
+  @override
+  User? getCurrentUser() {
+    // TODO: implement getCurrentUser
+    throw UnimplementedError();
+  }
+
 }

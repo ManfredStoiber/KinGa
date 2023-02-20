@@ -10,6 +10,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:kinga/constants/keys.dart';
 import 'package:kinga/domain/entity/caregiver.dart';
+import 'package:kinga/features/commons/domain/analytics_service.dart';
 import 'package:kinga/features/observations/ui/observation_of_the_week_bar.dart';
 import 'package:kinga/features/permissions/ui/list_permissions_screen.dart';
 import 'package:kinga/ui/widgets/loading_indicator_dialog.dart';
@@ -35,6 +36,9 @@ class AttendanceScreen extends StatefulWidget {
 }
 
 class _AttendanceScreenState extends State<AttendanceScreen> {
+
+  final AnalyticsService _analyticsService = GetIt.I<AnalyticsService>();
+
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final List<String> allShowcases = [Keys.attendanceKey, Keys.searchKey, Keys.filterKey, Keys.drawerKey, Keys.createStudentKey, Keys.createPermissionKey];
   Map<String, GlobalKey> showcaseKeys = {};
@@ -437,6 +441,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                       ListTile(
                         title: const Text(Strings.showHelp),
                         onTap: () {
+                          _analyticsService.logEvent(name: Keys.analyticsShowHelp);
                           GetIt.instance.get<StreamingSharedPreferences>().setStringList(Keys.finishedShowcases, []);
                           _scaffoldKey.currentState!.closeDrawer();
                           Navigator.of(context).pop();
@@ -526,11 +531,13 @@ class AttendanceItemState extends State<AttendanceItem> {
                   margin: const EdgeInsets.all(10),
                   child: ElevatedButton(
                       onPressed: () {
+                        GetIt.I<AnalyticsService>().logEvent(name: Keys.analyticsShowStudent);
                         Navigator.push(context, MaterialPageRoute(
                             builder: (context) =>
                                 ShowStudentScreen(studentId: widget.studentId,)));
                       },
                       onLongPress: () {
+                        GetIt.I<AnalyticsService>().logEvent(name: Keys.analyticsToggleAttendance);
                         toggleAttendance();
                       },
                       style: TextButton.styleFrom(

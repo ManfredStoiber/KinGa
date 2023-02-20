@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
 import 'package:kinga/constants/colors.dart';
 import 'package:kinga/constants/keys.dart';
 import 'package:kinga/constants/strings.dart';
@@ -7,6 +8,7 @@ import 'package:kinga/domain/entity/absence.dart';
 import 'package:kinga/features/absences/ui/bloc/absences_cubit.dart';
 import 'package:kinga/features/absences/ui/create_absence_dialog.dart';
 import 'package:kinga/features/absences/ui/edit_absence_dialog.dart';
+import 'package:kinga/features/commons/domain/analytics_service.dart';
 import 'package:kinga/ui/widgets/loading_indicator.dart';
 import 'package:kinga/ui/widgets/slide_menu.dart';
 import 'package:kinga/util/date_utils.dart';
@@ -51,6 +53,7 @@ class ShowAbsencesWidgetState extends State<ShowAbsencesWidget> {
               ],
             ),).then((confirmed) {
               if (confirmed ?? false) {
+                GetIt.I<AnalyticsService>().logEvent(name: Keys.analyticsDeleteAbsence);
                 cubit.removeAbsence(widget.studentId, state.selectedAbsences.elementAt(index));
               }
             });

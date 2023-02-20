@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:kinga/constants/keys.dart';
 import 'package:kinga/constants/strings.dart';
 import 'package:kinga/domain/entity/incidence.dart';
 import 'package:kinga/domain/student_service.dart';
+import 'package:kinga/features/commons/domain/analytics_service.dart';
 import 'package:kinga/util/date_utils.dart';
 
 class CreateIncidenceDialog extends StatefulWidget {
@@ -38,6 +40,7 @@ class _CreateIncidenceDialogState extends State<CreateIncidenceDialog> {
               String dateTime = "${IsoDateUtils.getIsoDateFromIsoDateTime(DateTime.now().toIso8601String())}T${_timeController.text}";
               Incidence incidence = Incidence(dateTime, _descriptionController.text.trim(), _selectedCategory);
               GetIt.I<StudentService>().createIncidence(widget.studentId, incidence).then((value) {
+                GetIt.I<AnalyticsService>().logEvent(name: Keys.analyticsCreateIncidence);
                 Navigator.of(context).pop(incidence);
               }); // TODO: What if network connection is slow and you close dialog manually? Will the next element of Navigator be popped then?
             }

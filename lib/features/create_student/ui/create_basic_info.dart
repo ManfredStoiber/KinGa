@@ -38,7 +38,7 @@ class _CreateBasicInfoState extends State<CreateBasicInfo> with AutomaticKeepAli
   @override
   Widget build(BuildContext context) {
     TextEditingController birthdayController = TextEditingController();
-    birthdayController.text = widget.student['birthday'] != null ? IsoDateUtils.getGermanDateFromIsoDate(widget.student['birthday']) : '';
+    birthdayController.text = widget.student['birthday'] != null && widget.student['birthday'] != "" ? IsoDateUtils.getGermanDateFromIsoDate(widget.student['birthday']) : '';
 
     return ListView(padding: EdgeInsets.only(bottom: 80.0), children: [
     Wrap(children: [

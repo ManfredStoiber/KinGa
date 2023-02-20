@@ -10,4 +10,6 @@ abstract class AuthenticationRepository {
   Future signOut();
 
   Stream<User?> authStateChanges();
+
+  User? getCurrentUser();
 }

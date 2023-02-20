@@ -7,7 +7,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:kinga/constants/colors.dart';
+import 'package:kinga/constants/keys.dart';
 import 'package:kinga/constants/strings.dart';
+import 'package:kinga/features/commons/domain/analytics_service.dart';
 import 'package:kinga/features/observations/domain/observation_service.dart';
 import 'package:kinga/features/observations/ui/ObservationStudentDto.dart';
 import 'package:kinga/features/observations/ui/bloc/observation_of_the_week_cubit.dart';
@@ -91,6 +93,7 @@ class _AnswerObservationScreenState extends State<AnswerObservationScreen> {
         floatingActionButton: FloatingActionButton(
             onPressed: () {
               saveAnswers(state);
+              GetIt.I<AnalyticsService>().logEvent(name: Keys.analyticsAnswerObservationOfTheWeek);
               Navigator.of(context).pop();
             },
           child: Icon(Icons.check),

@@ -190,9 +190,13 @@ class StudentService {
   }
 
   bool hasBirthday(String studentId) {
+    var birthday = getStudent(studentId).birthday;
+    if (birthday == "") {
+      return false;
+    }
+
     return IsoDateUtils.getIsoDateFromIsoDateTime(
-        DateTime.now().toIso8601String()).substring(5) == getStudent(studentId)
-        .birthday.substring(5);
+        DateTime.now().toIso8601String()).substring(5) == birthday.substring(5);
   }
 
   Future<void> setProfileImage(String studentId, Uint8List image) async {

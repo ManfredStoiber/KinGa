@@ -6,6 +6,7 @@ import 'package:kinga/constants/keys.dart';
 import 'package:kinga/constants/strings.dart';
 import 'package:kinga/domain/entity/student.dart';
 import 'package:kinga/domain/student_service.dart';
+import 'package:kinga/features/commons/domain/analytics_service.dart';
 import 'package:kinga/features/permissions/domain/permission_service.dart';
 import 'package:kinga/features/permissions/ui/list_permissions_screen.dart';
 import 'package:kinga/features/permissions/ui/permission_item_widget.dart';
@@ -159,6 +160,7 @@ class _ShowPermissionScreenState extends State<ShowPermissionScreen> {
                               selected: groupSelection[group] ?? false,
                               onSelected: (selected) {
                                 setState(() {
+                                  GetIt.I<AnalyticsService>().logEvent(name: Keys.analyticsListPermissionsChangeFilter);
                                   groupSelection[group] = !(groupSelection[group] ?? false);
                                 });
                               },
@@ -208,6 +210,7 @@ class _ShowPermissionScreenState extends State<ShowPermissionScreen> {
                                     ],
                                     onChanged: (value) {
                                       setState(() {
+                                        GetIt.I<AnalyticsService>().logEvent(name: Keys.analyticsListPermissionsChangeFilter);
                                         permitted = value ?? permitted;
                                       });
                                     },
@@ -222,6 +225,7 @@ class _ShowPermissionScreenState extends State<ShowPermissionScreen> {
                                 selectedColor: ColorSchemes.kingacolor,
                                 onSelected: (selected) {
                                   setState(() {
+                                    GetIt.I<AnalyticsService>().logEvent(name: Keys.analyticsListPermissionsChangeFilter);
                                     onlyAttendantStudents = !onlyAttendantStudents;
                                   });
                                 },

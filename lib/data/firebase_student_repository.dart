@@ -266,6 +266,11 @@ class FirebaseStudentRepository implements StudentRepository {
 
   @override
   Future<void> setProfileImage(String studentId, Uint8List image) async {
+
+    if (image.isEmpty) {
+      image = await randomImage(studentId);
+    }
+
     // store in cache
     cacheProfileImage(studentId, image);
     // encrypt and store in firebase storage
@@ -386,7 +391,8 @@ class FirebaseStudentRepository implements StudentRepository {
         image += 'koala.png';
         break;
       case 20:
-        image += 'lion.png';
+        //image += 'lion.png'; TODO: lion not available
+        image += 'koala.png';
         break;
       case 21:
         image += 'owl.png';

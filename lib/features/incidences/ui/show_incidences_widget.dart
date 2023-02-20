@@ -5,9 +5,11 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:kinga/constants/colors.dart';
+import 'package:kinga/constants/keys.dart';
 import 'package:kinga/constants/strings.dart';
 import 'package:kinga/domain/entity/incidence.dart';
 import 'package:kinga/domain/student_service.dart';
+import 'package:kinga/features/commons/domain/analytics_service.dart';
 import 'package:kinga/features/incidences/ui/bloc/incidences_cubit.dart';
 import 'package:kinga/features/incidences/ui/edit_incidence_dialog.dart';
 import 'package:kinga/ui/widgets/slide_menu.dart';
@@ -338,6 +340,7 @@ class _AnimatedSlideMenuState extends State<AnimatedSlideMenu> with AutomaticKee
         Incidence incidenceToRemove = (BlocProvider.of<IncidencesCubit>(context).state as IncidencesLoaded).incidences
             .elementAt(widget.index);
         GetIt.I<StudentService>().deleteIncidence(widget.studentId, incidenceToRemove).then((value) {
+          GetIt.I<AnalyticsService>().logEvent(name: Keys.analyticsDeleteIncidence);
         });
       }
     });

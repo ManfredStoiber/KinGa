@@ -8,6 +8,7 @@ import 'package:kinga/constants/keys.dart';
 import 'package:kinga/domain/authentication_service.dart';
 import 'package:kinga/domain/entity/user.dart';
 import 'package:kinga/domain/student_service.dart';
+import 'package:kinga/features/commons/domain/analytics_service.dart';
 import 'package:kinga/injection.dart';
 import 'package:kinga/ui/attendance_screen.dart';
 import 'package:kinga/ui/setup_account_screen.dart';
@@ -38,18 +39,47 @@ void main() async {
   runApp(MyApp(studentService, authenticationService));
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
 
   final StudentService _studentService;
   final AuthenticationService _authenticationService;
 
-  const MyApp(this._studentService, this._authenticationService, {Key? key}) : super(key: key);
+  MyApp(this._studentService, this._authenticationService, {Key? key}) : super(key: key);
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
+
+  @override
+  void initState() {
+    super.initState();
+    GetIt.I<AnalyticsService>().logEvent(name: Keys.analyticsResumed);
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    if (state == AppLifecycleState.resumed) {
+      GetIt.I<AnalyticsService>().logEvent(name: Keys.analyticsResumed);
+    } else if (state == AppLifecycleState.paused) {
+      GetIt.I<AnalyticsService>().logEvent(name: Keys.analyticsPaused);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     // StreamBuilder for distinction if user is authenticated or not
     return StreamBuilder<User?>(
-      stream: _authenticationService.authStateChanges(),
+      stream: widget._authenticationService.authStateChanges(),
       builder: (BuildContext context, AsyncSnapshot<User?> snapshot) {
         if (snapshot.hasData) {
           // if logged in
@@ -63,7 +93,7 @@ class MyApp extends StatelessWidget {
                   return MultiBlocProvider(
                     providers: [
                       BlocProvider(
-                        create: (context) => StudentsCubit(_studentService),
+                        create: (context) => StudentsCubit(widget._studentService),
                         child: const AttendanceScreen(),
                       ),
                     ],
@@ -102,7 +132,7 @@ class MyApp extends StatelessWidget {
                   return MultiBlocProvider(
                     providers: [
                       BlocProvider(
-                        create: (context) => StudentsCubit(_studentService),
+                        create: (context) => StudentsCubit(widget._studentService),
                         child: const AttendanceScreen(),
                       )
                     ],
@@ -126,7 +156,7 @@ class MyApp extends StatelessWidget {
           return MultiBlocProvider(
             providers: [
               BlocProvider(
-                create: (context) => StudentsCubit(_studentService),
+                create: (context) => StudentsCubit(widget._studentService),
                 child: const AttendanceScreen(),
               )
             ],

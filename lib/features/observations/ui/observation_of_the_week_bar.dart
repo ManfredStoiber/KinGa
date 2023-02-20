@@ -1,6 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
+import 'package:kinga/constants/keys.dart';
+import 'package:kinga/features/commons/domain/analytics_service.dart';
 import 'package:kinga/features/observations/ui/answer_observation_screen.dart';
 import 'package:kinga/features/observations/ui/bloc/observation_of_the_week_bar_cubit.dart';
 
@@ -18,6 +21,7 @@ class ObservationOfTheWeekBar extends StatelessWidget {
           }
           return InkWell(
             onTap: () {
+              GetIt.I<AnalyticsService>().logEvent(name: Keys.analyticsShowObservationOfTheWeek);
               Navigator.of(context).push(MaterialPageRoute(
                 builder: (context) => AnswerObservationScreen(),));
             },
