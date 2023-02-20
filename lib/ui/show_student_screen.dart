@@ -41,7 +41,7 @@ class ShowStudentScreen extends StatefulWidget {
 
 class _ShowStudentScreenState extends State<ShowStudentScreen>
     with SingleTickerProviderStateMixin {
-  final List<String> allShowcases = [Keys.emergencyContactsKey, Keys.showIncidenceWidgetKey, Keys.createIncidenceKey, Keys.showObservationsWidgetKey, Keys.editObservationsKey, Keys.showAbsencesWidgetKey, Keys.createAbsenceKey, Keys.showStudentDataKey, Keys.editStudentDataKey];
+  final List<String> allShowcases = [Keys.emergencyContactsKey, Keys.showIncidenceWidgetKey, Keys.createIncidenceKey, Keys.showObservationsWidgetKey, /*Keys.editObservationsKey,*/ Keys.showAbsencesWidgetKey, Keys.createAbsenceKey, Keys.showStudentDataKey, Keys.editStudentDataKey];
   Map<String, GlobalKey> showcaseKeys = {};
   List<GlobalKey> showcases = [];
   List<String> locallyFinishedShowcases = [];
