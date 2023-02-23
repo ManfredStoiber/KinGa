@@ -28,7 +28,7 @@ class ObservationOfTheWeekBar extends StatelessWidget {
             child: Material(
               elevation: 1,
               child: Container(
-                padding: EdgeInsets.symmetric(vertical: 10.0),
+                padding: const EdgeInsets.all(10.0),
                 child: Column(
                   children: [
                     Row(children: [
@@ -45,7 +45,7 @@ class ObservationOfTheWeekBar extends StatelessWidget {
                       Expanded(
                         child: Column(children: [
                           Text("Frage der Woche:"),
-                          Text('"${(state as ObservationOfTheWeekBarLoaded).question.text}"', style: const TextStyle(fontWeight: FontWeight.bold),),
+                          Text('"${(state as ObservationOfTheWeekBarLoaded).question.text}"', textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold),),
                         ],),
                       ),
                       /*
