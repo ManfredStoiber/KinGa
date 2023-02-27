@@ -45,7 +45,7 @@ class ObservationOfTheWeekBar extends StatelessWidget {
                       Expanded(
                         child: Column(children: [
                           Text("Frage der Woche:"),
-                          Text('"${(state as ObservationOfTheWeekBarLoaded).question.text}"', textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold),),
+                          Text('"${(state as ObservationOfTheWeekBarLoaded).question.text.replaceAll('"', "'")}"', textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold),),
                         ],),
                       ),
                       /*

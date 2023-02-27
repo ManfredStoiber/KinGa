@@ -52,7 +52,11 @@ class FirebaseObservationRepository implements ObservationRepository {
     var doc = await db.collection('Institution').doc(currentInstitutionId).collection("Student").doc(studentId).collection('Observation').get();
     List<Observation> observations = [];
     for (var data in doc.docs) {
-      observations.add(mapToObservation(data.data(), observationForms));
+      try {
+        observations.add(mapToObservation(data.data(), observationForms));
+      } catch (e) {
+        // could not map to observation
+      }
     }
 
     return observations;

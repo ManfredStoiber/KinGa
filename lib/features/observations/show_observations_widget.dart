@@ -297,6 +297,10 @@ class ShowObservationsWidgetState extends State<ShowObservationsWidget> with Aut
                   ],
                 ),
               );
+            } else if (state is ObservationsError) {
+              return Center(
+                child: Text(Strings.errorOccured),
+              );
             } else {
               return Column(
                 children: [

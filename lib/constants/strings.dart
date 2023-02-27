@@ -104,6 +104,7 @@ class Strings {
   static const String tabStudentData = 'Info';
   static const String time = 'Uhrzeit';
   static const String today = 'Heute';
+  static const String errorConnectivity = 'Keine Internetverbindung';
   static const String errorEmailAlreadyInUse = 'Es besteht bereits ein Benutzerkonto mit der angegebenen E-Mail-Adresse';
   static const String errorEmailEmpty = 'E-Mail-Adresse darf nicht leer sein';
   static const String errorInvalidEmail = 'Die angegebene E-Mail-Adresse ist ungültig';

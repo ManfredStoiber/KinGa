@@ -10,6 +10,7 @@ import 'package:kinga/constants/colors.dart';
 import 'package:kinga/constants/keys.dart';
 import 'package:kinga/constants/strings.dart';
 import 'package:kinga/features/commons/domain/analytics_service.dart';
+import 'package:kinga/features/connectivity_indicator/ui/connectivity_indicator.dart';
 import 'package:kinga/features/observations/domain/observation_service.dart';
 import 'package:kinga/features/observations/ui/ObservationStudentDto.dart';
 import 'package:kinga/features/observations/ui/bloc/observation_of_the_week_cubit.dart';
@@ -68,20 +69,22 @@ class _AnswerObservationScreenState extends State<AnswerObservationScreen> {
   child: BlocBuilder<ObservationOfTheWeekCubit, ObservationOfTheWeekState>(
   builder: (context, state) {
     if (state is ObservationOfTheWeekEmpty) {
-      return Scaffold(
-        appBar: AppBar(
-          title: Text("Frage der Woche"), // TODO
-          elevation: 0,
-        ),
-        body: Column(
-          children: [
-            Container(width: double.infinity, padding: EdgeInsets.all(5), color: ColorSchemes.kingacolor, child: Text(textAlign: TextAlign.center, '"${state.question.text}"', style: Theme.of(context).textTheme.titleMedium,)),
-            Spacer(),
-            Container(margin: const EdgeInsets.all(30), width: 100, child: SimpleShadow(child: Opacity(opacity: 0.4, child: Image.asset('assets/images/no_results.png')))),
-            Text(Strings.noObservationsYet, style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.black54), textAlign: TextAlign.center,),
-            Container(margin: const EdgeInsets.all(20), child: Text(Strings.noObservationsYetDescription, style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.black54), textAlign: TextAlign.center,)),
-            Spacer(flex: 2)
-          ],
+      return ConnectivityIndicator(
+        child: Scaffold(
+          appBar: AppBar(
+            title: Text("Frage der Woche"), // TODO
+            elevation: 0,
+          ),
+          body: Column(
+            children: [
+              Container(width: double.infinity, padding: EdgeInsets.all(5), color: ColorSchemes.kingacolor, child: Text(textAlign: TextAlign.center, '"${state.question.text.replaceAll('"', "'")}"', style: Theme.of(context).textTheme.titleMedium,)),
+              Spacer(),
+              Container(margin: const EdgeInsets.all(30), width: 100, child: SimpleShadow(child: Opacity(opacity: 0.4, child: Image.asset('assets/images/no_results.png')))),
+              Text(Strings.noObservationsYet, style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.black54), textAlign: TextAlign.center,),
+              Container(margin: const EdgeInsets.all(20), child: Text(Strings.noObservationsYetDescription, style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.black54), textAlign: TextAlign.center,)),
+              Spacer(flex: 2)
+            ],
+          ),
         ),
       );
     } else if (state is ObservationOfTheWeekLoaded) {

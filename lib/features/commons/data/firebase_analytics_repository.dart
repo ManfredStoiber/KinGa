@@ -29,7 +29,7 @@ class FirebaseAnalyticsRepository implements AnalyticsRepository {
       GetIt.I<StreamingSharedPreferences>().setString("analytics", analyticsString);
 
       String? userId = GetIt.I<AuthenticationService>().getCurrentUser()?.userId;
-      if (userId != null && analytics.length >= 1) {
+      if (userId != null && analytics.length >= 10) {
         // persist analytics to firestore
         var batch = db.batch();
         for (var analyticsItem in analytics) {

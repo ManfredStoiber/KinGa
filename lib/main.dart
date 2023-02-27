@@ -1,3 +1,4 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -109,20 +110,20 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                       ],
                       theme: ThemeData(
                         // This is the theme of your application.
-                        primarySwatch: ColorSchemes.kingacolor,
-                        scaffoldBackgroundColor: ColorSchemes.backgroundColor,
-                        backgroundColor: ColorSchemes.backgroundColor,
-                        errorColor: ColorSchemes.errorColor,
-                        cardTheme: CardTheme.of(context).copyWith(
-                          clipBehavior: Clip.antiAlias,
-                          shape: RoundedRectangleBorder(
-                            side: const BorderSide(
-                              color: ColorSchemes.kingaGrey,
-                              width: 3.0,
-                            ),
-                            borderRadius: BorderRadius.circular(10.0),
+                          primarySwatch: ColorSchemes.kingacolor,
+                          scaffoldBackgroundColor: ColorSchemes.backgroundColor,
+                          backgroundColor: ColorSchemes.backgroundColor,
+                          errorColor: ColorSchemes.errorColor,
+                          cardTheme: CardTheme.of(context).copyWith(
+                              clipBehavior: Clip.antiAlias,
+                              shape: RoundedRectangleBorder(
+                                side: const BorderSide(
+                                  color: ColorSchemes.kingaGrey,
+                                  width: 3.0,
+                                ),
+                                borderRadius: BorderRadius.circular(10.0),
+                              )
                           )
-                        )
                       ),
                       home: const AttendanceScreen(),
                     ),

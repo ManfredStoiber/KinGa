@@ -19,6 +19,7 @@ import 'package:kinga/domain/student_service.dart';
 import 'package:kinga/features/commons/data/firebase_analytics_repository.dart';
 import 'package:kinga/features/commons/domain/analytics_repository.dart';
 import 'package:kinga/features/commons/domain/analytics_service.dart';
+import 'package:kinga/features/connectivity_indicator/connection_status_singleton.dart';
 import 'package:kinga/features/observations/data/firebase_observation_repository.dart';
 import 'package:kinga/features/observations/domain/observation_repository.dart';
 import 'package:kinga/features/observations/domain/observation_service.dart';
@@ -77,5 +78,9 @@ Future<void> configureDependencies() async {
   // analytics
   GetIt.I.registerSingleton<AnalyticsRepository>(FirebaseAnalyticsRepository());
   GetIt.I.registerSingleton<AnalyticsService>(AnalyticsService());
+
+  // connection status singleton
+  ConnectionStatusSingleton connectionStatus = ConnectionStatusSingleton.getInstance();
+  connectionStatus.initialize();
 
 }
