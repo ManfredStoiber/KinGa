@@ -128,7 +128,7 @@ class ShowObservationsWidgetState extends State<ShowObservationsWidget> with Aut
                               Container(margin: const EdgeInsets.only(top: 30), child: Text("${state.selectedObservationForm!.title} ${Strings.noObservationFormYet}", style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.black54), textAlign: TextAlign.center,)),
                               Container(margin: const EdgeInsets.all(30), width: 100, child: SimpleShadow(child: Opacity(opacity: 0.4, child: Image.asset('assets/images/observations.png'.replaceAll('/', Platform.pathSeparator))))),
                               ElevatedButton(onPressed: () {
-                                LoadingIndicatorDialog.show(context);
+                                LoadingIndicatorDialog.show(context, Strings.loadCreateObservationForm);
                                 BlocProvider.of<ObservationsCubit>(context).createObservationForm(widget.studentId, state.selectedObservationForm!.title, state.selectedObservationForm!.version, "TODO").then((value) => Navigator.of(context).pop()); // TODO: timespan
                               }, child: const Text(Strings.createObservationForm),),
                             ],

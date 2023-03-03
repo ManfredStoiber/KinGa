@@ -60,7 +60,7 @@ class _AnswerObservationQuestionDialogState extends State<AnswerObservationQuest
         ),
         TextButton(
           onPressed: () {
-            LoadingIndicatorDialog.show(context);
+            LoadingIndicatorDialog.show(context, Strings.loadAnswerObservation);
             _observationService.updateObservation(widget.studentId, Observation(widget.question, "TODO", selectedAnswer, _notesController.text.isNotEmpty ? _notesController.text : null)).then((value) { // TODO: timespan
               GetIt.I<AnalyticsService>().logEvent(name: Keys.analyticsAnswerObservation);
               Navigator.of(context).pop(); // pop LoadingIndicatorDialog

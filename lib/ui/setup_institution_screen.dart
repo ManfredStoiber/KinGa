@@ -284,7 +284,7 @@ class _SetupInstitutionScreenState extends State<SetupInstitutionScreen> with Ti
 
   void submitLoginForm() async {
     if (_loginFormKey.currentState!.validate()) {
-      LoadingIndicatorDialog.show(context);
+      LoadingIndicatorDialog.show(context, Strings.loadJoinInstitution);
       _institutionRepository.joinInstitution(_loginInstitutionIdInputController.text, _loginInstitutionPasswordInputController.text).then((_) {
         Navigator.of(context).pop();
       },);
@@ -293,13 +293,13 @@ class _SetupInstitutionScreenState extends State<SetupInstitutionScreen> with Ti
 
   void submitCreateInstitutionForm() async {
     if (_createInstitutionFormKey.currentState!.validate()) {
-      LoadingIndicatorDialog.show(context);
+      LoadingIndicatorDialog.show(context, Strings.loadCreateInstitution);
       _institutionRepository.createInstitution(createInstitutionNameInputController.text, _createInstitutionPassword).then((institutionId) {
         Navigator.of(context).pop();
         if (institutionId != null) {
           showDialog(context: context, builder: (context) => ShowInstitutionQrCodeScreen(institutionId, _createInstitutionPassword),)
               .then((value) {
-                LoadingIndicatorDialog.show(context);
+                LoadingIndicatorDialog.show(context, Strings.loadJoinInstitution);
                 _institutionRepository.joinInstitution(institutionId, _createInstitutionPassword).then((value) => Navigator.of(context).pop());
               });
         } else {

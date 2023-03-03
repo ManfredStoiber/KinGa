@@ -43,7 +43,7 @@ class _EditAbsenceDialogState extends State<EditAbsenceDialog> {
         ),
         TextButton(
           onPressed: () {
-            LoadingIndicatorDialog.show(context);
+            LoadingIndicatorDialog.show(context, Strings.loadEditAbsence);
             String dateFromFormatted = IsoDateUtils.getIsoDateFromGermanDate(dateFromController.text);
             String dateUntilFormatted = IsoDateUtils.getIsoDateFromGermanDate(dateUntilController.text);
             BlocProvider.of<StudentsCubit>(context).updateAbsence(widget.studentId, widget.absence, Absence(dateFromFormatted, dateUntilFormatted, _selectedReason)).then((value) {

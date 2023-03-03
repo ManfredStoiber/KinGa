@@ -44,7 +44,7 @@ class _EditIncidenceDialogState extends State<EditIncidenceDialog> {
         TextButton(
           onPressed: () {
             if (descriptionKey.currentState?.validate() ?? false) {
-              LoadingIndicatorDialog.show(context);
+              LoadingIndicatorDialog.show(context, Strings.loadEditIncidence);
               String dateTime = "${IsoDateUtils.getIsoDateFromIsoDateTime(widget.incidence.dateTime)}T${_timeController.text}";
               Incidence incidence = Incidence(dateTime, _descriptionController.text.trim(), _selectedCategory);
               GetIt.I<StudentService>().updateIncidence(widget.studentId, widget.incidence, incidence).then((value) {

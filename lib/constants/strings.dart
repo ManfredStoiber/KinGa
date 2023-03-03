@@ -140,7 +140,7 @@ class Strings {
   // permissions
   static const String confirmDeletePermission = 'Soll die Berechtigung wirklich gelöscht werden?';
   static const String confirmDiscardNewPermission = 'Soll die neue Berechtigung wirklich verworfen werden?';
-  static const String createNewPermission = 'Neue Berechtigung anlegen?';
+  static const String createNewPermission = 'Neue Berechtigung';
   static const String filterAttendant = 'Nur Anwesende';
   static const String newPermissionHint = 'Neue Berechtigung';
   static const String noPermissionsFiltered = 'Keine Berechtigung für diese Auswahl';
@@ -172,6 +172,22 @@ class Strings {
   static const String showObservationsWidgetTooltip = 'Hier kannst du Entwicklungsbögen für das Kind verwalten';
   static const String showStudentDataTooltip = 'Stammdaten findest du hier';
   static const String toggleAttendanceTooltip = 'Tippe, um die Kindübersicht aufzurufen. \nMit langem Tippen kann das Kind als an- und abwesend markiert werden.';
+
+  // loading hints
+  static const String loadAnswerObservation = 'Antwort wird eingetragen..';
+  static const String loadCreateAbsence = 'Abwesenheit wird angelegt..';
+  static const String loadCreateInstitution = 'Institution wird angelegt..';
+  static const String loadCreateObservationForm = 'Entwicklungsbogen wird angelegt..';
+  static const String loadCreatePermission = 'Berechtigung wird angelegt..';
+  static const String loadCreateStudent = 'Kind wird angelegt..';
+  static const String loadCreateUser = 'Konto wird erstellt..';
+  static const String loadDeletePermission = 'Berechtigung wird gelöscht..';
+  static const String loadDeleteStudent = 'Kind wird gelöscht..';
+  static const String loadEditAbsence = 'Abwesenheit wird aktualisiert..';
+  static const String loadEditIncidence = 'Ereignis wird aktualisiert..';
+  static const String loadJoinInstitution = 'Institution wird beigetreten..';
+  static const String loadLogin = 'Wird eingeloggt..';
+  static const String loadLogout = 'Wird ausgeloggt..';
 
   // Firebase error codes for signInWithEmailAndPassword
   static const String firebaseErrorInvalidEmail = 'invalid-email';

@@ -3,7 +3,7 @@ import 'package:kinga/constants/strings.dart';
 
 class LoadingIndicatorDialog {
 
-  static void show(context) {
+  static void show(context, [title]) {
     showDialog( barrierDismissible: false, context: context, builder: (context) => WillPopScope(
       onWillPop: () async => false,
       child: AlertDialog(
@@ -13,9 +13,9 @@ class LoadingIndicatorDialog {
           child: Center(child: Column(
             mainAxisSize: MainAxisSize.max,
             mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: const [
-              CircularProgressIndicator(),
-              Text(Strings.loading),
+            children: [
+              const CircularProgressIndicator(),
+              title == null ? const Text(Strings.loading) : Text(title),
             ],
           ))
         ),

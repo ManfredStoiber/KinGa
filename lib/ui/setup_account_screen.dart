@@ -263,7 +263,7 @@ class _SetupAccountScreenState extends State<SetupAccountScreen> with TickerProv
 
   void submitLoginForm() async {
     if (_loginFormKey.currentState!.validate()) {
-      LoadingIndicatorDialog.show(context);
+      LoadingIndicatorDialog.show(context, Strings.loadLogin);
       _authenticationService.signInWithEmailAndPassword(loginEmailInputController.text, loginPasswordInputController.text).then((error) {
         if (error != null) {
           ScaffoldMessenger.of(context)
@@ -276,7 +276,7 @@ class _SetupAccountScreenState extends State<SetupAccountScreen> with TickerProv
 
   void submitRegistrationForm() async {
     if (_registerFormKey.currentState!.validate()) {
-      LoadingIndicatorDialog.show(context);
+      LoadingIndicatorDialog.show(context, Strings.loadCreateUser);
       await _authenticationService.createUserWithEmailAndPassword(registrationEmailInputController.text, registrationPasswordInputController.text).then((error) {
         if (error != null) {
           ScaffoldMessenger.of(context)

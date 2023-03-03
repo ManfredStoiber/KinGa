@@ -107,7 +107,7 @@ class _ShowPermissionScreenState extends State<ShowPermissionScreen> {
                     ],
                   ),).then((confirmed) {
                     if (confirmed ?? false) {
-                      LoadingIndicatorDialog.show(context);
+                      LoadingIndicatorDialog.show(context, Strings.loadDeletePermission);
                       _permissionService.deletePermission(widget.permission).then((value) {
                         Navigator.of(context).pop();
                         Navigator.of(context).pop();

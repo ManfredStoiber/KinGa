@@ -56,7 +56,7 @@ class _CreateAbsenceDialogState extends State<CreateAbsenceDialog> {
         ),
         TextButton(
           onPressed: () {
-            LoadingIndicatorDialog.show(context);
+            LoadingIndicatorDialog.show(context, Strings.loadCreateAbsence);
             String dateFromFormatted = IsoDateUtils.getIsoDateFromGermanDate(dateFromController.text);
             String dateUntilFormatted = IsoDateUtils.getIsoDateFromGermanDate(dateUntilController.text);
             BlocProvider.of<StudentsCubit>(context).createAbsence(widget.studentId, Absence(dateFromFormatted, dateUntilFormatted, _selectedReason)).then((value) {

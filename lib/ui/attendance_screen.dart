@@ -482,7 +482,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                               ],
                             ),).then((confirmed) {
                               if (confirmed ?? false) {
-                                LoadingIndicatorDialog.show(context);
+                                LoadingIndicatorDialog.show(context, Strings.loadLogout);
                                 GetIt.I<InstitutionRepository>().leaveInstitution();
                                 FirebaseAuth.instance.signOut().then((_) {
                                   Navigator.pop(context);

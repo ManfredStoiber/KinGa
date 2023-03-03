@@ -80,7 +80,7 @@ class _CreatePermissionScreenState extends State<CreatePermissionScreen> {
             child: const Icon(Icons.check),
             onPressed: () {
               showDialog(context: context, builder: (context) => AlertDialog(
-                title: const Text(Strings.createNewPermission),
+                title: Text('${Strings.createNewPermission} \'${_newPermissionController.text}\' anlegen?'),
                 actions: [
                   TextButton(onPressed: () {
                     Navigator.of(context).pop(false);
@@ -91,7 +91,7 @@ class _CreatePermissionScreenState extends State<CreatePermissionScreen> {
                 ],
               ),).then((confirmed) {
                 if (confirmed) {
-                  LoadingIndicatorDialog.show(context);
+                  LoadingIndicatorDialog.show(context, Strings.loadCreatePermission);
                   _permissionService.createPermission(_newPermissionController.text.trim(), _studentPermissions).then((value) {
                     Navigator.of(context).pop();
                     Navigator.of(context).pop();

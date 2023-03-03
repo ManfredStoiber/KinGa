@@ -121,7 +121,7 @@ class _EditStudentScreenState extends State<EditStudentScreen>
                 )).then((confirmed) {
                   Student? s = widget.student;
                   if ((confirmed ?? false) && s != null) {
-                    LoadingIndicatorDialog.show(context);
+                    LoadingIndicatorDialog.show(context, Strings.loadDeleteStudent);
                     BlocProvider.of<StudentsCubit>(context).deleteStudent(s.studentId).then((value) {
                       Navigator.pop(context);
                       Navigator.pop(context);
@@ -201,7 +201,7 @@ class _EditStudentScreenState extends State<EditStudentScreen>
                             ],
                           ),).then((confirmed) {
                             if (confirmed) {
-                              LoadingIndicatorDialog.show(context);
+                              LoadingIndicatorDialog.show(context, Strings.loadCreateStudent);
                               for (var caregiver in caregiverMaps) {
                                 Map<String, dynamic> caregiverMapped = Map<String, dynamic>.from(caregiver);
                                 caregiverMapped['phoneNumbers'] = {};
