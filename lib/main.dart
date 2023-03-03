@@ -34,6 +34,10 @@ void main() async {
 
   //Setting SystmeUIMode
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge, overlays: [SystemUiOverlay.top]);
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
 
   final StudentService studentService = GetIt.I<StudentService>();
   final AuthenticationService authenticationService = GetIt.I<AuthenticationService>();
