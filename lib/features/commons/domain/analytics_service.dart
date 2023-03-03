@@ -12,4 +12,8 @@ class AnalyticsService {
     _analyticsRepository.logEvent(name: name, parameters: parameters);
   }
 
+  Future<void> createCsv() {
+    return _analyticsRepository.createCsv();
+  }
+
 }

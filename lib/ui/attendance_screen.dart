@@ -451,6 +451,13 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                           },
                           leading: const Icon(Icons.help_outline),
                         ),
+                        ListTile(
+                          title: const Text("DEBUG"),
+                          onTap: () {
+                            debug();
+                          },
+                          leading: const Icon(Icons.settings),
+                        ),
                         /*
                         ListTile(
                           title: const Text(Strings.settings),
@@ -504,6 +511,10 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
       ShowCaseWidget.of(attendanceContext!).startShowCase(showcases);
     }
     SharedPrefsUtils.updateFinishedShowcases(key);
+  }
+
+  void debug() {
+    GetIt.I<AnalyticsService>().createCsv();
   }
 }
 
@@ -612,4 +623,5 @@ class AttendanceItemState extends State<AttendanceItem> {
   void toggleAttendance() {
     BlocProvider.of<StudentsCubit>(context).toggleAttendance(widget.studentId);
   }
+
 }
