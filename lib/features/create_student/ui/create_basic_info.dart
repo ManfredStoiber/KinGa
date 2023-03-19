@@ -213,7 +213,7 @@ class _CreateBasicInfoState extends State<CreateBasicInfo> with AutomaticKeepAli
             buildTextField(Strings.lastname, 'lastname'),
             InkWell(
                 child: buildTextField(Strings.birthday, 'birthday', true,
-                        () => showDatePicker(context: context, initialDate: DateTime(DateTime.now().year - 3, 1, 1), firstDate: DateTime(DateTime.now().year - 10, 1, 1), lastDate: DateTime.now()).then((value) {
+                        () => showDatePicker(context: context, initialDate: DateTime(DateTime.now().year - 3, 1, 1), firstDate: DateTime(DateTime.now().year - 16, 1, 1), lastDate: DateTime.now()).then((value) {
                       if (value != null) {
                         birthdayController.text = IsoDateUtils.getGermanDateFromDateTime(value);
                         widget.student['birthday'] = IsoDateUtils.getIsoDateFromIsoDateTime(value.toIso8601String());
