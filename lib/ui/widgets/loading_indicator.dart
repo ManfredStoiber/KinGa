@@ -6,9 +6,12 @@ class LoadingIndicator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Transform.scale(
-        scale: 2,
-        child: const CircularProgressIndicator(),
+      child: Container(
+        margin: const EdgeInsets.all(50),
+        width: 75,
+        child: const FittedBox(
+            child: CircularProgressIndicator()
+        ),
       ),
     );
   }

@@ -1,14 +1,13 @@
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'dart:convert';
 
 import 'package:async/async.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:crypto/crypto.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
+import 'package:image/image.dart';
 import 'package:kinga/constants/keys.dart';
 import 'package:kinga/data/firebase_utils.dart';
 import 'package:flutter/services.dart';
@@ -34,6 +33,7 @@ class FirebaseStudentRepository implements StudentRepository {
   final Directory _applicationDocumentsDirectory = GetIt.I<Directory>(instanceName: Keys.applicationDocumentsDirectory);
 
   final Map<String, Uint8List> _profileImagesCache = GetIt.I<Map<String, Uint8List>>(instanceName: Keys.profileImagesCache);
+  //final Map<String, DateTime> _observationsTimestamps = {};
 
   FirebaseStudentRepository() {
     currentInstitutionId = GetIt.I<StreamingSharedPreferences>().getString(Keys.institutionId, defaultValue: "").getValue();
@@ -77,10 +77,16 @@ class FirebaseStudentRepository implements StudentRepository {
             if (currentInstitutionId != "") {
               Set<Student> students = {};
               for (var doc in event.docs) {
-                List tmp = FirebaseUtils.decryptStudent(doc.data()['value']);
-                Student student = tmp[0];
+                Map<String, dynamic> decrypted = FirebaseUtils.decryptStudent(doc.data()['value']);
+                Student student = decrypted['student'];
                 late Uint8List profileImage;
-                String? profileImageHash = tmp[1];
+                String? profileImageHash = decrypted['profileImage'];
+                //DateTime observationsTimestamp = DateTime.now();
+                if (decrypted['observationsTimestamp'] != null) {
+                  //observationsTimestamp = DateTime.parse(decrypted['observationsTimestamp']);
+                }
+
+                // load profileImage
                 if (profileImageHash != null) {
                   // get profileImage from cache if exists
                   Uint8List? profileImageCache = (getProfileImageFromCache(student.studentId));
@@ -91,8 +97,16 @@ class FirebaseStudentRepository implements StudentRepository {
                   } else {
                     Uint8List? profileImageDownload = await storage.ref().child('$currentInstitutionId/${student.studentId}').getData().catchError((e) => null);
                     if (profileImageDownload != null) {
-                      profileImage = profileImageDownload;
-                      cacheProfileImage(student.studentId, profileImageDownload); // store image in cache
+                      // decrypt profileImage
+                      try {
+                        profileImage =
+                            Uint8List.fromList(base64.decode(CryptoUtils.decrypt(
+                                utf8.decode(profileImageDownload))));
+                      } catch (e) {
+                        // if decryption failed, image is stored unencrypted // TODO: remove when everything is encrypted
+                        profileImage = profileImageDownload;
+                      }
+                      cacheProfileImage(student.studentId, profileImage); // store image in cache
                     } else {
                       profileImage = await randomImage(student.studentId);
                       setProfileImage(student.studentId, profileImage);
@@ -103,6 +117,16 @@ class FirebaseStudentRepository implements StudentRepository {
                   setProfileImage(student.studentId, profileImage);
                 }
                 student.profileImage = profileImage;
+
+                /* TODO
+                // load observations if out of date
+                if (_observationsTimestamps[student.studentId]?.isBefore(observationsTimestamp) ?? true) {
+                  var observations = await GetIt.I<ObservationService>().getObservations(student.studentId);
+                  student.observations = observations;
+                }
+
+                 */
+
                 students.add(student);
               }
               if (event.docs.isEmpty) {
@@ -171,7 +195,6 @@ class FirebaseStudentRepository implements StudentRepository {
       [],
       [],
       [],
-      [],
     );
   }
 
@@ -214,7 +237,6 @@ class FirebaseStudentRepository implements StudentRepository {
         [],
         [],
         [],
-        [],
         permissions);
 
     await db.collection('Institution').doc(currentInstitutionId).collection('Student')
@@ -239,19 +261,33 @@ class FirebaseStudentRepository implements StudentRepository {
 
   @override
   Future<void> setProfileImage(String studentId, Uint8List image) async {
+
+    if (image.isEmpty) {
+      image = await randomImage(studentId);
+    }
+
     // store in cache
     cacheProfileImage(studentId, image);
-    // store in firebase storage
-    storage.ref().child('$currentInstitutionId/$studentId').putData(image);
+    // encrypt and store in firebase storage
+    var encrypted = Uint8List.fromList(utf8.encode(CryptoUtils.encrypt(base64.encode(image))));
+    storage.ref().child('$currentInstitutionId/$studentId').putData(encrypted);
     // update student
     StudentService studentService = GetIt.I<StudentService>();
-    studentService.updateStudent(studentService.getStudent(studentId)..profileImage = image);
+    return studentService.updateStudent(studentService.getStudent(studentId)..profileImage = image);
   }
 
   @override
   Future<void> createAbsence(String studentId, Absence absence) async {
     Student s = GetIt.I<StudentService>().getStudent(studentId);
     s.absences.add(absence);
+    updateStudent(s);
+  }
+
+  @override
+  Future<void> updateAbsence(String studentId, Absence oldAbsence, Absence newAbsence) async {
+    Student s = GetIt.I<StudentService>().getStudent(studentId);
+    s.absences.remove(oldAbsence);
+    s.absences.add(newAbsence);
     updateStudent(s);
   }
 
@@ -266,6 +302,14 @@ class FirebaseStudentRepository implements StudentRepository {
   Future<void> createIncidence(String studentId, Incidence incidence) async {
     Student s = GetIt.I<StudentService>().getStudent(studentId);
     s.incidences.add(incidence);
+    return updateStudent(s);
+  }
+
+  @override
+  Future<void> updateIncidence(String studentId, Incidence oldIncidence, Incidence newIncidence) async {
+    Student s = GetIt.I<StudentService>().getStudent(studentId);
+    s.incidences.remove(oldIncidence);
+    s.incidences.add(newIncidence);
     return updateStudent(s);
   }
 
@@ -342,7 +386,8 @@ class FirebaseStudentRepository implements StudentRepository {
         image += 'koala.png';
         break;
       case 20:
-        image += 'lion.png';
+        //image += 'lion.png'; TODO: lion not available
+        image += 'koala.png';
         break;
       case 21:
         image += 'owl.png';
@@ -391,9 +436,29 @@ class FirebaseStudentRepository implements StudentRepository {
         break;
     }
 
+    // add padding to default images to prevent from clipping in AttendanceScreen and ShowStudentScreen
     ByteData bytes = await rootBundle.load(image);
     Uint8List list = bytes.buffer.asUint8List();
+    Image? decodedImage = PngDecoder().decodeImage(list);
+    Image paddedImage = Image(600, 600);
+    paddedImage.fill(Color.fromRgba(0, 0, 0, 0));
+    if (decodedImage != null) {
+      for (int y = 0; y < paddedImage.height; y++) {
+        for (int x = 0; x < paddedImage.width; x++) {
+          if ((x >= 44 && x < 556) && (y >= 44 && y < 556)) {
+            paddedImage.setPixel(x, y, decodedImage.getPixel(x - 44, y - 44));
+          }
+        }
+      }
+    }
+    list = Uint8List.fromList(PngEncoder().encodeImage(paddedImage));
     return list;
+  }
+
+  @override
+  Future<String> getStudentIdFromRfid(String rfid) {
+    // TODO: implement getStudentIdFromRfid
+    throw UnimplementedError();
   }
 
 }

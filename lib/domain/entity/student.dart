@@ -17,7 +17,6 @@ class Student extends Person implements Comparable<Student> {
   String group = "";
   List<Incidence> incidences = [];
   List<Caregiver> caregivers;
-  List<Person> pickups;
   List<Attendance> attendances;
   Uint8List? profileImage;
   List<Absence> absences;
@@ -41,7 +40,6 @@ class Student extends Person implements Comparable<Student> {
       [ this.profileImage,
         this.caregivers = const [],
         this.attendances = const [],
-        this.pickups = const [],
         this.absences = const [],
         this.allergies = const [],
         this.diseases = const [],
@@ -55,7 +53,7 @@ class Student extends Person implements Comparable<Student> {
   @override
   int compareTo(Student other) {
     // TODO: compare all properties
-    return "$firstname $lastname".compareTo("${other.firstname} ${other.lastname}");
+    return "$firstname $lastname".toLowerCase().compareTo("${other.firstname} ${other.lastname}".toLowerCase());
   }
 }
 

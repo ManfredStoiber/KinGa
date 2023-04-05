@@ -15,7 +15,7 @@ class ExpandableFab extends StatefulWidget {
   });
 
   final bool? initialOpen;
-  final Icon icon;
+  final Widget icon;
   final Color color;
   final double distance;
   final List<Widget> children;
@@ -67,9 +67,6 @@ class ExpandableFabState extends State<ExpandableFab>
 
   @override
   Widget build(BuildContext context) {
-    /*
-
-     */
     return Stack(
       children: [
         Visibility(
@@ -79,7 +76,7 @@ class ExpandableFabState extends State<ExpandableFab>
               toggle();
             }),
             child: Container(
-                color: Color.fromRGBO(5, 5, 5, 0.5),
+                color: const Color.fromRGBO(5, 5, 5, 0.5),
                 height: MediaQuery.of(context).size.height,
                 child: BackdropFilter(
                   filter: ImageFilter.blur(sigmaX: 1.0, sigmaY: 1.0),
@@ -90,7 +87,7 @@ class ExpandableFabState extends State<ExpandableFab>
         ),
         SizedBox.expand(
           child: Transform.translate(
-            offset: Offset(-20, -20),
+            offset: const Offset(-20, -20),
             child: Stack(
               alignment: Alignment.bottomRight,
               clipBehavior: Clip.none,
@@ -133,7 +130,7 @@ class ExpandableFabState extends State<ExpandableFab>
   List<Widget> _buildExpandingActionButtons() {
     final children = <Widget>[];
     final count = widget.children.length;
-    final step = 70;
+    const step = 70;
     for (var i = 0, distance = step;
     i < count;
     i++, distance += step) {
@@ -226,7 +223,7 @@ class ActionButton extends StatelessWidget {
   });
 
   final VoidCallback? onPressed;
-  final Icon icon;
+  final Widget icon;
   final String text;
 
   @override
@@ -235,14 +232,14 @@ class ActionButton extends StatelessWidget {
     return Row(
       children: [
         Container(
-          padding: EdgeInsets.all(5),
-          margin: EdgeInsets.fromLTRB(0, 0, 15, 0),
-          decoration: ShapeDecoration(color: Color.fromARGB(150, 0, 0, 0), shape: ContinuousRectangleBorder(borderRadius: BorderRadius.circular(10))),
+          padding: const EdgeInsets.all(5),
+          margin: const EdgeInsets.fromLTRB(0, 0, 15, 0),
+          decoration: ShapeDecoration(color: const Color.fromARGB(150, 0, 0, 0), shape: ContinuousRectangleBorder(borderRadius: BorderRadius.circular(10))),
           //color: Color.fromARGB(50, 0, 0, 0),
-          child: Text(text, style: TextStyle(color: Colors.white),)
+          child: Text(text, style: const TextStyle(color: Colors.white),)
         ),
         Material(
-          shape: CircleBorder(),
+          shape: const CircleBorder(),
           clipBehavior: Clip.antiAlias,
           color: theme.colorScheme.error,
           elevation: 4.0,

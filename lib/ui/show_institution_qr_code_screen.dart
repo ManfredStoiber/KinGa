@@ -9,10 +9,10 @@ import 'package:qr_flutter/qr_flutter.dart';
 
 class ShowInstitutionQrCodeScreen extends StatelessWidget {
 
-  String _institutionId;
-  String _institutionPassword;
+  final String _institutionId;
+  final String _institutionPassword;
 
-  ShowInstitutionQrCodeScreen(this._institutionId, this._institutionPassword, {Key? key}) : super(key: key);
+  const ShowInstitutionQrCodeScreen(this._institutionId, this._institutionPassword, {Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -35,26 +35,26 @@ class ShowInstitutionQrCodeScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Expanded(flex: 2, child: Container()),
-            Text(textAlign: TextAlign.center, Strings.institutionCredentialsHint),
+            Container(padding: const EdgeInsets.all(8.0), child: const Text(textAlign: TextAlign.center, Strings.institutionCredentialsHint)),
             Expanded(flex: 1, child: Container()),
             Container(
-              margin: EdgeInsets.all(32),
+              margin: const EdgeInsets.all(32),
               color: Colors.white,
-              padding: EdgeInsets.all(32),
+              padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 32.0),
               child: Column(
                 children: [
-                   QrImage(data: json.encode({Keys.institutionId: _institutionId, Keys.institutionPassword: _institutionPassword})),
+                  Container(padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0), child: QrImage(data: json.encode({Keys.institutionId: _institutionId, Keys.institutionPassword: _institutionPassword}))),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(
+                        const Text(
                             style: TextStyle(fontSize: 20),
                             "${Strings.institutionId}: ",
                         ),
                         Text(
-                          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                           _institutionId,
                         ),
                       ],
@@ -65,12 +65,12 @@ class ShowInstitutionQrCodeScreen extends StatelessWidget {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(
+                        const Text(
                             style: TextStyle(fontSize: 20),
                             "${Strings.password}: ",
                         ),
                         Text(
-                          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                           _institutionPassword,
                         ),
                       ],
@@ -80,9 +80,31 @@ class ShowInstitutionQrCodeScreen extends StatelessWidget {
               ),
             ),
             Expanded(flex: 1, child: Container()),
-            Text(textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold), Strings.institutionCredentialsWarning),
-            Expanded(flex: 2, child: Container()),
+            Container(padding: const EdgeInsets.all(8.0), child: const Text(textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold), Strings.institutionCredentialsWarning)),
+            Expanded(flex: 1, child: Container()),
           ]
+        ),
+        bottomNavigationBar: ButtonBar(
+          alignment: MainAxisAlignment.end,
+          children: [
+            TextButton(
+              onPressed: () async {
+                await showDialog(context: context, builder: (context) => AlertDialog(
+                  title: const Text(Strings.institutionCredentialsConfirm),
+                  actions: [
+                    TextButton(onPressed: () => Navigator.of(context).pop(false), child: const Text(Strings.cancel)),
+                    TextButton(onPressed: () => Navigator.of(context).pop(true), child: const Text(Strings.next)),
+                  ],
+                ),).then((confirmed) {
+                  if (confirmed == true) {
+                    Navigator.of(context).pop();
+                  }
+                  return null;
+                });
+              },
+              child: const Text(Strings.next),
+            ),
+          ],
         ),
       ),
     );

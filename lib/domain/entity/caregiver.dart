@@ -13,6 +13,7 @@ class Caregiver extends Person {
   }
 
   static Caregiver fromMap(Map<String, dynamic> caregiver) {
-    return Caregiver(caregiver['firstname'], caregiver['lastname'], caregiver['label'], caregiver['phoneNumbers'], caregiver['email'] ?? '');
+    Map<String, String> phoneNumbers = (caregiver['phoneNumbers'] as Map<dynamic, dynamic>).map((key, value) => MapEntry<String, String>(key.toString(), value.toString()));
+    return Caregiver(caregiver['firstname'], caregiver['lastname'], caregiver['label'], phoneNumbers, caregiver['email'] ?? '');
   }
 }

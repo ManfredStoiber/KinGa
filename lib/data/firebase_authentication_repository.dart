@@ -78,4 +78,16 @@ class FirebaseAuthenticationRepository implements AuthenticationRepository {
     }
   }
 
+  @override
+  kinga.User? getCurrentUser() {
+    final user = _auth.currentUser;
+    String? userId = user?.uid;
+    String? email = user?.email;
+    if (userId is String && email is String) {
+      return kinga.User(userId, email);
+    } else {
+      return null;
+    }
+  }
+
 }

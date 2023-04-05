@@ -1,29 +1,35 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:kinga/constants/colors.dart';
+import 'package:kinga/constants/keys.dart';
 import 'package:kinga/constants/strings.dart';
 import 'package:kinga/domain/entity/incidence.dart';
 import 'package:kinga/domain/student_service.dart';
+import 'package:kinga/features/commons/domain/analytics_service.dart';
 import 'package:kinga/features/incidences/ui/bloc/incidences_cubit.dart';
+import 'package:kinga/features/incidences/ui/edit_incidence_dialog.dart';
+import 'package:kinga/ui/widgets/slide_menu.dart';
+import 'package:simple_shadow/simple_shadow.dart';
 
 import 'incidence_item.dart';
 
 class ShowIncidencesWidget extends StatefulWidget {
   final String studentId;
-  final GlobalKey<AnimatedListState> listKey = GlobalKey<AnimatedListState>();
+  final GlobalKey<AnimatedListState> listKey;
   final Function()? onIncidencesChanged;
 
-  ShowIncidencesWidget(this.studentId, {Key? key, this.onIncidencesChanged}) : super(key: key);
+  ShowIncidencesWidget(this.studentId, this.listKey, {Key? key, this.onIncidencesChanged}) : super(key: key);
 
   @override
   State<ShowIncidencesWidget> createState() => ShowIncidencesWidgetState();
 
 }
 
-class ShowIncidencesWidgetState extends State<ShowIncidencesWidget> {
+class ShowIncidencesWidgetState extends State<ShowIncidencesWidget> with AutomaticKeepAliveClientMixin<ShowIncidencesWidget> {
 
   @override
   Widget build(BuildContext context) {
@@ -105,7 +111,7 @@ class ShowIncidencesWidgetState extends State<ShowIncidencesWidget> {
       builder: (context, state) {
         return state is IncidencesLoaded ? ListView(
           padding: const EdgeInsets.fromLTRB(5, 5, 5, 30),
-          physics: const ClampingScrollPhysics(),
+          physics: const NeverScrollableScrollPhysics(),
           shrinkWrap: true,
           children: [
             BlocBuilder<IncidencesCubit, IncidencesState>(
@@ -118,62 +124,74 @@ class ShowIncidencesWidgetState extends State<ShowIncidencesWidget> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
-                          IntrinsicWidth(
-                            child: Container(
-                              decoration: ShapeDecoration(shape: OutlineInputBorder(borderRadius: BorderRadius.circular(50), borderSide: const BorderSide(color: ColorSchemes.kingacolor, width: 0)), color: ColorSchemes.kingacolor),
-                              child: DropdownButtonFormField<String>(
-                                decoration: InputDecoration (
-                                  isDense: true,
-                                  prefixIcon: Container(padding: const EdgeInsets.fromLTRB(10, 5, 5, 5), child: Icon(size: 20, Icons.category_outlined, color: Colors.black)),
-                                  prefixIconConstraints: const BoxConstraints(maxHeight: 30),
-                                  enabledBorder: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(16)), borderSide: BorderSide(color: Colors.transparent)),
-                                  focusedBorder: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(16)), borderSide: BorderSide(color: Colors.transparent)),
-                                  border: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(16)), borderSide: BorderSide(color: Colors.transparent)),
-                                  contentPadding: const EdgeInsets.only(left: 0, right: 0, top: 5, bottom: 5)
-                                ),
-                                alignment: Alignment.center,
-                                value: state2.selectedCategory,
-                                items: const [
-                                  DropdownMenuItem( value: Strings.all, child: Text(Strings.all)),
-                                  DropdownMenuItem(value: Strings.achievement, child: Text(Strings.achievement)),
-                                  DropdownMenuItem( value: Strings.accident, child: Text(Strings.accident)),
-                                  DropdownMenuItem( value: Strings.other, child: Text(Strings.other))
-                                ],
-                                onChanged: (String? newValue) {
-                                  BlocProvider.of<IncidencesCubit>(context)
-                                      .onSelectedCategoryChanged(newValue);
-                                },
-                              ),
-                            ),
-                          ),
-                          IntrinsicWidth(
-                            child: Container(
-                              decoration: ShapeDecoration(shape: OutlineInputBorder(borderRadius: BorderRadius.circular(50), borderSide: const BorderSide(color: ColorSchemes.kingacolor, width: 0)), color: ColorSchemes.kingacolor),
-                              child: DropdownButtonFormField<String>(
-                                decoration: InputDecoration (
+                          if (state.hasIncidences)
+                            IntrinsicWidth(
+                              child: Container(
+                                decoration: ShapeDecoration(shape: OutlineInputBorder(borderRadius: BorderRadius.circular(50), borderSide: const BorderSide(color: ColorSchemes.kingacolor, width: 0)), color: ColorSchemes.kingacolor),
+                                child: DropdownButtonFormField<String>(
+                                  style: const TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.w500),
+                                  decoration: InputDecoration (
                                     isDense: true,
-                                    prefixIcon: Container(padding: const EdgeInsets.fromLTRB(10, 5, 5, 5), child: Icon(size: 20, Icons.calendar_today, color: Colors.black)),
+                                    prefixIcon: Container(padding: const EdgeInsets.fromLTRB(10, 5, 5, 5), child: Icon(size: 20, Icons.category_outlined, color: Colors.black)),
                                     prefixIconConstraints: const BoxConstraints(maxHeight: 30),
-                                    enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.transparent)),
-                                    focusedBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.transparent)),
-                                    border: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.transparent)),
+                                    enabledBorder: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(16)), borderSide: BorderSide(color: Colors.transparent)),
+                                    focusedBorder: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(16)), borderSide: BorderSide(color: Colors.transparent)),
+                                    border: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(16)), borderSide: BorderSide(color: Colors.transparent)),
                                     contentPadding: const EdgeInsets.only(left: 0, right: 0, top: 5, bottom: 5)
+                                  ),
+                                  alignment: Alignment.center,
+                                  value: state2.selectedCategory,
+                                  items: const [
+                                    DropdownMenuItem( value: Strings.all, child: Text(Strings.all)),
+                                    DropdownMenuItem(value: Strings.achievement, child: Text(Strings.achievement)),
+                                    DropdownMenuItem( value: Strings.accident, child: Text(Strings.accident)),
+                                    DropdownMenuItem( value: Strings.other, child: Text(Strings.other))
+                                  ],
+                                  onChanged: (String? newValue) {
+                                    BlocProvider.of<IncidencesCubit>(context)
+                                        .onSelectedCategoryChanged(newValue);
+                                  },
                                 ),
-                                alignment: Alignment.center,
-                                value: state2.selectedTimeFrame,
-                                items: const [
-                                  DropdownMenuItem( value: Strings.today, child: Text(Strings.today)),
-                                  DropdownMenuItem(value: Strings.lastMonth, child: Text(Strings.lastMonth)),
-                                  DropdownMenuItem( value: Strings.lastYear, child: Text(Strings.lastYear)),
-                                  DropdownMenuItem( value: Strings.all, child: Text(Strings.all))
-                                ],
-                                onChanged: (String? newValue) {
-                                  BlocProvider.of<IncidencesCubit>(context)
-                                      .onSelectedTimeFrameChanged(newValue);
-                                },
                               ),
                             ),
-                          ),
+                          state.hasIncidences ?
+                            IntrinsicWidth(
+                              child: Container(
+                                decoration: ShapeDecoration(shape: OutlineInputBorder(borderRadius: BorderRadius.circular(50), borderSide: const BorderSide(color: ColorSchemes.kingacolor, width: 0)), color: ColorSchemes.kingacolor),
+                                child: DropdownButtonFormField<String>(
+                                  style: const TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.w500),
+                                  decoration: InputDecoration (
+                                      isDense: true,
+                                      prefixIcon: Container(padding: const EdgeInsets.fromLTRB(10, 5, 5, 5), child: Icon(size: 20, Icons.calendar_today, color: Colors.black)),
+                                      prefixIconConstraints: const BoxConstraints(maxHeight: 30),
+                                      enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.transparent)),
+                                      focusedBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.transparent)),
+                                      border: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.transparent)),
+                                      contentPadding: const EdgeInsets.only(left: 0, right: 0, top: 5, bottom: 5)
+                                  ),
+                                  alignment: Alignment.center,
+                                  value: state2.selectedTimeFrame,
+                                  items: const [
+                                    DropdownMenuItem( value: Strings.today, child: Text(Strings.today)),
+                                    DropdownMenuItem(value: Strings.lastMonth, child: Text(Strings.lastMonth)),
+                                    DropdownMenuItem( value: Strings.lastYear, child: Text(Strings.lastYear)),
+                                    DropdownMenuItem( value: Strings.all, child: Text(Strings.all))
+                                  ],
+                                  onChanged: (String? newValue) {
+                                    BlocProvider.of<IncidencesCubit>(context)
+                                        .onSelectedTimeFrameChanged(newValue);
+                                  },
+                                ),
+                              ),
+                            ) :
+                            Center(
+                              child: Column(
+                                children: [
+                                  Container(margin: const EdgeInsets.all(20), width: 100, child: SimpleShadow(child: Opacity(opacity: 0.4, child: Image.asset('assets${Platform.pathSeparator}images${Platform.pathSeparator}no_results.png')),),),
+                                  const Text(Strings.noIncidences, style: TextStyle(color: ColorSchemes.textColorLight),),
+                                ],
+                              ),
+                            ),
                         ],
                       ),
                     ),
@@ -184,22 +202,33 @@ class ShowIncidencesWidgetState extends State<ShowIncidencesWidget> {
 
               },
             ),
-            AnimatedList(key: widget.listKey,
-              shrinkWrap: true,
-              physics: const ClampingScrollPhysics(),
-              initialItemCount: state.incidences.length,
-              itemBuilder: (context, index, animation) {
-                return AnimatedSlideMenu(key: UniqueKey(), animation: animation, index: index, listKey: widget.listKey, studentId: widget.studentId,);
-            },),
+            Container(
+              child: AnimatedList(key: widget.listKey,
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                initialItemCount: state.incidences.length,
+                itemBuilder: (context, index, animation) {
+                  return AnimatedSlideMenu(key: UniqueKey(), animation: animation, index: index, listKey: widget.listKey, studentId: widget.studentId,);
+              },),
+            ),
             BlocBuilder<IncidencesCubit, IncidencesState>(
               builder: (context, state) {
-                if (state is IncidencesLoaded && state.incidences.isNotEmpty) {
+                if (state is IncidencesLoaded && state.incidences.isNotEmpty || state is IncidencesLoaded && !state.hasIncidences) {
                   return Container();
                 } else {
                   return Center(
                     child: Column(
                       children: [
-                        Container(margin: const EdgeInsets.all(20), width: 50, child: Opacity(opacity: 0.7, child: Image.asset('assets${Platform.pathSeparator}images${Platform.pathSeparator}no_results.png'))),
+                        Container(
+                          margin: const EdgeInsets.all(20),
+                          width: 100,
+                          child: SimpleShadow(
+                            child: Opacity(
+                                opacity: 0.4,
+                                child: Image.asset('assets${Platform.pathSeparator}images${Platform.pathSeparator}no_results.png')
+                            ),
+                          ),
+                        ),
                         const Text(Strings.noIncidences, style: TextStyle(color: ColorSchemes.textColorLight),),
                       ],
                     ),
@@ -213,24 +242,54 @@ class ShowIncidencesWidgetState extends State<ShowIncidencesWidget> {
     )
 );
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }
 
-class AnimatedSlideMenu extends StatelessWidget {
+class AnimatedSlideMenu extends StatefulWidget {
 
   final GlobalKey<AnimatedListState>? listKey;
   final int index;
   final String studentId;
   final animation;
-  final GlobalKey<SlideMenuState> slideMenuKey = GlobalKey();
 
   AnimatedSlideMenu({Key? key, required this.listKey, required this.index, required this.studentId, required this.animation}) : super(key: key);
 
   @override
+  State<AnimatedSlideMenu> createState() => _AnimatedSlideMenuState();
+}
+
+class _AnimatedSlideMenuState extends State<AnimatedSlideMenu> with AutomaticKeepAliveClientMixin {
+  final GlobalKey<SlideMenuState> slideMenuKey = GlobalKey();
+
+  @override
   Widget build(BuildContext context) {
     return SizeTransition(
-      sizeFactor: animation,
+      sizeFactor: widget.animation,
       child: SlideMenu(menuItems: [
         Container(
+          padding: const EdgeInsets.fromLTRB(0, 5, 5, 5),
+          margin: Theme
+              .of(context)
+              .cardTheme
+              .margin,
+          child: ElevatedButton(
+              clipBehavior: Clip.antiAlias,
+              style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all(
+                      ColorSchemes.kingacolor),
+                  shape: MaterialStateProperty.all(
+                      RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      )
+                  )
+              ),
+              onLongPress: onEdit,
+              onPressed: onEdit,
+              child: const Icon(Icons.edit)
+          ),
+        ),Container(
           padding: const EdgeInsets.fromLTRB(0, 5, 5, 5),
           margin: Theme
               .of(context)
@@ -247,125 +306,47 @@ class AnimatedSlideMenu extends StatelessWidget {
                       )
                   )
               ),
-              onPressed: () {
-                showDialog(context: context, builder: (context) =>
-                    AlertDialog(
-                      title: const Text(Strings.confirmDeleteIncidence),
-                      actions: [
-                        TextButton(onPressed: () =>
-                            Navigator.of(context).pop(false),
-                            child: const Text(Strings.cancel)),
-                        TextButton(onPressed: () =>
-                            Navigator.of(context).pop(true),
-                            child: const Text(Strings.confirm))
-                      ],
-                    ),).then((confirmed) {
-                  if (confirmed ?? false) {
-                    Incidence incidenceToRemove = (BlocProvider.of<IncidencesCubit>(context).state as IncidencesLoaded).incidences
-                        .elementAt(index);
-                    GetIt.I<StudentService>().deleteIncidence(studentId, incidenceToRemove).then((value) {
-                    });
-                  }
-                });
-              }, child: const Icon(Icons.delete)
+              onLongPress: onDelete,
+              onPressed: onDelete,
+              child: const Icon(Icons.delete)
           ),
         ),
       ],
-          child: IncidenceItem(studentId, (BlocProvider.of<IncidencesCubit>(context).state as IncidencesLoaded).incidences.elementAt(index))
+          child: IncidenceItem(widget.studentId, (BlocProvider.of<IncidencesCubit>(context).state as IncidencesLoaded).incidences.elementAt(widget.index))
       ),
     );
   }
-}
 
+  void onEdit() {
+    Incidence incidenceToEdit = (BlocProvider.of<IncidencesCubit>(context).state as IncidencesLoaded).incidences
+        .elementAt(widget.index);
+    showDialog(context: context, builder: (context) => EditIncidenceDialog(widget.studentId, incidenceToEdit));
+  }
 
-class SlideMenu extends StatefulWidget {
-  final Widget child;
-  final List<Widget> menuItems;
-  final double? progress;
-
-  const SlideMenu({Key? key,
-    required this.child, required this.menuItems, this.progress
-  }) : super(key: key);
-
-  @override
-  State<SlideMenu> createState() => SlideMenuState();
-}
-
-class SlideMenuState extends State<SlideMenu> with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-
-  @override
-  initState() {
-    super.initState();
-    _controller = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 200));
+  void onDelete() {
+    showDialog(context: context, builder: (context) =>
+        AlertDialog(
+          title: const Text(Strings.confirmDeleteIncidence),
+          actions: [
+            TextButton(onPressed: () =>
+                Navigator.of(context).pop(false),
+                child: const Text(Strings.cancel)),
+            TextButton(onPressed: () =>
+                Navigator.of(context).pop(true),
+                child: const Text(Strings.confirm))
+          ],
+        ),).then((confirmed) {
+      if (confirmed ?? false) {
+        Incidence incidenceToRemove = (BlocProvider.of<IncidencesCubit>(context).state as IncidencesLoaded).incidences
+            .elementAt(widget.index);
+        GetIt.I<StudentService>().deleteIncidence(widget.studentId, incidenceToRemove).then((value) {
+          GetIt.I<AnalyticsService>().logEvent(name: Keys.analyticsDeleteIncidence);
+        });
+      }
+    });
   }
 
   @override
-  dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    //Here the end field will determine the size of buttons which will appear after sliding
-    //If you need to appear them at the beginning, you need to change to "+" Offset coordinates (0.2, 0.0)
-    final animation = widget.progress == null ?
-    Tween(begin: const Offset(0.0, 0.0),
-        end: const Offset(-0.2, 0.0))
-        .animate(CurveTween(curve: Curves.decelerate).animate(_controller)) :
-    Tween(begin: Offset(-0.2 * widget.progress!, 0.0),
-        end: Offset(-0.2 * widget.progress!, 0.0)).animate(_controller);
-
-    return GestureDetector(
-        onHorizontalDragUpdate: (data) {
-          // we can access context.size here
-          setState(() {
-            //Here we set value of Animation controller depending on our finger move in horizontal axis
-            //If you want to slide to the right, change "-" to "+"
-            _controller.value -= (data.primaryDelta! / (context.size!.width*0.2));
-          });
-        },
-        onHorizontalDragEnd: (data) {
-          //To change slide direction, change to data.primaryVelocity! < -1500
-          if (data.primaryVelocity! > 1500)
-            _controller.animateTo(.0); //close menu on fast swipe in the right direction
-          //To change slide direction, change to data.primaryVelocity! > 1500
-          else if (_controller.value >= .5 || data.primaryVelocity! < -1500)
-            _controller.animateTo(1.0); // fully open if dragged a lot to left or on fast swipe to left
-          else // close if none of above
-            _controller.animateTo(.0);
-        },
-        child: LayoutBuilder(builder: (context, constraint) {
-          return Stack(
-            children: [
-              SlideTransition(
-                position: animation,
-                child: widget.child,
-              ),
-              AnimatedBuilder(
-                  animation: _controller,
-                  builder: (context, child) {
-                    //To change slide direction to right, replace the right parameter with left:
-                    return Positioned(
-                      right: .0,
-                      top: .0,
-                      bottom: .0,
-                      width: constraint.maxWidth * animation.value.dx * -1,
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: widget.menuItems.map((child) {
-                          return Expanded(
-                            child: child,
-                          );
-                        }).toList(),
-                      ),
-                    );
-                  })
-            ],
-          );
-        })
-    );
-  }
+  bool get wantKeepAlive => true;
 }
+

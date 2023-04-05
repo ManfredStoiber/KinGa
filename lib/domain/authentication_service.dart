@@ -1,5 +1,4 @@
 import 'package:get_it/get_it.dart';
-import 'package:injectable/injectable.dart';
 import 'package:kinga/domain/authentication_repository.dart';
 import 'package:kinga/domain/entity/user.dart';
 
@@ -21,6 +20,10 @@ class AuthenticationService {
 
   Stream<User?> authStateChanges() {
     return _authenticationRepository.authStateChanges();
+  }
+
+  User? getCurrentUser() {
+    return _authenticationRepository.getCurrentUser();
   }
 
 }

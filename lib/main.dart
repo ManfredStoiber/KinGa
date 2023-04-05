@@ -1,4 +1,8 @@
+import 'dart:io';
+
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -7,12 +11,14 @@ import 'package:kinga/constants/keys.dart';
 import 'package:kinga/domain/authentication_service.dart';
 import 'package:kinga/domain/entity/user.dart';
 import 'package:kinga/domain/student_service.dart';
-import 'package:kinga/features/permissions/ui/list_permissions_screen.dart';
-import 'package:kinga/features/permissions/ui/show_permission_screen.dart';
+import 'package:kinga/features/commons/domain/analytics_service.dart';
 import 'package:kinga/injection.dart';
 import 'package:kinga/ui/attendance_screen.dart';
+import 'package:kinga/ui/attendance_screen_native.dart';
 import 'package:kinga/ui/setup_account_screen.dart';
+import 'package:kinga/ui/setup_account_screen_native.dart';
 import 'package:kinga/ui/setup_institution_screen.dart';
+import 'package:kinga/ui/setup_institution_screen_native.dart';
 import 'package:streaming_shared_preferences/streaming_shared_preferences.dart';
 import 'ui/bloc/students_cubit.dart';
 
@@ -22,23 +28,70 @@ void main() async {
   // configure dependencies
   await configureDependencies();
 
+  //Setting SysemUIOverlay
+  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+      systemStatusBarContrastEnforced: true,
+      systemNavigationBarColor: Colors.transparent,
+      systemNavigationBarDividerColor: Colors.transparent,
+      systemNavigationBarIconBrightness: Brightness.dark,
+      statusBarIconBrightness: Brightness.dark)
+  );
+
+  //Setting SystmeUIMode
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge, overlays: [SystemUiOverlay.top]);
+  if (!(Platform.isWindows || Platform.isLinux)) {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+  }
+
   final StudentService studentService = GetIt.I<StudentService>();
   final AuthenticationService authenticationService = GetIt.I<AuthenticationService>();
   runApp(MyApp(studentService, authenticationService));
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
 
   final StudentService _studentService;
   final AuthenticationService _authenticationService;
 
-  const MyApp(this._studentService, this._authenticationService, {Key? key}) : super(key: key);
+  MyApp(this._studentService, this._authenticationService, {Key? key}) : super(key: key);
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
+
+  @override
+  void initState() {
+    super.initState();
+    GetIt.I<AnalyticsService>().logEvent(name: Keys.analyticsResumed);
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    if (state == AppLifecycleState.resumed) {
+      GetIt.I<AnalyticsService>().logEvent(name: Keys.analyticsResumed);
+    } else if (state == AppLifecycleState.paused) {
+      GetIt.I<AnalyticsService>().logEvent(name: Keys.analyticsPaused);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     // StreamBuilder for distinction if user is authenticated or not
     return StreamBuilder<User?>(
-      stream: _authenticationService.authStateChanges(),
+      stream: widget._authenticationService.authStateChanges(),
       builder: (BuildContext context, AsyncSnapshot<User?> snapshot) {
         if (snapshot.hasData) {
           // if logged in
@@ -52,12 +105,12 @@ class MyApp extends StatelessWidget {
                   return MultiBlocProvider(
                     providers: [
                       BlocProvider(
-                        create: (context) => StudentsCubit(_studentService),
+                        create: (context) => StudentsCubit(widget._studentService),
                         child: const AttendanceScreen(),
                       ),
                     ],
                     child: MaterialApp(
-                      title: 'Flutter Demo',
+                      title: 'KinGa',
                       localizationsDelegates: const [
                         GlobalMaterialLocalizations.delegate,
                         GlobalWidgetsLocalizations.delegate,
@@ -68,21 +121,22 @@ class MyApp extends StatelessWidget {
                       ],
                       theme: ThemeData(
                         // This is the theme of your application.
-                        primarySwatch: ColorSchemes.kingacolor,
-                        scaffoldBackgroundColor: ColorSchemes.backgroundColor,
-                        backgroundColor: ColorSchemes.backgroundColor,
-                        errorColor: ColorSchemes.errorColor,
-                        cardTheme: CardTheme.of(context).copyWith(
-                          shape: RoundedRectangleBorder(
-                            side: BorderSide(
-                              color: ColorSchemes.absentColor,
-                              width: 3.0,
-                            ),
-                            borderRadius: BorderRadius.circular(10.0),
+                          primarySwatch: ColorSchemes.kingacolor,
+                          scaffoldBackgroundColor: ColorSchemes.backgroundColor,
+                          backgroundColor: ColorSchemes.backgroundColor,
+                          errorColor: ColorSchemes.errorColor,
+                          cardTheme: CardTheme.of(context).copyWith(
+                              clipBehavior: Clip.antiAlias,
+                              shape: RoundedRectangleBorder(
+                                side: const BorderSide(
+                                  color: ColorSchemes.kingaGrey,
+                                  width: 3.0,
+                                ),
+                                borderRadius: BorderRadius.circular(10.0),
+                              )
                           )
-                        )
                       ),
-                      home: const AttendanceScreen(),
+                      home: (Platform.isWindows || Platform.isLinux) ? const AttendanceScreenNative() : const AttendanceScreen(),
                     ),
                   );
                 } else {
@@ -90,20 +144,17 @@ class MyApp extends StatelessWidget {
                   return MultiBlocProvider(
                     providers: [
                       BlocProvider(
-                        create: (context) => StudentsCubit(_studentService),
-                        child: const AttendanceScreen(),
+                        create: (context) => StudentsCubit(widget._studentService),
+                        child: (Platform.isWindows || Platform.isLinux) ? AttendanceScreenNative() : const AttendanceScreen(),
                       )
                     ],
                     child: MaterialApp(
-                      title: 'Flutter Demo',
+                      title: 'KinGa',
                       theme: ThemeData(
                         // This is the theme of your application.
-                          primarySwatch: ColorSchemes.kingacolor,
-                          scaffoldBackgroundColor: ColorSchemes.backgroundColor,
-                          backgroundColor: ColorSchemes.backgroundColor,
-                          errorColor: ColorSchemes.errorColor
+                          scaffoldBackgroundColor: ColorSchemes.backgroundColor, colorScheme: ColorScheme.fromSwatch(primarySwatch: ColorSchemes.kingacolor).copyWith(background: ColorSchemes.backgroundColor).copyWith(error: ColorSchemes.errorColor)
                       ),
-                      home: const SetupInstitutionScreen(),
+                      home: (Platform.isWindows || Platform.isLinux) ? SetupInstitutionScreenNative() : const SetupInstitutionScreen(),
                     ),
                   );
                 }
@@ -114,20 +165,17 @@ class MyApp extends StatelessWidget {
           return MultiBlocProvider(
             providers: [
               BlocProvider(
-                create: (context) => StudentsCubit(_studentService),
+                create: (context) => StudentsCubit(widget._studentService),
                 child: const AttendanceScreen(),
               )
             ],
             child: MaterialApp(
-              title: 'Flutter Demo',
+              title: 'KinGa',
               theme: ThemeData(
                 // This is the theme of your application.
-                  primarySwatch: ColorSchemes.kingacolor,
-                  scaffoldBackgroundColor: ColorSchemes.backgroundColor,
-                  backgroundColor: ColorSchemes.backgroundColor,
-                  errorColor: ColorSchemes.errorColor
+                  scaffoldBackgroundColor: ColorSchemes.backgroundColor, colorScheme: ColorScheme.fromSwatch(primarySwatch: ColorSchemes.kingacolor).copyWith(background: ColorSchemes.backgroundColor).copyWith(error: ColorSchemes.errorColor)
               ),
-              home: const SetupAccountScreen(),
+              home: (Platform.isWindows || Platform.isLinux) ? const SetupAccountScreenNative() : const SetupAccountScreen(),
             ),
           );
         }

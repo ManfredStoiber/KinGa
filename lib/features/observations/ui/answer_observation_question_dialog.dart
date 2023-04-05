@@ -1,17 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:kinga/constants/colors.dart';
+import 'package:kinga/constants/keys.dart';
 import 'package:kinga/constants/strings.dart';
+import 'package:kinga/features/commons/domain/analytics_service.dart';
 import 'package:kinga/features/observations/domain/entity/observation.dart';
 import 'package:kinga/features/observations/domain/entity/question.dart';
 import 'package:kinga/features/observations/domain/observation_service.dart';
-import 'package:kinga/shared/loading_indicator_dialog.dart';
+import 'package:kinga/ui/widgets/loading_indicator_dialog.dart';
 
 class AnswerObservationQuestionDialog extends StatefulWidget {
   final String studentId;
   final Question question;
+  final int? selectedAnswerInitial;
+  final String? noteInitial;
 
-  const AnswerObservationQuestionDialog(this.studentId, this.question, {Key? key}) : super(key: key);
+  const AnswerObservationQuestionDialog(this.studentId, this.question, {Key? key, this.selectedAnswerInitial, this.noteInitial}) : super(key: key);
 
   @override
   State<AnswerObservationQuestionDialog> createState() => _AnswerObservationQuestionDialogState();
@@ -25,7 +29,10 @@ class _AnswerObservationQuestionDialogState extends State<AnswerObservationQuest
 
   @override
   void initState() {
-    selectedAnswer = widget.question.possibleAnswers.keys.first;
+    selectedAnswer = widget.selectedAnswerInitial != null ? widget.selectedAnswerInitial! : widget.question.possibleAnswers.keys.first;
+    if (widget.noteInitial != null) {
+      _notesController.text = widget.noteInitial!;
+    }
     super.initState();
   }
 
@@ -38,7 +45,7 @@ class _AnswerObservationQuestionDialogState extends State<AnswerObservationQuest
       titlePadding: EdgeInsets.zero,
       title: Container(
         padding: const EdgeInsets.all(15),
-        color: ColorSchemes.absentColor.withAlpha(50),
+        color: ColorSchemes.kingaGrey.withAlpha(50),
         child: Column(
           children: [
             Text(widget.question.part.title, style: Theme.of(context).textTheme.titleLarge,),
@@ -53,8 +60,9 @@ class _AnswerObservationQuestionDialogState extends State<AnswerObservationQuest
         ),
         TextButton(
           onPressed: () {
-            LoadingIndicatorDialog.show(context);
+            LoadingIndicatorDialog.show(context, Strings.loadAnswerObservation);
             _observationService.updateObservation(widget.studentId, Observation(widget.question, "TODO", selectedAnswer, _notesController.text.isNotEmpty ? _notesController.text : null)).then((value) { // TODO: timespan
+              GetIt.I<AnalyticsService>().logEvent(name: Keys.analyticsAnswerObservation);
               Navigator.of(context).pop(); // pop LoadingIndicatorDialog
               Navigator.of(context).pop(true); // pop CreateObservationDialog with success = true
             });
@@ -92,6 +100,7 @@ class _AnswerObservationQuestionDialogState extends State<AnswerObservationQuest
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 15.0),
             child: TextField(
+              textCapitalization: TextCapitalization.sentences,
               controller: _notesController,
               minLines: 1,
               maxLines: null,

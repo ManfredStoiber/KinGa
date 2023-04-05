@@ -7,6 +7,7 @@ abstract class StudentsState {
 
 class StudentsInitial extends StudentsState {}
 class StudentsLoading extends StudentsState {}
+class StudentsEmpty extends StudentsState {}
 class StudentsLoaded extends StudentsState {
   final Set<Student> students;
   late final Set<String> groups;

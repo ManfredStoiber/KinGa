@@ -17,7 +17,11 @@ class StudentsCubit extends Cubit<StudentsState> {
   StudentsCubit(this._studentService) : super(StudentsInitial()) {
     emit(StudentsLoading());
     _streamSubscription = _studentService.watchStudents().listen((students) {
-      emit(StudentsLoaded(students, null));
+      if (students.isEmpty) {
+        emit(StudentsEmpty());
+      } else {
+        emit(StudentsLoaded(students, null));
+      }
     });
   }
 
@@ -49,8 +53,8 @@ class StudentsCubit extends Cubit<StudentsState> {
     return _studentService.hasBirthday(studentId);
   }
 
-  void createStudent(Map<String, dynamic> student, Uint8List profileImage) {
-    _studentService.createStudent(student, profileImage);
+  Future<void> createStudent(Map<String, dynamic> student, Uint8List profileImage) async {
+    return _studentService.createStudent(student, profileImage);
   }
 
   Future<void> updateStudent(Student student, Uint8List profileImage) async {
@@ -72,6 +76,10 @@ class StudentsCubit extends Cubit<StudentsState> {
 
   Future<void> createAbsence(String studentId, Absence absence) async {
     _studentService.createAbsence(studentId, absence);
+  }
+
+  Future<void> updateAbsence(String studentId, Absence oldAbsence, Absence newAbsence) async {
+    _studentService.updateAbsence(studentId, oldAbsence, newAbsence);
   }
 
 }
