@@ -52,10 +52,9 @@ class BackendServicer(backend_pb2_grpc.BackendServicer):
 
     def get_student(self, student_id):
         try:
-            student = Student.objects.get(studentId=student_id)
+            return Student.objects.get(studentId=student_id)
         except Student.DoesNotExist:
-            return Student(studentId='', value='', institutionId='')
-        return student
+            self.context.abort(grpc.StatusCode.NOT_FOUND, 'Student: %s not found!' % student_id)
 
     def CreateInstitution(self, request, context):
         print('Create institution: ' + request.institutionId)
@@ -72,11 +71,9 @@ class BackendServicer(backend_pb2_grpc.BackendServicer):
 
     def get_institution(self, institution_id):
         try:
-            institution = Institution.objects.get(institutionId=institution_id)
+            return Institution.objects.get(institutionId=institution_id)
         except Institution.DoesNotExist:
-            return Institution(institutionId='', encryptedInstitutionKey='', institutionKeyIv='',
-                               institutionName='', passwordKeyNonce='', verificationKey='')
-        return institution
+            self.context.abort(grpc.StatusCode.NOT_FOUND, 'Institution: %s not found!' % institution_id)
 
     def CreateProfileImage(self, request, context):
         print('Create profile image for student: ' + request.studentId)
@@ -103,10 +100,9 @@ class BackendServicer(backend_pb2_grpc.BackendServicer):
 
     def get_profile_image(self, student_id):
         try:
-            profile_image = ProfileImage.objects.get(studentId=student_id)
+            return ProfileImage.objects.get(studentId=student_id)
         except ProfileImage.DoesNotExist:
-            return ProfileImage(studentId='', data='')
-        return profile_image
+            self.context.abort(grpc.StatusCode.NOT_FOUND, 'Profile image for student: %s not found!' % student_id)
 
     def publish_msg(self, msg):
         client = mqtt_client.connect_mqtt()

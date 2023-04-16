@@ -108,6 +108,7 @@ class PostgreSQLInstitutionRepository implements InstitutionRepository {
     const numbers = '0123456789';
 
     String institutionId;
+    bool idExists = true;
 
     // check if id is unique
     do {
@@ -120,8 +121,12 @@ class PostgreSQLInstitutionRepository implements InstitutionRepository {
         final indexRandom = Random.secure().nextInt(numbers.length);
         return numbers[indexRandom];
       }).join('');
-    }
-    while ((await (stub.retrieveInstitution(gen.Id()..requestId=institutionId))).institutionId != '');
+      try {
+        idExists = (await (stub.retrieveInstitution(gen.Id()..requestId=institutionId))).institutionId != '';
+      } on GrpcError catch (_) {
+        idExists = false;
+      }
+    } while (idExists);
 
     return institutionId;
   }

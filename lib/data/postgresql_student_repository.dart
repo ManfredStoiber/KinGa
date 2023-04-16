@@ -212,18 +212,17 @@ class PostgreSQLStudentRepository implements StudentRepository {
 
   @override
   Future<void> updateStudent(Student student) async {
-    //TODO: fix try catch because 'OK' is a grpc error
-    //try {
+    try {
       await clientStub.updateStudent(gen.Student()
         ..studentId = student.studentId
         ..value = FirebaseUtils.studentToMap(student)['value']
         ..institutionId = currentInstitutionId
       );
-    /*} catch (e) {
+    } catch (e) {
       if (kDebugMode) {
         print(e);
       }
-    }*/
+    }
   }
 
   @override
@@ -272,11 +271,10 @@ class PostgreSQLStudentRepository implements StudentRepository {
       Set<Student> students = {};
 
       List<gen.Student> tmp = <gen.Student>[];
-      //TODO: fix try catch because 'OK' is a grpc error
-      //try {
+      try {
         var receivedStudents = clientStub.retrieveInstitutionStudents(gen.Id()..requestId=currentInstitutionId);
         await for (var student in receivedStudents) {
-          if (student.studentId != '') tmp.add(student);
+          tmp.add(student);
         }
 
         for (var response in tmp) {
@@ -299,17 +297,20 @@ class PostgreSQLStudentRepository implements StudentRepository {
               profileImage = profileImageCache;
             } else {
               String? profileImageDownload;
-              clientStub.retrieveProfileImage(gen.Id()..requestId=student.studentId).then((response) {
-                if (response.data.isNotEmpty) profileImageDownload = response.data;
-              });
+              try {
+                var response = await clientStub.retrieveProfileImage(gen.Id()..requestId=student.studentId);
+                profileImageDownload = response.data;
+              } on GrpcError catch (_) {
+                //TODO:
+              }
               if (profileImageDownload != null) {
                 // decrypt profileImage
                 try {
                   profileImage =
-                      Uint8List.fromList(base64.decode(CryptoUtils.decrypt(profileImageDownload!)));
+                      Uint8List.fromList(base64.decode(CryptoUtils.decrypt(profileImageDownload)));
                 } catch (e) {
                   // if decryption failed, image is stored unencrypted // TODO: remove when everything is encrypted
-                  profileImage = Uint8List.fromList(base64.decode(profileImageDownload!));
+                  profileImage = Uint8List.fromList(base64.decode(profileImageDownload));
                 }
                 cacheProfileImage(student.studentId, profileImage); // store image in cache
               } else {
@@ -332,9 +333,9 @@ class PostgreSQLStudentRepository implements StudentRepository {
 
           students.add(student);
         }
-      /*} on GrpcError catch (e) {
+      } on GrpcError catch (e) {
         return null; //TODO: error-handling
-      }*/
+      }
       if (tmp.isEmpty) {
           // create test students
           createTestStudents();
