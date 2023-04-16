@@ -7,11 +7,10 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:get_it/get_it.dart';
 import 'package:kinga/constants/keys.dart';
 import 'package:kinga/data/firebase_authentication_repository.dart';
-import 'package:kinga/data/firebase_institution_repository.dart';
 import 'package:kinga/data/firebase_rest_authentication_repository.dart';
 import 'package:kinga/data/firebase_rest_institution_repository.dart';
 import 'package:kinga/data/firebase_rest_student_repository.dart';
-import 'package:kinga/data/firebase_student_repository.dart';
+import 'package:kinga/data/postgresql_institution_repository.dart';
 import 'package:kinga/domain/authentication_repository.dart';
 import 'package:kinga/domain/authentication_service.dart';
 import 'package:kinga/domain/institution_repository.dart';
@@ -32,6 +31,8 @@ import 'package:kinga/firebase_options.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart';
 import 'package:streaming_shared_preferences/streaming_shared_preferences.dart';
+
+import 'data/postgresql_student_repository.dart';
 
 Future<Map<String, Uint8List>> loadProfileImages() async {
   Map<String, Uint8List> profileImages = {};
@@ -64,8 +65,8 @@ Future<void> configureDependencies() async {
     );
     GetIt.I.registerSingleton<FirebaseAuth>(FirebaseAuth.instance);
     GetIt.I.registerSingleton<AuthenticationRepository>(FirebaseAuthenticationRepository());
-    GetIt.I.registerSingleton<StudentRepository>(FirebaseStudentRepository());
-    GetIt.I.registerSingleton<InstitutionRepository>(FirebaseInstitutionRepository());
+    GetIt.I.registerSingleton<StudentRepository>(PostgreSQLStudentRepository());
+    GetIt.I.registerSingleton<InstitutionRepository>(PostgreSQLInstitutionRepository());
   }
   GetIt.I.registerSingleton<AuthenticationService>(AuthenticationService());
   GetIt.I.registerSingleton<StudentService>(StudentService());

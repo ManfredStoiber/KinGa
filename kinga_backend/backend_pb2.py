@@ -14,7 +14,7 @@ _sym_db = _symbol_database.Default()
 from google.protobuf import empty_pb2 as google_dot_protobuf_dot_empty__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\rbackend.proto\x12\x07\x62\x61\x63kend\x1a\x1bgoogle/protobuf/empty.proto\"+\n\x07Student\x12\x11\n\tstudentId\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t\"\xcf\x01\n\x0bInstitution\x12\x15\n\rinstitutionId\x18\x01 \x01(\t\x12\"\n\x08students\x18\x02 \x03(\x0b\x32\x10.backend.Student\x12\x1f\n\x17\x65ncryptedInstitutionKey\x18\x03 \x01(\t\x12\x18\n\x10institutionKeyIv\x18\x04 \x01(\t\x12\x17\n\x0finstitutionName\x18\x05 \x01(\t\x12\x18\n\x10passwordKeyNonce\x18\x06 \x01(\t\x12\x17\n\x0fverificationKey\x18\x07 \x01(\t\"!\n\x0cProfileImage\x12\x11\n\tstudentId\x18\x01 \x01(\t\"\x07\n\x05\x45mpty2\xfb\x02\n\x07\x42\x61\x63kend\x12\x33\n\rUpdateStudent\x12\x10.backend.Student\x1a\x0e.backend.Empty\"\x00\x12\x37\n\x0fRetrieveStudent\x12\x10.backend.Student\x1a\x10.backend.Student\"\x00\x12;\n\x11UpdateInstitution\x12\x14.backend.Institution\x1a\x0e.backend.Empty\"\x00\x12\x43\n\x13RetrieveInstitution\x12\x14.backend.Institution\x1a\x14.backend.Institution\"\x00\x12=\n\x12UpdateProfileImage\x12\x15.backend.ProfileImage\x1a\x0e.backend.Empty\"\x00\x12\x41\n\x14RetrieveProfileImage\x12\x10.backend.Student\x1a\x15.backend.ProfileImage\"\x00\x62\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\rbackend.proto\x12\x07\x62\x61\x63kend\x1a\x1bgoogle/protobuf/empty.proto\"B\n\x07Student\x12\x11\n\tstudentId\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t\x12\x15\n\rinstitutionId\x18\x03 \x01(\t\"\xab\x01\n\x0bInstitution\x12\x15\n\rinstitutionId\x18\x01 \x01(\t\x12\x1f\n\x17\x65ncryptedInstitutionKey\x18\x02 \x01(\t\x12\x18\n\x10institutionKeyIv\x18\x03 \x01(\t\x12\x17\n\x0finstitutionName\x18\x04 \x01(\t\x12\x18\n\x10passwordKeyNonce\x18\x05 \x01(\t\x12\x17\n\x0fverificationKey\x18\x06 \x01(\t\"/\n\x0cProfileImage\x12\x11\n\tstudentId\x18\x01 \x01(\t\x12\x0c\n\x04\x64\x61ta\x18\x02 \x01(\t\"\x17\n\x02Id\x12\x11\n\trequestId\x18\x01 \x01(\t\"\x07\n\x05\x45mpty2\x8b\x05\n\x07\x42\x61\x63kend\x12\x35\n\rCreateStudent\x12\x10.backend.Student\x1a\x10.backend.Student\"\x00\x12.\n\rDeleteStudent\x12\x0b.backend.Id\x1a\x0e.backend.Empty\"\x00\x12\x33\n\rUpdateStudent\x12\x10.backend.Student\x1a\x0e.backend.Empty\"\x00\x12\x32\n\x0fRetrieveStudent\x12\x0b.backend.Id\x1a\x10.backend.Student\"\x00\x12@\n\x1bRetrieveInstitutionStudents\x12\x0b.backend.Id\x1a\x10.backend.Student\"\x00\x30\x01\x12\x41\n\x11\x43reateInstitution\x12\x14.backend.Institution\x1a\x14.backend.Institution\"\x00\x12:\n\x13RetrieveInstitution\x12\x0b.backend.Id\x1a\x14.backend.Institution\"\x00\x12=\n\x12\x43reateProfileImage\x12\x15.backend.ProfileImage\x1a\x0e.backend.Empty\"\x00\x12\x33\n\x12\x44\x65leteProfileImage\x12\x0b.backend.Id\x1a\x0e.backend.Empty\"\x00\x12=\n\x12UpdateProfileImage\x12\x15.backend.ProfileImage\x1a\x0e.backend.Empty\"\x00\x12<\n\x14RetrieveProfileImage\x12\x0b.backend.Id\x1a\x15.backend.ProfileImage\"\x00\x62\x06proto3')
 
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, globals())
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'backend_pb2', globals())
@@ -22,13 +22,15 @@ if _descriptor._USE_C_DESCRIPTORS == False:
 
   DESCRIPTOR._options = None
   _STUDENT._serialized_start=55
-  _STUDENT._serialized_end=98
-  _INSTITUTION._serialized_start=101
-  _INSTITUTION._serialized_end=308
-  _PROFILEIMAGE._serialized_start=310
-  _PROFILEIMAGE._serialized_end=343
-  _EMPTY._serialized_start=345
-  _EMPTY._serialized_end=352
-  _BACKEND._serialized_start=355
-  _BACKEND._serialized_end=734
+  _STUDENT._serialized_end=121
+  _INSTITUTION._serialized_start=124
+  _INSTITUTION._serialized_end=295
+  _PROFILEIMAGE._serialized_start=297
+  _PROFILEIMAGE._serialized_end=344
+  _ID._serialized_start=346
+  _ID._serialized_end=369
+  _EMPTY._serialized_start=371
+  _EMPTY._serialized_end=378
+  _BACKEND._serialized_start=381
+  _BACKEND._serialized_end=1032
 # @@protoc_insertion_point(module_scope)

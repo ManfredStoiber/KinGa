@@ -14,6 +14,16 @@ class BackendStub(object):
         Args:
             channel: A grpc.Channel.
         """
+        self.CreateStudent = channel.unary_unary(
+                '/backend.Backend/CreateStudent',
+                request_serializer=backend__pb2.Student.SerializeToString,
+                response_deserializer=backend__pb2.Student.FromString,
+                )
+        self.DeleteStudent = channel.unary_unary(
+                '/backend.Backend/DeleteStudent',
+                request_serializer=backend__pb2.Id.SerializeToString,
+                response_deserializer=backend__pb2.Empty.FromString,
+                )
         self.UpdateStudent = channel.unary_unary(
                 '/backend.Backend/UpdateStudent',
                 request_serializer=backend__pb2.Student.SerializeToString,
@@ -21,18 +31,33 @@ class BackendStub(object):
                 )
         self.RetrieveStudent = channel.unary_unary(
                 '/backend.Backend/RetrieveStudent',
-                request_serializer=backend__pb2.Student.SerializeToString,
+                request_serializer=backend__pb2.Id.SerializeToString,
                 response_deserializer=backend__pb2.Student.FromString,
                 )
-        self.UpdateInstitution = channel.unary_unary(
-                '/backend.Backend/UpdateInstitution',
+        self.RetrieveInstitutionStudents = channel.unary_stream(
+                '/backend.Backend/RetrieveInstitutionStudents',
+                request_serializer=backend__pb2.Id.SerializeToString,
+                response_deserializer=backend__pb2.Student.FromString,
+                )
+        self.CreateInstitution = channel.unary_unary(
+                '/backend.Backend/CreateInstitution',
                 request_serializer=backend__pb2.Institution.SerializeToString,
-                response_deserializer=backend__pb2.Empty.FromString,
+                response_deserializer=backend__pb2.Institution.FromString,
                 )
         self.RetrieveInstitution = channel.unary_unary(
                 '/backend.Backend/RetrieveInstitution',
-                request_serializer=backend__pb2.Institution.SerializeToString,
+                request_serializer=backend__pb2.Id.SerializeToString,
                 response_deserializer=backend__pb2.Institution.FromString,
+                )
+        self.CreateProfileImage = channel.unary_unary(
+                '/backend.Backend/CreateProfileImage',
+                request_serializer=backend__pb2.ProfileImage.SerializeToString,
+                response_deserializer=backend__pb2.Empty.FromString,
+                )
+        self.DeleteProfileImage = channel.unary_unary(
+                '/backend.Backend/DeleteProfileImage',
+                request_serializer=backend__pb2.Id.SerializeToString,
+                response_deserializer=backend__pb2.Empty.FromString,
                 )
         self.UpdateProfileImage = channel.unary_unary(
                 '/backend.Backend/UpdateProfileImage',
@@ -41,13 +66,25 @@ class BackendStub(object):
                 )
         self.RetrieveProfileImage = channel.unary_unary(
                 '/backend.Backend/RetrieveProfileImage',
-                request_serializer=backend__pb2.Student.SerializeToString,
+                request_serializer=backend__pb2.Id.SerializeToString,
                 response_deserializer=backend__pb2.ProfileImage.FromString,
                 )
 
 
 class BackendServicer(object):
     """Missing associated documentation comment in .proto file."""
+
+    def CreateStudent(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def DeleteStudent(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
 
     def UpdateStudent(self, request, context):
         """Missing associated documentation comment in .proto file."""
@@ -61,13 +98,31 @@ class BackendServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def UpdateInstitution(self, request, context):
+    def RetrieveInstitutionStudents(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def CreateInstitution(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def RetrieveInstitution(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def CreateProfileImage(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def DeleteProfileImage(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -88,6 +143,16 @@ class BackendServicer(object):
 
 def add_BackendServicer_to_server(servicer, server):
     rpc_method_handlers = {
+            'CreateStudent': grpc.unary_unary_rpc_method_handler(
+                    servicer.CreateStudent,
+                    request_deserializer=backend__pb2.Student.FromString,
+                    response_serializer=backend__pb2.Student.SerializeToString,
+            ),
+            'DeleteStudent': grpc.unary_unary_rpc_method_handler(
+                    servicer.DeleteStudent,
+                    request_deserializer=backend__pb2.Id.FromString,
+                    response_serializer=backend__pb2.Empty.SerializeToString,
+            ),
             'UpdateStudent': grpc.unary_unary_rpc_method_handler(
                     servicer.UpdateStudent,
                     request_deserializer=backend__pb2.Student.FromString,
@@ -95,18 +160,33 @@ def add_BackendServicer_to_server(servicer, server):
             ),
             'RetrieveStudent': grpc.unary_unary_rpc_method_handler(
                     servicer.RetrieveStudent,
-                    request_deserializer=backend__pb2.Student.FromString,
+                    request_deserializer=backend__pb2.Id.FromString,
                     response_serializer=backend__pb2.Student.SerializeToString,
             ),
-            'UpdateInstitution': grpc.unary_unary_rpc_method_handler(
-                    servicer.UpdateInstitution,
+            'RetrieveInstitutionStudents': grpc.unary_stream_rpc_method_handler(
+                    servicer.RetrieveInstitutionStudents,
+                    request_deserializer=backend__pb2.Id.FromString,
+                    response_serializer=backend__pb2.Student.SerializeToString,
+            ),
+            'CreateInstitution': grpc.unary_unary_rpc_method_handler(
+                    servicer.CreateInstitution,
                     request_deserializer=backend__pb2.Institution.FromString,
-                    response_serializer=backend__pb2.Empty.SerializeToString,
+                    response_serializer=backend__pb2.Institution.SerializeToString,
             ),
             'RetrieveInstitution': grpc.unary_unary_rpc_method_handler(
                     servicer.RetrieveInstitution,
-                    request_deserializer=backend__pb2.Institution.FromString,
+                    request_deserializer=backend__pb2.Id.FromString,
                     response_serializer=backend__pb2.Institution.SerializeToString,
+            ),
+            'CreateProfileImage': grpc.unary_unary_rpc_method_handler(
+                    servicer.CreateProfileImage,
+                    request_deserializer=backend__pb2.ProfileImage.FromString,
+                    response_serializer=backend__pb2.Empty.SerializeToString,
+            ),
+            'DeleteProfileImage': grpc.unary_unary_rpc_method_handler(
+                    servicer.DeleteProfileImage,
+                    request_deserializer=backend__pb2.Id.FromString,
+                    response_serializer=backend__pb2.Empty.SerializeToString,
             ),
             'UpdateProfileImage': grpc.unary_unary_rpc_method_handler(
                     servicer.UpdateProfileImage,
@@ -115,7 +195,7 @@ def add_BackendServicer_to_server(servicer, server):
             ),
             'RetrieveProfileImage': grpc.unary_unary_rpc_method_handler(
                     servicer.RetrieveProfileImage,
-                    request_deserializer=backend__pb2.Student.FromString,
+                    request_deserializer=backend__pb2.Id.FromString,
                     response_serializer=backend__pb2.ProfileImage.SerializeToString,
             ),
     }
@@ -127,6 +207,40 @@ def add_BackendServicer_to_server(servicer, server):
  # This class is part of an EXPERIMENTAL API.
 class Backend(object):
     """Missing associated documentation comment in .proto file."""
+
+    @staticmethod
+    def CreateStudent(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/backend.Backend/CreateStudent',
+            backend__pb2.Student.SerializeToString,
+            backend__pb2.Student.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def DeleteStudent(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/backend.Backend/DeleteStudent',
+            backend__pb2.Id.SerializeToString,
+            backend__pb2.Empty.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
     def UpdateStudent(request,
@@ -157,13 +271,13 @@ class Backend(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/backend.Backend/RetrieveStudent',
-            backend__pb2.Student.SerializeToString,
+            backend__pb2.Id.SerializeToString,
             backend__pb2.Student.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
-    def UpdateInstitution(request,
+    def RetrieveInstitutionStudents(request,
             target,
             options=(),
             channel_credentials=None,
@@ -173,9 +287,26 @@ class Backend(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/backend.Backend/UpdateInstitution',
+        return grpc.experimental.unary_stream(request, target, '/backend.Backend/RetrieveInstitutionStudents',
+            backend__pb2.Id.SerializeToString,
+            backend__pb2.Student.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def CreateInstitution(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/backend.Backend/CreateInstitution',
             backend__pb2.Institution.SerializeToString,
-            backend__pb2.Empty.FromString,
+            backend__pb2.Institution.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
@@ -191,8 +322,42 @@ class Backend(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/backend.Backend/RetrieveInstitution',
-            backend__pb2.Institution.SerializeToString,
+            backend__pb2.Id.SerializeToString,
             backend__pb2.Institution.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def CreateProfileImage(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/backend.Backend/CreateProfileImage',
+            backend__pb2.ProfileImage.SerializeToString,
+            backend__pb2.Empty.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def DeleteProfileImage(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/backend.Backend/DeleteProfileImage',
+            backend__pb2.Id.SerializeToString,
+            backend__pb2.Empty.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
@@ -225,7 +390,7 @@ class Backend(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/backend.Backend/RetrieveProfileImage',
-            backend__pb2.Student.SerializeToString,
+            backend__pb2.Id.SerializeToString,
             backend__pb2.ProfileImage.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

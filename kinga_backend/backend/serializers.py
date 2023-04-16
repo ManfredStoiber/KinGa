@@ -1,18 +1,24 @@
 from django_grpc_framework import proto_serializers
-import backend.models
-import backend_pb2
+import backend.models as backend
+import backend_pb2 as proto
 
 
 class StudentProtoSerializer(proto_serializers.ModelProtoSerializer):
     class Meta:
         model = backend.Student
-        proto_class = backend_pb2.Student
-        fields = ['studentId', 'value']
+        proto_class = proto.Student
+        fields = '__all__'
 
 
 class InstitutionProtoSerializer(proto_serializers.ModelProtoSerializer):
     class Meta:
         model = backend.Institution
-        proto_class = backend_pb2.Institution
-        fields = ['institutionId', 'students', 'encryptedInstitutionKey', 'institutionKeyIv',
-                  'institutionName', 'passwordKeyNonce', 'verificationKey']
+        proto_class = proto.Institution
+        fields = '__all__'
+
+
+class ProfileImageProtoSerializer(proto_serializers.ModelProtoSerializer):
+    class Meta:
+        model = backend.ProfileImage
+        proto_class = proto.ProfileImage
+        fields = '__all__'
