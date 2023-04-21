@@ -3,13 +3,14 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 import 'package:kinga/constants/keys.dart';
+import 'package:kinga/constants/routes.dart';
 import 'package:kinga/constants/strings.dart';
 import 'package:kinga/domain/institution_repository.dart';
 import 'package:kinga/ui/widgets/loading_indicator_dialog.dart';
 import 'package:kinga/ui/qr_scanner_dialog.dart';
 import 'package:kinga/ui/show_institution_qr_code_screen.dart';
-import 'package:qr_flutter/qr_flutter.dart';
 import 'package:http/http.dart' as http;
 
 class SetupInstitutionScreen extends StatefulWidget {
@@ -228,11 +229,10 @@ class _SetupInstitutionScreenState extends State<SetupInstitutionScreen> with Ti
                 children: [
                   TextButton(
                     style: TextButton.styleFrom(
-                      backgroundColor: Theme.of(context).primaryColor,
-                      primary: Colors.white,
+                      foregroundColor: Colors.white, backgroundColor: Theme.of(context).primaryColor,
                     ),
                     onPressed: () async {
-                      String? data = await showDialog(context: context, builder: (context) => QrScannerDialog());
+                      String? data = await showDialog(context: context, builder: (context) => const QrScannerDialog());
                       if (data != null) {
                         final code = json.decode(data);
                         String? institutionId = code[Keys.institutionId];
@@ -302,8 +302,11 @@ class _SetupInstitutionScreenState extends State<SetupInstitutionScreen> with Ti
   void submitLoginForm() async {
     if (_loginFormKey.currentState!.validate()) {
       LoadingIndicatorDialog.show(context, Strings.loadJoinInstitution);
-      _institutionRepository.joinInstitution(_loginInstitutionIdInputController.text, _loginInstitutionPasswordInputController.text).then((_) {
-        Navigator.of(context).pop();
+      _institutionRepository.joinInstitution(_loginInstitutionIdInputController.text, _loginInstitutionPasswordInputController.text).then((error) {
+        if (error == null) {
+          context.go(Routes.reset);
+        }
+        // context.pop();
       },);
     }
   }
@@ -312,12 +315,15 @@ class _SetupInstitutionScreenState extends State<SetupInstitutionScreen> with Ti
     if (_createInstitutionFormKey.currentState!.validate()) {
       LoadingIndicatorDialog.show(context, Strings.loadCreateInstitution);
       _institutionRepository.createInstitution(createInstitutionNameInputController.text, _createInstitutionPassword).then((institutionId) {
-        Navigator.of(context).pop();
+        context.pop();
         if (institutionId != null) {
           showDialog(context: context, builder: (context) => ShowInstitutionQrCodeScreen(institutionId, _createInstitutionPassword),)
               .then((value) {
                 LoadingIndicatorDialog.show(context, Strings.loadJoinInstitution);
-                _institutionRepository.joinInstitution(institutionId, _createInstitutionPassword).then((value) => Navigator.of(context).pop());
+                _institutionRepository.joinInstitution(institutionId, _createInstitutionPassword).then((value) {
+                  context.pop();
+                  context.go(Routes.reset);
+                });
               });
         } else {
           // TODO: error handling

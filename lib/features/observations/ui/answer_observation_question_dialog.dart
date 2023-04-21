@@ -1,21 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 import 'package:kinga/constants/colors.dart';
 import 'package:kinga/constants/keys.dart';
 import 'package:kinga/constants/strings.dart';
 import 'package:kinga/features/commons/domain/analytics_service.dart';
 import 'package:kinga/features/observations/domain/entity/observation.dart';
+import 'package:kinga/features/observations/domain/entity/observation_period.dart';
 import 'package:kinga/features/observations/domain/entity/question.dart';
 import 'package:kinga/features/observations/domain/observation_service.dart';
 import 'package:kinga/ui/widgets/loading_indicator_dialog.dart';
 
 class AnswerObservationQuestionDialog extends StatefulWidget {
+  final String id;
   final String studentId;
   final Question question;
   final int? selectedAnswerInitial;
   final String? noteInitial;
 
-  const AnswerObservationQuestionDialog(this.studentId, this.question, {Key? key, this.selectedAnswerInitial, this.noteInitial}) : super(key: key);
+  const AnswerObservationQuestionDialog(this.id, this.studentId, this.question, {Key? key, this.selectedAnswerInitial, this.noteInitial}) : super(key: key);
 
   @override
   State<AnswerObservationQuestionDialog> createState() => _AnswerObservationQuestionDialogState();
@@ -55,16 +58,16 @@ class _AnswerObservationQuestionDialogState extends State<AnswerObservationQuest
       ),
       actions: [
         TextButton(
-          onPressed: () => Navigator.of(context).pop(false),
+          onPressed: () => context.pop(false),
           child: const Text(Strings.cancel),
         ),
         TextButton(
           onPressed: () {
             LoadingIndicatorDialog.show(context, Strings.loadAnswerObservation);
-            _observationService.updateObservation(widget.studentId, Observation(widget.question, "TODO", selectedAnswer, _notesController.text.isNotEmpty ? _notesController.text : null)).then((value) { // TODO: timespan
+            _observationService.updateObservation(widget.studentId, Observation(widget.id, widget.question, ObservationPeriod(DateTime.now().year, 0), selectedAnswer, _notesController.text.isNotEmpty ? _notesController.text : null)).then((value) { // TODO: timespan
               GetIt.I<AnalyticsService>().logEvent(name: Keys.analyticsAnswerObservation);
-              Navigator.of(context).pop(); // pop LoadingIndicatorDialog
-              Navigator.of(context).pop(true); // pop CreateObservationDialog with success = true
+              context.pop(); // pop LoadingIndicatorDialog
+              context.pop(true); // pop CreateObservationDialog with success = true
             });
           },
           child: const Text(Strings.enter),

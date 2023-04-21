@@ -1,0 +1,85 @@
+syntax = "proto3";
+
+package observation.v1;
+
+import "google/protobuf/empty.proto";
+
+service ObservationBackend {
+  rpc CreateObservationForm(ObservationForm) returns (google.protobuf.Empty) {}
+  rpc CreateObservations(CreateObservationsRequest) returns (google.protobuf.Empty) {}
+  rpc RetrieveObservations(StudentId) returns (stream Observation) {}
+  rpc RetrieveObservationForm(ObservationFormId) returns (ObservationForm) {}
+  rpc RetrieveObservationForms(google.protobuf.Empty) returns (stream ObservationForm) {}
+  rpc RetrieveQuestions(RetrieveQuestionsRequest) returns (stream Question) {}
+  rpc UpdateObservation(Observation) returns (google.protobuf.Empty) {}
+}
+
+message Observation {
+  string id = 1;
+  string student_id = 2;
+  int32 answer = 3;
+  string note = 4;
+  string period = 5;
+  string observation_form_id = 6;
+  string observation_form_part_id = 7;
+  string observation_form_part_section_id = 8;
+  string question_id = 9;
+}
+
+message CreateObservationsRequest {
+  string student_id = 1;
+  string observation_form_id = 2;
+  string period = 3;
+}
+
+message ObservationFormPartSection {
+  string id = 1;
+  string title = 2;
+  string subtitle = 3;
+  string code = 4;
+  string observation_form_id = 5;
+  string observation_form_part_id = 6;
+  repeated Question questions = 7;
+}
+
+message ObservationFormPart {
+  string id = 1;
+  string title = 2;
+  int32 number = 3;
+  string observation_form_id = 4;
+  repeated ObservationFormPartSection observation_form_part_sections = 5;
+}
+
+message ObservationForm {
+  string id = 1;
+  string title = 2;
+  string version = 3;
+  repeated ObservationFormPart observation_form_parts = 4;
+}
+
+message Question {
+  string id = 1;
+  string text = 2;
+  int32 number = 3;
+  string observation_form_id = 4;
+  string observation_form_part_id = 5;
+  string observation_form_part_section_id = 6;
+  repeated Answer possible_answers = 7;
+}
+
+message Answer {
+  int32 number = 1;
+  string text = 2;
+}
+
+message ObservationFormId {
+  string id = 1;
+}
+
+message StudentId {
+  string student_id = 1;
+}
+
+message RetrieveQuestionsRequest {
+  repeated string question_ids = 1;
+}

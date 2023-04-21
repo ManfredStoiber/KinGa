@@ -6,22 +6,26 @@ import 'package:cryptography/cryptography.dart';
 import 'package:encrypt/encrypt.dart';
 import 'package:get_it/get_it.dart';
 import 'package:grpc/grpc.dart';
+import 'package:kinga/constants/backend_config.dart';
 import 'package:kinga/constants/keys.dart';
+import 'package:kinga/data/auth_interceptor.dart';
 import 'package:kinga/domain/institution_repository.dart';
-import 'package:kinga/generated/backend.pbgrpc.dart' as gen;
+import 'package:kinga/generated/institution.pbgrpc.dart';
 import 'package:kinga/util/crypto_utils.dart';
 import 'package:streaming_shared_preferences/streaming_shared_preferences.dart';
 
+import '../constants/config.dart';
+
 class PostgreSQLInstitutionRepository implements InstitutionRepository {
-  late gen.BackendClient stub;
+  late InstitutionBackendClient institutionBackendClient;
 
   PostgreSQLInstitutionRepository() {
     final channel = ClientChannel(
-      Keys.serverIpAddress,
-      port: Keys.port,
-      options: const ChannelOptions(credentials: ChannelCredentials.insecure()),
+      BackendConfig.backendServerHost,
+      port: BackendConfig.port,
+      options: Config.tls ? const ChannelOptions() : const ChannelOptions(credentials: ChannelCredentials.insecure()),
     );
-    stub = gen.BackendClient(channel);
+    institutionBackendClient = InstitutionBackendClient(channel, interceptors: [AuthInterceptor()]);
   }
 
   @override
@@ -41,7 +45,7 @@ class PostgreSQLInstitutionRepository implements InstitutionRepository {
     final Encrypter encrypter = Encrypter(AES(Key(passwordKey)));
     final Encrypted encryptedInstitutionKey = encrypter.encrypt(institutionKey.base64, iv: institutionKeyIv);
 
-    await stub.createInstitution(gen.Institution()
+    await institutionBackendClient.createInstitution(Institution()
         ..institutionId = institutionId
         ..institutionName = institutionName
         ..encryptedInstitutionKey = encryptedInstitutionKey.base64
@@ -66,7 +70,7 @@ class PostgreSQLInstitutionRepository implements InstitutionRepository {
     late final Uint8List verificationKey;
 
     // TODO: implement error-handling
-    await stub.retrieveInstitution(gen.Id()..requestId = institutionId).then((value) {
+    await institutionBackendClient.retrieveInstitution(InstitutionId()..institutionId = institutionId).then((value) {
       encryptedInstitutionKey = base64.decode(value.encryptedInstitutionKey);
       institutionKeyIv = base64.decode(value.institutionKeyIv);
       passwordKeyNonce = base64.decode(value.passwordKeyNonce);
@@ -94,12 +98,12 @@ class PostgreSQLInstitutionRepository implements InstitutionRepository {
       // TODO
     }
   }
+    return null;
   }
 
   @override
   void leaveInstitution() {
     GetIt.instance.get<StreamingSharedPreferences>().remove(Keys.institutionId);
-    //GetIt.I<Preference<String>>(instanceName: Keys.institutionId).setValue("");
   }
 
   Future<String> generateInstitutionId(String institutionName) async {
@@ -122,7 +126,7 @@ class PostgreSQLInstitutionRepository implements InstitutionRepository {
         return numbers[indexRandom];
       }).join('');
       try {
-        idExists = (await (stub.retrieveInstitution(gen.Id()..requestId=institutionId))).institutionId != '';
+        idExists = (await (institutionBackendClient.retrieveInstitution(InstitutionId()..institutionId=institutionId))).institutionId != '';
       } on GrpcError catch (_) {
         idExists = false;
       }

@@ -1,26 +1,105 @@
 import 'dart:io';
 
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:go_router/go_router.dart';
 import 'package:kinga/constants/colors.dart';
 import 'package:kinga/constants/keys.dart';
+import 'package:kinga/constants/routes.dart';
 import 'package:kinga/domain/authentication_service.dart';
-import 'package:kinga/domain/entity/user.dart';
-import 'package:kinga/domain/student_service.dart';
 import 'package:kinga/features/commons/domain/analytics_service.dart';
+import 'package:kinga/features/permissions/ui/create_permission_screen.dart';
+import 'package:kinga/features/permissions/ui/list_permissions_screen.dart';
+import 'package:kinga/features/permissions/ui/show_permission_screen.dart';
 import 'package:kinga/injection.dart';
 import 'package:kinga/ui/attendance_screen.dart';
-import 'package:kinga/ui/attendance_screen_native.dart';
 import 'package:kinga/ui/setup_account_screen.dart';
-import 'package:kinga/ui/setup_account_screen_native.dart';
 import 'package:kinga/ui/setup_institution_screen.dart';
-import 'package:kinga/ui/setup_institution_screen_native.dart';
+import 'package:kinga/ui/show_student_screen.dart';
 import 'package:streaming_shared_preferences/streaming_shared_preferences.dart';
 import 'ui/bloc/students_cubit.dart';
+
+final router = GoRouter(
+
+  redirect: (context, state) {
+    if (GetIt.I<AuthenticationService>().getCurrentUser() == null) {
+      return '/${Routes.setupAccount}';
+    }
+    if (GetIt.I<StreamingSharedPreferences>().getString(Keys.institutionId, defaultValue: "").getValue() == '') {
+      return '/${Routes.setupInstitution}';
+    }
+    if (state.location == '/${Routes.attendance}') {
+      return '/';
+    }
+    if (state.location == '/${Routes.student}') {
+      return '/';
+    }
+    if (state.location == Routes.reset) {
+      return '/';
+    }
+    return null;
+  },
+  routes: [
+    GoRoute(
+        path: '/',
+        name: Routes.home,
+        builder: (context, state) {
+          return const AttendanceScreen();
+        },
+      routes: [
+        GoRoute(
+          path: 'permission',
+          name: Routes.listPermissions,
+          builder: (context, state) {
+            return const ListPermissionsScreen();
+          },
+          routes: [
+            GoRoute(
+              path: 'permission/:permission',
+              name: Routes.showPermission,
+              builder: (context, state) {
+                var permission = (state.pathParameters['permission']);
+                return ShowPermissionScreen(permission!);
+              },
+            ),
+            GoRoute(
+              path: 'createPermission',
+              name: Routes.createPermission,
+              builder: (context, state) {
+                return const CreatePermissionScreen();
+              },
+            ),
+          ]
+        ),
+        GoRoute(
+          path: 'student/:studentId',
+          name: Routes.student,
+          builder: (context, state) {
+            var studentId = (state.pathParameters['studentId']);
+            if (studentId == null) {
+              return Container();
+            }
+            return ShowStudentScreen(studentId: studentId, initialTab: state.queryParameters['show']);
+          },
+        ),
+      ]
+    ),
+    GoRoute(
+      path: '/${Routes.setupAccount}',
+      name: Routes.setupAccount,
+      builder: (context, state) => const SetupAccountScreen(),
+    ),
+    GoRoute(
+      path: '/${Routes.setupInstitution}',
+      name: Routes.setupInstitution,
+      builder: (context, state) => const SetupInstitutionScreen(),
+    ),
+  ]
+);
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -46,17 +125,14 @@ void main() async {
     ]);
   }
 
-  final StudentService studentService = GetIt.I<StudentService>();
-  final AuthenticationService authenticationService = GetIt.I<AuthenticationService>();
-  runApp(MyApp(studentService, authenticationService));
+  //runApp(MyApp(studentService, authenticationService));
+  runApp(const MyApp());
+
 }
 
 class MyApp extends StatefulWidget {
 
-  final StudentService _studentService;
-  final AuthenticationService _authenticationService;
-
-  MyApp(this._studentService, this._authenticationService, {Key? key}) : super(key: key);
+  const MyApp({Key? key}) : super(key: key);
 
   @override
   State<MyApp> createState() => _MyAppState();
@@ -89,97 +165,40 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    // StreamBuilder for distinction if user is authenticated or not
-    return StreamBuilder<User?>(
-      stream: widget._authenticationService.authStateChanges(),
-      builder: (BuildContext context, AsyncSnapshot<User?> snapshot) {
-        if (snapshot.hasData) {
-          // if logged in
-          return PreferenceBuilder(preference: GetIt.I<StreamingSharedPreferences>().getString(Keys.institutionId, defaultValue: ""),
-              builder: (BuildContext context, String institutionId) {
-                // reconfigure dependencies
-                //reconfigureDependencies();
-                // check if user is already in an institution
-                if (institutionId != "") {
-                  // if in institution
-                  return MultiBlocProvider(
-                    providers: [
-                      BlocProvider(
-                        create: (context) => StudentsCubit(widget._studentService),
-                        child: const AttendanceScreen(),
-                      ),
-                    ],
-                    child: MaterialApp(
-                      title: 'KinGa',
-                      localizationsDelegates: const [
-                        GlobalMaterialLocalizations.delegate,
-                        GlobalWidgetsLocalizations.delegate,
-                        GlobalCupertinoLocalizations.delegate,
-                      ],
-                      supportedLocales: const [
-                        Locale('de', 'DE'),
-                      ],
-                      theme: ThemeData(
-                        // This is the theme of your application.
-                          primarySwatch: ColorSchemes.kingacolor,
-                          scaffoldBackgroundColor: ColorSchemes.backgroundColor,
-                          backgroundColor: ColorSchemes.backgroundColor,
-                          errorColor: ColorSchemes.errorColor,
-                          cardTheme: CardTheme.of(context).copyWith(
-                              clipBehavior: Clip.antiAlias,
-                              shape: RoundedRectangleBorder(
-                                side: const BorderSide(
-                                  color: ColorSchemes.kingaGrey,
-                                  width: 3.0,
-                                ),
-                                borderRadius: BorderRadius.circular(10.0),
-                              )
-                          )
-                      ),
-                      home: (Platform.isWindows || Platform.isLinux) ? const AttendanceScreenNative() : const AttendanceScreen(),
-                    ),
-                  );
-                } else {
-                  // if not in institution
-                  return MultiBlocProvider(
-                    providers: [
-                      BlocProvider(
-                        create: (context) => StudentsCubit(widget._studentService),
-                        child: (Platform.isWindows || Platform.isLinux) ? AttendanceScreenNative() : const AttendanceScreen(),
-                      )
-                    ],
-                    child: MaterialApp(
-                      title: 'KinGa',
-                      theme: ThemeData(
-                        // This is the theme of your application.
-                          scaffoldBackgroundColor: ColorSchemes.backgroundColor, colorScheme: ColorScheme.fromSwatch(primarySwatch: ColorSchemes.kingacolor).copyWith(background: ColorSchemes.backgroundColor).copyWith(error: ColorSchemes.errorColor)
-                      ),
-                      home: (Platform.isWindows || Platform.isLinux) ? SetupInstitutionScreenNative() : const SetupInstitutionScreen(),
-                    ),
-                  );
-                }
-              }
-          );
-        } else {
-          // if not logged in
-          return MultiBlocProvider(
-            providers: [
-              BlocProvider(
-                create: (context) => StudentsCubit(widget._studentService),
-                child: const AttendanceScreen(),
-              )
-            ],
-            child: MaterialApp(
-              title: 'KinGa',
-              theme: ThemeData(
-                // This is the theme of your application.
-                  scaffoldBackgroundColor: ColorSchemes.backgroundColor, colorScheme: ColorScheme.fromSwatch(primarySwatch: ColorSchemes.kingacolor).copyWith(background: ColorSchemes.backgroundColor).copyWith(error: ColorSchemes.errorColor)
+    return BlocProvider(
+      create: (context) => StudentsCubit(),
+      child: MaterialApp.router(
+        routerConfig: router,
+        title: 'KinGa',
+        localizationsDelegates: const [
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: const [
+          Locale('de', 'DE'),
+        ],
+        theme: ThemeData(
+          // This is the theme of your application.
+          primarySwatch: ColorSchemes.kingacolor,
+          scaffoldBackgroundColor: ColorSchemes.backgroundColor,
+          backgroundColor: ColorSchemes.backgroundColor,
+          cardTheme: CardTheme.of(context).copyWith(
+            clipBehavior: Clip.antiAlias,
+            shape: RoundedRectangleBorder(
+              side: const BorderSide(
+                color: ColorSchemes.kingaGrey,
+                width: 3.0,
               ),
-              home: (Platform.isWindows || Platform.isLinux) ? const SetupAccountScreenNative() : const SetupAccountScreen(),
-            ),
-          );
-        }
-      },
+              borderRadius: BorderRadius.circular(10.0),
+            )
+          ),
+          colorScheme: ColorScheme.fromSwatch(primarySwatch: ColorSchemes.kingacolor).copyWith(
+            error: ColorSchemes.errorColor,
+            background: ColorSchemes.backgroundColor
+          )
+        ),
+      ),
     );
   }
 }

@@ -5,9 +5,10 @@ abstract class ObservationOfTheWeekState {}
 
 class ObservationOfTheWeekInitial extends ObservationOfTheWeekState {}
 class ObservationOfTheWeekLoading extends ObservationOfTheWeekState {}
-class ObservationOfTheWeekEmpty extends ObservationOfTheWeekState {
+class ObservationOfTheWeekNoQuestion extends ObservationOfTheWeekState {}
+class ObservationOfTheWeekNoStudent extends ObservationOfTheWeekState {
   Question question;
-  ObservationOfTheWeekEmpty(this.question);
+  ObservationOfTheWeekNoStudent(this.question);
 }
 class ObservationOfTheWeekLoaded extends ObservationOfTheWeekState {
 

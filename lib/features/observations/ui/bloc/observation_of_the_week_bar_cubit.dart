@@ -9,7 +9,10 @@ part 'observation_of_the_week_bar_state.dart';
 class ObservationOfTheWeekBarCubit extends Cubit<ObservationOfTheWeekBarState> {
   ObservationOfTheWeekBarCubit() : super(ObservationOfTheWeekBarInitial()) {
     GetIt.I<ObservationService>().getObservationOfTheWeekQuestion().then((question) {
-      emit(ObservationOfTheWeekBarLoaded(question));
+      if (question != null) {
+        emit(ObservationOfTheWeekBarLoaded(question));
+      }
+      emit(ObservationOfTheWeekBarNoQuestion());
     });
   }
 }

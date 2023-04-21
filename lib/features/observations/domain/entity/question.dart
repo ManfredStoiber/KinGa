@@ -4,15 +4,16 @@ import 'package:kinga/features/observations/domain/entity/observation_form_part_
 
 class Question {
 
+  String id;
   late ObservationForm observationForm;
   ObservationFormPart part;
   ObservationFormPartSection section;
-  String text; // ISO-String for dates
+  String text;
   int number;
   Map<int, String> possibleAnswers;
 
 
-  Question(this.text, this.number, this.possibleAnswers, this.observationForm, this.part, this.section);
+  Question(this.id, this.text, this.number, this.possibleAnswers, this.observationForm, this.part, this.section);
 
   @override
   bool operator==(Object other) => other is Question &&

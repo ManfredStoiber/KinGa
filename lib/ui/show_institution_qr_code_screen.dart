@@ -1,7 +1,7 @@
 import 'dart:convert';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import 'package:kinga/constants/keys.dart';
 import 'package:kinga/constants/strings.dart';
@@ -21,8 +21,8 @@ class ShowInstitutionQrCodeScreen extends StatelessWidget {
         bool? confirmed = await showDialog(context: context, builder: (context) => AlertDialog(
           title: const Text(Strings.institutionCredentialsConfirm),
           actions: [
-            TextButton(onPressed: () => Navigator.of(context).pop(false), child: const Text(Strings.cancel)),
-            TextButton(onPressed: () => Navigator.of(context).pop(true), child: const Text(Strings.next)),
+            TextButton(onPressed: () => context.pop(false), child: const Text(Strings.cancel)),
+            TextButton(onPressed: () => context.pop(true), child: const Text(Strings.next)),
           ],
         ),);
         if (confirmed == true) {
@@ -92,12 +92,12 @@ class ShowInstitutionQrCodeScreen extends StatelessWidget {
                 await showDialog(context: context, builder: (context) => AlertDialog(
                   title: const Text(Strings.institutionCredentialsConfirm),
                   actions: [
-                    TextButton(onPressed: () => Navigator.of(context).pop(false), child: const Text(Strings.cancel)),
-                    TextButton(onPressed: () => Navigator.of(context).pop(true), child: const Text(Strings.next)),
+                    TextButton(onPressed: () => context.pop(false), child: const Text(Strings.cancel)),
+                    TextButton(onPressed: () => context.pop(true), child: const Text(Strings.next)),
                   ],
                 ),).then((confirmed) {
                   if (confirmed == true) {
-                    Navigator.of(context).pop();
+                    context.pop();
                   }
                   return null;
                 });

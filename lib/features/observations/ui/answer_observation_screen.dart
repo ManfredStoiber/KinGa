@@ -5,6 +5,7 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 import 'package:kinga/constants/colors.dart';
 import 'package:kinga/constants/keys.dart';
 import 'package:kinga/constants/strings.dart';
@@ -19,7 +20,7 @@ import 'package:simple_shadow/simple_shadow.dart';
 
 class AnswerObservationScreen extends StatefulWidget {
 
-  AnswerObservationScreen({Key? key}) : super(key: key);
+  const AnswerObservationScreen({Key? key}) : super(key: key);
 
   @override
   State<AnswerObservationScreen> createState() => _AnswerObservationScreenState();
@@ -67,7 +68,7 @@ class _AnswerObservationScreenState extends State<AnswerObservationScreen> {
   create: (context) => ObservationOfTheWeekCubit(),
   child: BlocBuilder<ObservationOfTheWeekCubit, ObservationOfTheWeekState>(
   builder: (context, state) {
-    if (state is ObservationOfTheWeekEmpty) {
+    if (state is ObservationOfTheWeekNoStudent) {
       return ConnectivityIndicator(
         child: Scaffold(
           appBar: AppBar(
@@ -96,7 +97,7 @@ class _AnswerObservationScreenState extends State<AnswerObservationScreen> {
             onPressed: () {
               saveAnswers(state);
               GetIt.I<AnalyticsService>().logEvent(name: Keys.analyticsAnswerObservationOfTheWeek);
-              Navigator.of(context).pop();
+              context.pop();
             },
           child: const Icon(Icons.check),
         ),

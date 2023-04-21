@@ -4,12 +4,13 @@ import 'package:collection/collection.dart';
 
 class ObservationForm {
 
+  String id;
   String title;
-  String version;
+  String version; // ISO-String for dates
 
   List<ObservationFormPart> parts;
 
-  ObservationForm(this.title, this.version, this.parts);
+  ObservationForm(this.id, this.title, this.version, this.parts);
 
   List<Question> getQuestions() {
     List<Question> questions = [];

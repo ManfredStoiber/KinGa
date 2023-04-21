@@ -14,8 +14,8 @@ class StudentService {
 
   final StudentRepository _studentRepository = GetIt.I<StudentRepository>();
   late Stream<Set<Student>> studentStream;
-  late Set<Student> students;
-  late Set<String> groups;
+  late Set<Student> students = {};
+  late Set<String> groups = {};
 
   final _rfidCache = TimedCache<String, void>(const Duration(seconds: 25).inMilliseconds);
   final _rfidQueue = Queue();
@@ -128,7 +128,7 @@ class StudentService {
         //print("StudentId of RFID Tag: ${studentId}");
       } catch (err) {
         print("Error, enqueueing registration attempt..");
-        print("Error: ${err}");
+        print("Error: $err");
         // enqueue registration attempt
         _rfidQueue.addLast(rfidRegistration);
         return;

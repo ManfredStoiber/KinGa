@@ -3,12 +3,14 @@ import 'dart:io';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:kinga/constants/colors.dart';
 import 'package:kinga/constants/strings.dart';
 import 'package:kinga/features/observations/domain/entity/observation.dart';
 import 'package:kinga/features/observations/domain/entity/observation_form.dart';
 import 'package:kinga/features/observations/domain/entity/observation_form_part.dart';
 import 'package:kinga/features/observations/domain/entity/observation_form_part_section.dart';
+import 'package:kinga/features/observations/domain/entity/observation_period.dart';
 import 'package:kinga/features/observations/ui/answer_observation_question_dialog.dart';
 import 'package:kinga/features/observations/ui/bloc/observations_cubit.dart';
 import 'package:kinga/ui/widgets/drop.dart';
@@ -17,7 +19,7 @@ import 'package:kinga/ui/widgets/loading_indicator_dialog.dart';
 import 'package:simple_shadow/simple_shadow.dart';
 
 class ShowObservationsWidget extends StatefulWidget {
-  ShowObservationsWidget(this.studentId, {Key? key}) : super(key: key);
+  const ShowObservationsWidget(this.studentId, {Key? key}) : super(key: key);
 
   final String studentId;
 
@@ -130,7 +132,7 @@ class ShowObservationsWidgetState extends State<ShowObservationsWidget> with Aut
                               Container(margin: const EdgeInsets.all(30), width: 100, child: SimpleShadow(child: Opacity(opacity: 0.4, child: Image.asset('assets/images/observations.png'.replaceAll('/', Platform.pathSeparator))))),
                               ElevatedButton(onPressed: () {
                                 LoadingIndicatorDialog.show(context, Strings.loadCreateObservationForm);
-                                BlocProvider.of<ObservationsCubit>(context).createObservationForm(widget.studentId, state.selectedObservationForm.title, state.selectedObservationForm.version, "TODO").then((value) => Navigator.of(context).pop()); // TODO: timespan
+                                BlocProvider.of<ObservationsCubit>(context).createObservationForm(widget.studentId, state.selectedObservationForm.id, ObservationPeriod(2023, 0)).then((value) => context.pop()); // TODO: period
                               }, child: const Text(Strings.createObservationForm),),
                             ],
                           ),
@@ -206,7 +208,7 @@ class ShowObservationsWidgetState extends State<ShowObservationsWidget> with Aut
                                         if (observation.answer == null) SizedBox(
                                           width: double.infinity,
                                           child: TextButton(onPressed: (){
-                                            showDialog(context: context, builder: (context) => AnswerObservationQuestionDialog(widget.studentId, observation.question)).then((success) {
+                                            showDialog(context: context, builder: (context) => AnswerObservationQuestionDialog(observation.id, widget.studentId, observation.question)).then((success) {
                                               if (success) {
                                                 BlocProvider.of<ObservationsCubit>(context).updateUi();
                                               }
@@ -216,7 +218,7 @@ class ShowObservationsWidgetState extends State<ShowObservationsWidget> with Aut
                                         if (observation.answer != null) Container(
                                           margin: const EdgeInsets.fromLTRB(.0, 10.0, 5.0, 10.0),
                                           child: InkWell(
-                                            onLongPress: () => showDialog(context: context, builder: (context) => AnswerObservationQuestionDialog(widget.studentId, observation.question, selectedAnswerInitial: observation.answer, noteInitial: observation.note,),).then((success) {
+                                            onLongPress: () => showDialog(context: context, builder: (context) => AnswerObservationQuestionDialog(observation.id, widget.studentId, observation.question, selectedAnswerInitial: observation.answer, noteInitial: observation.note,),).then((success) {
                                               if (success) {
                                                 BlocProvider.of<ObservationsCubit>(context).updateUi();
                                               }
@@ -238,7 +240,7 @@ class ShowObservationsWidgetState extends State<ShowObservationsWidget> with Aut
                                                             onPressed: () {
                                                               showDialog(context: context, builder: (context) => AlertDialog(
                                                                 contentPadding: const EdgeInsets.fromLTRB(25.0, 20.0, 25.0, .0),
-                                                                actions: [TextButton(child: const Text(Strings.close), onPressed: () => Navigator.of(context).pop(),)],
+                                                                actions: [TextButton(child: const Text(Strings.close), onPressed: () => context.pop(),)],
                                                                 title: const Text(Strings.note),
                                                                 content: Text(observation.note!),
                                                               ),);

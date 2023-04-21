@@ -1,9 +1,9 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 import 'package:kinga/constants/colors.dart';
 import 'package:kinga/constants/keys.dart';
 import 'package:kinga/constants/strings.dart';
@@ -22,7 +22,7 @@ class ShowIncidencesWidget extends StatefulWidget {
   final GlobalKey<AnimatedListState> listKey;
   final Function()? onIncidencesChanged;
 
-  ShowIncidencesWidget(this.studentId, this.listKey, {Key? key, this.onIncidencesChanged}) : super(key: key);
+  const ShowIncidencesWidget(this.studentId, this.listKey, {Key? key, this.onIncidencesChanged}) : super(key: key);
 
   @override
   State<ShowIncidencesWidget> createState() => ShowIncidencesWidgetState();
@@ -132,7 +132,7 @@ class ShowIncidencesWidgetState extends State<ShowIncidencesWidget> with Automat
                                   style: const TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.w500),
                                   decoration: InputDecoration (
                                     isDense: true,
-                                    prefixIcon: Container(padding: const EdgeInsets.fromLTRB(10, 5, 5, 5), child: Icon(size: 20, Icons.category_outlined, color: Colors.black)),
+                                    prefixIcon: Container(padding: const EdgeInsets.fromLTRB(10, 5, 5, 5), child: const Icon(size: 20, Icons.category_outlined, color: Colors.black)),
                                     prefixIconConstraints: const BoxConstraints(maxHeight: 30),
                                     enabledBorder: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(16)), borderSide: BorderSide(color: Colors.transparent)),
                                     focusedBorder: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(16)), borderSide: BorderSide(color: Colors.transparent)),
@@ -162,7 +162,7 @@ class ShowIncidencesWidgetState extends State<ShowIncidencesWidget> with Automat
                                   style: const TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.w500),
                                   decoration: InputDecoration (
                                       isDense: true,
-                                      prefixIcon: Container(padding: const EdgeInsets.fromLTRB(10, 5, 5, 5), child: Icon(size: 20, Icons.calendar_today, color: Colors.black)),
+                                      prefixIcon: Container(padding: const EdgeInsets.fromLTRB(10, 5, 5, 5), child: const Icon(size: 20, Icons.calendar_today, color: Colors.black)),
                                       prefixIconConstraints: const BoxConstraints(maxHeight: 30),
                                       enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.transparent)),
                                       focusedBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.transparent)),
@@ -254,7 +254,7 @@ class AnimatedSlideMenu extends StatefulWidget {
   final String studentId;
   final animation;
 
-  AnimatedSlideMenu({Key? key, required this.listKey, required this.index, required this.studentId, required this.animation}) : super(key: key);
+  const AnimatedSlideMenu({Key? key, required this.listKey, required this.index, required this.studentId, required this.animation}) : super(key: key);
 
   @override
   State<AnimatedSlideMenu> createState() => _AnimatedSlideMenuState();
@@ -329,10 +329,10 @@ class _AnimatedSlideMenuState extends State<AnimatedSlideMenu> with AutomaticKee
           title: const Text(Strings.confirmDeleteIncidence),
           actions: [
             TextButton(onPressed: () =>
-                Navigator.of(context).pop(false),
+                context.pop(false),
                 child: const Text(Strings.cancel)),
             TextButton(onPressed: () =>
-                Navigator.of(context).pop(true),
+                context.pop(true),
                 child: const Text(Strings.confirm))
           ],
         ),).then((confirmed) {

@@ -1,16 +1,21 @@
 
 import 'dart:io';
 
+import 'package:kinga/constants/backend_config.dart';
+import 'package:logger/logger.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
 import 'package:uuid/uuid.dart';
 
 class MqttClientManager {
+
+  var logger = Logger();
+
   String clientId = 'flutter_client_${const Uuid().v1()}';
   late MqttServerClient mqttServerClient;
 
   MqttClientManager() {
-    mqttServerClient = MqttServerClient('test.mosquitto.org', clientId);
+    mqttServerClient = MqttServerClient(BackendConfig.mqttHost, clientId);
   }
 
   Future<int> connect() async {
@@ -25,23 +30,21 @@ class MqttClientManager {
     final connMess = MqttConnectMessage()
         .startClean()
         .withWillQos(MqttQos.atLeastOnce);
-    print('Client connecting....');
     mqttServerClient.connectionMessage = connMess;
 
     try {
       await mqttServerClient.connect();
     } on NoConnectionException catch (e) {
-      print('Client exception: $e');
+      logger.e('Client exception: $e');
       mqttServerClient.disconnect();
     } on SocketException catch (e) {
-      print('Socket exception: $e');
+      logger.e('Socket exception: $e');
       mqttServerClient.disconnect();
     }
 
     if (mqttServerClient.connectionStatus!.state == MqttConnectionState.connected) {
-      print('Client connected');
     } else {
-      print('Client connection failed - disconnecting, status is ${mqttServerClient.connectionStatus}');
+      logger.e('Client connection failed - disconnecting, status is ${mqttServerClient.connectionStatus}');
       mqttServerClient.disconnect();
       exit(-1);
     }
@@ -58,27 +61,27 @@ class MqttClientManager {
   }
 
   void onSubscribed(String topic) {
-    print('Subscription confirmed for topic $topic');
+    logger.v('Subscription confirmed for topic $topic');
   }
 
   void onUnsubscribed(String topic) {
-    print('Unsubscribed topic: $topic');
+    logger.v('Unsubscribed topic: $topic');
   }
 
   void onSubscribeFail(String topic) {
-    print('Failed to subscribe $topic');
+    logger.e('Failed to subscribe $topic');
   }
 
   void onDisconnected() {
-    print('OnDisconnected client callback - Client disconnection');
+    logger.i('OnDisconnected client callback - Client disconnection');
   }
 
   void onConnected() {
-    print('OnConnected client callback - Client connection was successful');
+    logger.i('OnConnected client callback - Client connection was successful');
   }
 
   void pong() {
-    print('Ping response client callback invoked');
+    logger.i('Ping response client callback invoked');
   }
 
   Stream<List<MqttReceivedMessage<MqttMessage>>>? getMessagesStream() {

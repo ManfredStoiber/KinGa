@@ -1,4 +1,3 @@
-import 'package:collection/collection.dart';
 import 'package:get_it/get_it.dart';
 
 import 'package:kinga/features/observations/domain/entity/observation_form.dart';
@@ -6,6 +5,8 @@ import 'package:kinga/features/observations/domain/entity/question.dart';
 import 'package:kinga/features/observations/domain/entity/observation.dart';
 import 'package:kinga/features/observations/domain/observation_repository.dart';
 import 'package:kinga/util/date_utils.dart';
+
+import 'entity/observation_period.dart';
 
 class ObservationService {
 
@@ -19,29 +20,28 @@ class ObservationService {
     return _observationRepository.getObservations(studentId);
   }
 
-  Future<void> createObservationForm(String studentId, String observationFormTitle, String observationFormVersion, String timespan) async {
-    ObservationForm? observationForm = (await getObservationForms()).firstWhereOrNull((form) => form.title == observationFormTitle && form.version == observationFormVersion);
-    if (observationForm == null) {
-      return; // TODO: error handling
-    }
+  /// creates observation form for given student
+  Future<void> createObservationFormForStudent(String studentId, String observationFormId, ObservationPeriod period) async {
+    return _observationRepository.createObservations(studentId, observationFormId, period);
+  }
 
-    List<Observation> observations = [];
-    for (Question q in observationForm.getQuestions()) {
-      observations.add(Observation(q, timespan));
-    }
-
-    return _observationRepository.createObservations(studentId, observations);
+  Future<void> createObservationForm(ObservationForm observationForm) {
+    return _observationRepository.createObservationForm(observationForm);
   }
 
   Future<List<ObservationForm>> getObservationForms() async {
     return _observationRepository.getObservationForms();
   }
 
-  Future<Question> getObservationOfTheWeekQuestion() async {
+  Future<Question?> getObservationOfTheWeekQuestion() async {
     var observationForms = await _observationRepository.getObservationForms();
     var questions = [];
     for (var form in observationForms) {
       questions += form.getQuestions();
+    }
+
+    if (questions.isEmpty) {
+      return null;
     }
 
     // get observation of the week question for current week number

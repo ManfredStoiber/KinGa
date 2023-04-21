@@ -8,23 +8,31 @@ import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
 import 'package:grpc/grpc.dart';
 import 'package:image/image.dart';
+import 'package:kinga/constants/backend_config.dart';
 import 'package:kinga/constants/keys.dart';
 import 'package:kinga/data/mqtt_client_manager.dart';
-import 'package:kinga/data/firebase_utils.dart';
 import 'package:kinga/domain/entity/absence.dart';
 import 'package:kinga/domain/entity/caregiver.dart';
 import 'package:kinga/domain/entity/incidence.dart';
 import 'package:kinga/domain/entity/student.dart';
 import 'package:kinga/domain/student_repository.dart';
 import 'package:kinga/domain/student_service.dart';
-import 'package:kinga/generated/backend.pbgrpc.dart' as gen;
+import 'package:kinga/generated/student.pbgrpc.dart' as proto;
 import 'package:kinga/util/crypto_utils.dart';
+import 'package:kinga/util/student_utils.dart';
+import 'package:logger/logger.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:streaming_shared_preferences/streaming_shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 
+import '../constants/config.dart';
+import 'auth_interceptor.dart';
+
 class PostgreSQLStudentRepository implements StudentRepository {
-  late gen.BackendClient clientStub;
+
+  final logger = Logger();
+
+  late proto.StudentBackendClient studentBackendClient;
   late String currentInstitutionId;
 
   late MqttClientManager mqttClientManager;
@@ -41,11 +49,12 @@ class PostgreSQLStudentRepository implements StudentRepository {
     currentInstitutionId = GetIt.I<StreamingSharedPreferences>().getString(Keys.institutionId, defaultValue: "").getValue();
 
     final channel = ClientChannel(
-      Keys.serverIpAddress,
-      port: Keys.port,
-      options: const ChannelOptions(credentials: ChannelCredentials.insecure()),
+      BackendConfig.backendServerHost,
+      port: BackendConfig.port,
+      options: Config.tls ? const ChannelOptions() : const ChannelOptions(credentials: ChannelCredentials.insecure()),
     );
-    clientStub = gen.BackendClient(channel);
+
+    studentBackendClient = proto.StudentBackendClient(channel, interceptors: [AuthInterceptor()]);
 
     mqttClientManager = MqttClientManager();
     setupMqttClient();
@@ -63,7 +72,6 @@ class PostgreSQLStudentRepository implements StudentRepository {
         .listen((List<MqttReceivedMessage<MqttMessage?>>? c) {
       final recMess = c![0].payload as MqttPublishMessage;
       final pt = MqttPublishPayload.bytesToStringAsString(recMess.payload.message);
-      print('MQTTClient::Message received on topic: <${c[0].topic}> is $pt\n');
     });
   }
 
@@ -126,9 +134,9 @@ class PostgreSQLStudentRepository implements StudentRepository {
         permissions);
 
     try {
-      await clientStub.createStudent(gen.Student()
+      await studentBackendClient.createStudent(proto.Student()
         ..studentId = student.studentId
-        ..value = FirebaseUtils.studentToMap(student)['value']
+        ..value = StudentUtils.studentToMap(student)['value']
         ..institutionId = currentInstitutionId
       );
     } catch (e) {
@@ -157,8 +165,8 @@ class PostgreSQLStudentRepository implements StudentRepository {
   @override
   Future<void> deleteStudent(String studentId) async {
     try {
-      await clientStub.deleteStudent(gen.Id()..requestId=studentId).then((_) {
-        clientStub.deleteProfileImage(gen.Id()..requestId=studentId);
+      await studentBackendClient.deleteStudent(proto.StudentId()..studentId=studentId).then((_) {
+        studentBackendClient.deleteProfileImage(proto.StudentId()..studentId=studentId);
       });
     } catch (e) {
       if (kDebugMode) {
@@ -184,8 +192,8 @@ class PostgreSQLStudentRepository implements StudentRepository {
     // encrypt and store in firebase storage
     var encrypted = CryptoUtils.encrypt(base64.encode(image));
     try {
-      await clientStub.createProfileImage(gen.ProfileImage()..studentId=studentId..data=encrypted);
-    } on GrpcError catch (e) {
+      await studentBackendClient.createProfileImage(proto.ProfileImage()..studentId=studentId..data=encrypted);
+    } on GrpcError {
       //TODO
     }
 
@@ -213,9 +221,9 @@ class PostgreSQLStudentRepository implements StudentRepository {
   @override
   Future<void> updateStudent(Student student) async {
     try {
-      await clientStub.updateStudent(gen.Student()
+      await studentBackendClient.updateStudent(proto.Student()
         ..studentId = student.studentId
-        ..value = FirebaseUtils.studentToMap(student)['value']
+        ..value = StudentUtils.studentToMap(student)['value']
         ..institutionId = currentInstitutionId
       );
     } catch (e) {
@@ -254,7 +262,6 @@ class PostgreSQLStudentRepository implements StudentRepository {
         } else if (event is List<MqttReceivedMessage<MqttMessage>>) {
           final recMess = event[0].payload as MqttPublishMessage;
           final pt = MqttPublishPayload.bytesToStringAsString(recMess.payload.message);
-          print('MQTTClient::Message received on topic: <${event[0].topic}> is $pt\n');
 
           var students = await retrieveStudentsForInstitution();
           if (students != null) {
@@ -270,15 +277,15 @@ class PostgreSQLStudentRepository implements StudentRepository {
     if (currentInstitutionId != '') {
       Set<Student> students = {};
 
-      List<gen.Student> tmp = <gen.Student>[];
+      List<proto.Student> tmp = <proto.Student>[];
       try {
-        var receivedStudents = clientStub.retrieveInstitutionStudents(gen.Id()..requestId=currentInstitutionId);
+        var receivedStudents = studentBackendClient.retrieveInstitutionStudents(proto.InstitutionId()..institutionId=currentInstitutionId);
         await for (var student in receivedStudents) {
           tmp.add(student);
         }
 
         for (var response in tmp) {
-          Map<String, dynamic> decrypted = FirebaseUtils.decryptStudent(response.value);
+          Map<String, dynamic> decrypted = StudentUtils.decryptStudent(response.studentId, response.value);
           Student student = decrypted['student'];
           late Uint8List profileImage;
           String? profileImageHash = decrypted['profileImage'];
@@ -298,10 +305,10 @@ class PostgreSQLStudentRepository implements StudentRepository {
             } else {
               String? profileImageDownload;
               try {
-                var response = await clientStub.retrieveProfileImage(gen.Id()..requestId=student.studentId);
+                var response = await studentBackendClient.retrieveProfileImage(proto.StudentId()..studentId=student.studentId);
                 profileImageDownload = response.data;
-              } on GrpcError catch (_) {
-                //TODO:
+              } on GrpcError catch (e) {
+                logger.e(e);
               }
               if (profileImageDownload != null) {
                 // decrypt profileImage
@@ -334,6 +341,7 @@ class PostgreSQLStudentRepository implements StudentRepository {
           students.add(student);
         }
       } on GrpcError catch (e) {
+        logger.e(e);
         return null; //TODO: error-handling
       }
       if (tmp.isEmpty) {
@@ -347,52 +355,52 @@ class PostgreSQLStudentRepository implements StudentRepository {
   }
 
   void createTestStudents() async {
-    createStudent('Elias', '', 'Schulz', '2017-11-25', 'Musterstraße 1 12345 Musterhausen', 'Mondschein', Uint8List(0),
+    await createStudent('Elias', '', 'Schulz', '2017-11-25', 'Musterstraße 1 12345 Musterhausen', 'Mondschein', Uint8List(0),
         [Caregiver('Lisa', 'Schulz', 'Mama', {'Handy Arbeit': '0160654321', 'Handy Privat': '0160123456'}, 'Lisa.Schulz@beispiel.de'),
          Caregiver('Lukas', 'Schulz', 'Papa', {'Handy Arbeit': '0175654321', 'Handy Privat': '0175123456'}, 'Lukas.Schulz@beispiel.de')],
         {'Pinnwand', 'Zeitung', 'Website'}
     );
-    createStudent('Emilia', '', 'Schmidt', '2018-10-29', 'Musterstraße 1 12345 Musterhausen', 'Sonnenschein', Uint8List(0),
+    await createStudent('Emilia', '', 'Schmidt', '2018-10-29', 'Musterstraße 1 12345 Musterhausen', 'Sonnenschein', Uint8List(0),
         [Caregiver('Anna', 'Schmidt', 'Mama', {'Handy Arbeit': '0160654321', 'Handy Privat': '0160123456'}, 'Anna.Schmidt@beispiel.de'),
           Caregiver('Günther', 'Schmidt', 'Papa', {'Handy Arbeit': '0175654321', 'Handy Privat': '0175123456'}, 'Guenther.Schmidt@beispiel.de')],
         {'Pinnwand', 'Zeitung', 'Website'}
     );
-    createStudent('Leon', '', 'Maier', '2018-06-02', 'Musterstraße 1 12345 Musterhausen', 'Mondschein', Uint8List(0),
+    await createStudent('Leon', '', 'Maier', '2018-06-02', 'Musterstraße 1 12345 Musterhausen', 'Mondschein', Uint8List(0),
         [Caregiver('Beate', 'Maier', 'Oma', {'Handy Arbeit': '0160654321', 'Handy Privat': '0160123456'}, 'Beate.Maier@beispiel.de'),
           Caregiver('Daniel', 'Maier', 'Opa', {'Handy Arbeit': '0175654321', 'Handy Privat': '0175123456'}, 'Daniel.Maier@beispiel.de')],
         {'Pinnwand', 'Zeitung', 'Website'}
     );
-    createStudent('Mia', '', 'Fischer', '2018-05-03', 'Musterstraße 1 12345 Musterhausen', 'Regenbogen', Uint8List(0),
+    await createStudent('Mia', '', 'Fischer', '2018-05-03', 'Musterstraße 1 12345 Musterhausen', 'Regenbogen', Uint8List(0),
         [Caregiver('Marlene', 'Fischer', 'Mama', {'Handy Arbeit': '0160654321', 'Handy Privat': '0160123456'}, 'Marlene.Fischer@beispiel.de'),
           Caregiver('Alfons', 'Fischer', 'Papa', {'Handy Arbeit': '0175654321', 'Handy Privat': '0175123456'}, 'Alfons.Fischer@beispiel.de')],
         {'Pinnwand', 'Zeitung', 'Website'}
     );
-    createStudent('Anna', '', 'Müller', '2018-02-01', 'Musterstraße 1 12345 Musterhausen', 'Regenbogen', Uint8List(0),
+    await createStudent('Anna', '', 'Müller', '2018-02-01', 'Musterstraße 1 12345 Musterhausen', 'Regenbogen', Uint8List(0),
         [Caregiver('Franziska', 'Müller', 'Mama', {'Handy Arbeit': '0160654321', 'Handy Privat': '0160123456'}, 'Franziska.Mueller@beispiel.de'),
           Caregiver('Bernd', 'Müller', 'Papa', {'Handy Arbeit': '0175654321', 'Handy Privat': '0175123456'}, 'Bernd.Mueller@beispiel.de')],
         {'Pinnwand', 'Zeitung', 'Website'}
     );
-    createStudent('Emma', '', 'Schneider', '2018-04-15', 'Musterstraße 1 12345 Musterhausen', 'Mondschein', Uint8List(0),
+    await createStudent('Emma', '', 'Schneider', '2018-04-15', 'Musterstraße 1 12345 Musterhausen', 'Mondschein', Uint8List(0),
         [Caregiver('Maria', 'Schneider', 'Mama', {'Handy Arbeit': '0160654321', 'Handy Privat': '0160123456'}, 'Maria.Schneider@beispiel.de'),
           Caregiver('Johannes', 'Schneider', 'Papa', {'Handy Arbeit': '0175654321', 'Handy Privat': '0175123456'}, 'Johannes.Schneider@beispiel.de')],
         {'Pinnwand', 'Zeitung', 'Website'}
     );
-    createStudent('Jonas', '', 'Wagner', '2017-08-12', 'Musterstraße 1 12345 Musterhausen', 'Regenbogen', Uint8List(0),
+    await createStudent('Jonas', '', 'Wagner', '2017-08-12', 'Musterstraße 1 12345 Musterhausen', 'Regenbogen', Uint8List(0),
         [Caregiver('Johanna', 'Wagner', 'Mama', {'Handy Arbeit': '0160654321', 'Handy Privat': '0160123456'}, 'Johanna.Wagner@beispiel.de'),
           Caregiver('Sebastian', 'Wagner', 'Papa', {'Handy Arbeit': '0175654321', 'Handy Privat': '0175123456'}, 'Sebastian.Wagner@beispiel.de')],
         {'Pinnwand', 'Zeitung', 'Website'}
     );
-    createStudent('Adam', '', 'Hoffmann', '2017-12-05', 'Musterstraße 1 12345 Musterhausen', 'Regenbogen', Uint8List(0),
+    await createStudent('Adam', '', 'Hoffmann', '2017-12-05', 'Musterstraße 1 12345 Musterhausen', 'Regenbogen', Uint8List(0),
         [Caregiver('Sabrina', 'Hoffmann', 'Mama', {'Handy Arbeit': '0160654321', 'Handy Privat': '0160123456'}, 'Sabrina.Hoffmann@beispiel.de'),
           Caregiver('Markus', 'Hoffmann', 'Papa', {'Handy Arbeit': '0175654321', 'Handy Privat': '0175123456'}, 'Markus.Hoffmann@beispiel.de')],
         {'Pinnwand', 'Zeitung', 'Website'}
     );
-    createStudent('Ben', '', 'Becker', '2018-01-12', 'Musterstraße 1 12345 Musterhausen', 'Sonnenschein', Uint8List(0),
+    await createStudent('Ben', '', 'Becker', '2018-01-12', 'Musterstraße 1 12345 Musterhausen', 'Sonnenschein', Uint8List(0),
         [Caregiver('Karin', 'Becker', 'Mama', {'Handy Arbeit': '0160654321', 'Handy Privat': '0160123456'}, 'Karin.Becker@beispiel.de'),
           Caregiver('Christian', 'Becker', 'Papa', {'Handy Arbeit': '0175654321', 'Handy Privat': '0175123456'}, 'Christian.Becker@beispiel.de')],
         {'Pinnwand', 'Zeitung', 'Website'}
     );
-    createStudent('Lara', '', 'Weber', '2018-10-30', 'Musterstraße 1 12345 Musterhausen', 'Sonnenschein', Uint8List(0),
+    await createStudent('Lara', '', 'Weber', '2018-10-30', 'Musterstraße 1 12345 Musterhausen', 'Sonnenschein', Uint8List(0),
         [Caregiver('Martina', 'Weber', 'Mama', {'Handy Arbeit': '0160654321', 'Handy Privat': '0160123456'}, 'Martina.Weber@beispiel.de'),
           Caregiver('Joseph', 'Weber', 'Papa', {'Handy Arbeit': '0175654321', 'Handy Privat': '0175123456'}, 'Joseph.Weber@beispiel.de')],
         {'Pinnwand', 'Zeitung', 'Website'}

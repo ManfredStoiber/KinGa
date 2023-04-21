@@ -14,6 +14,10 @@ class ObservationOfTheWeekCubit extends Cubit<ObservationOfTheWeekState> {
     var observationService = GetIt.I<ObservationService>();
     observationService.getObservationForms().then((value) async {
       var question = await observationService.getObservationOfTheWeekQuestion();
+      if (question == null) {
+        emit(ObservationOfTheWeekNoQuestion());
+        return;
+      }
       var allStudents = GetIt.I<StudentService>().students;
       var students = <ObservationStudentDto>[];
       await Future.wait([
@@ -38,7 +42,7 @@ class ObservationOfTheWeekCubit extends Cubit<ObservationOfTheWeekState> {
       });
        */
       if (students.isEmpty) {
-        emit (ObservationOfTheWeekEmpty(question));
+        emit (ObservationOfTheWeekNoStudent(question));
       } else {
         emit (ObservationOfTheWeekLoaded(question, students));
       }
