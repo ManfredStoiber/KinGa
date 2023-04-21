@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package institution.v1;
+
+import "google/protobuf/empty.proto";
+
+service InstitutionBackend {
+  rpc CreateInstitution(Institution) returns (google.protobuf.Empty) {}
+  rpc RetrieveInstitution(Id) returns (Institution) {}
+}
+
+message Institution {
+  string institutionId = 1;
+  string encryptedInstitutionKey = 2;
+  string institutionKeyIv = 3;
+  string institutionName = 4;
+  string passwordKeyNonce = 5;
+  string verificationKey = 6;
+}
+
+message Id {
+  string requestId = 1;
+}

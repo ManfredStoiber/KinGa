@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+package student.v1;
+
+import "google/protobuf/empty.proto";
+
+service StudentBackend {
+  rpc CreateStudent(Student) returns (google.protobuf.Empty) {}
+  rpc DeleteStudent(Id) returns (google.protobuf.Empty) {}
+  rpc UpdateStudent(Student) returns (google.protobuf.Empty) {}
+  rpc RetrieveStudent(Id) returns (Student) {}
+  rpc RetrieveInstitutionStudents(Id) returns (stream Student) {}
+
+  rpc CreateProfileImage(ProfileImage) returns (google.protobuf.Empty) {}
+  rpc DeleteProfileImage(Id) returns (google.protobuf.Empty) {}
+  rpc UpdateProfileImage(ProfileImage) returns (google.protobuf.Empty) {}
+  rpc RetrieveProfileImage(Id) returns (ProfileImage) {}
+}
+
+message Student {
+  string studentId = 1;
+  string value = 2;
+  string institutionId = 3;
+}
+
+message ProfileImage {
+  string studentId = 1;
+  string data = 2;
+}
+
+message Id {
+  string requestId = 1;
+}

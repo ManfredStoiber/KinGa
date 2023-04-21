@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+package backend.permission;
+
+import "google/protobuf/empty.proto";
+
+service PermissionBackend {
+  rpc CreateStudent(Student) returns (Student) {}
+  rpc DeleteStudent(Id) returns (Empty) {}
+
+  rpc CreateInstitution(Institution) returns (Institution) {}
+  rpc RetrieveInstitution(Id) returns (Institution) {}
+
+  rpc CreateProfileImage(ProfileImage) returns (Empty) {}
+  rpc DeleteProfileImage(Id) returns (Empty) {}
+  rpc UpdateProfileImage(ProfileImage) returns (Empty) {}
+  rpc RetrieveProfileImage(Id) returns (ProfileImage) {}
+}
+
+message Student {
+  string studentId = 1;
+  string value = 2;
+  string institutionId = 3;
+}
+
+message Institution {
+  string institutionId = 1;
+  string encryptedInstitutionKey = 2;
+  string institutionKeyIv = 3;
+  string institutionName = 4;
+  string passwordKeyNonce = 5;
+  string verificationKey = 6;
+}
+
+message ProfileImage {
+  string studentId = 1;
+  string data = 2;
+}
+
+message Id {
+  string requestId = 1;
+}
+
+message Empty {}

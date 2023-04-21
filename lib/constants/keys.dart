@@ -3,7 +3,7 @@ class Keys {
   // Keys
   static const String locale = 'de_DE';
   static const String initializationStreamController = 'init';
-  static const String serverIpAddress = '192.168.178.46';
+  static const String serverIpAddress = '192.168.2.140';
   static const int port = 50051;
 
   static const String applicationDocumentsDirectory = 'applicationDocumentsDirectory';

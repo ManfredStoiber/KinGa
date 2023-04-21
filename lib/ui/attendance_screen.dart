@@ -11,6 +11,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:get_it/get_it.dart';
 import 'package:kinga/constants/keys.dart';
+import 'package:kinga/data/postgresql_institution_repository.dart';
 import 'package:kinga/domain/entity/caregiver.dart';
 import 'package:kinga/features/commons/domain/analytics_service.dart';
 import 'package:kinga/features/connectivity_indicator/ui/connectivity_indicator.dart';
@@ -516,7 +517,8 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
   }
 
   void debug() {
-    GetIt.I<AnalyticsService>().createCsv();
+    //GetIt.I<AnalyticsService>().createCsv();
+    (GetIt.I<InstitutionRepository>() as PostgreSQLInstitutionRepository).migrate();
   }
 }
 

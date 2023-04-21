@@ -17,14 +17,14 @@ import 'package:kinga/domain/entity/incidence.dart';
 import 'package:kinga/domain/entity/student.dart';
 import 'package:kinga/domain/student_repository.dart';
 import 'package:kinga/domain/student_service.dart';
-import 'package:kinga/generated/backend.pbgrpc.dart' as gen;
+import 'package:kinga/generated/student.pbgrpc.dart' as proto;
 import 'package:kinga/util/crypto_utils.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:streaming_shared_preferences/streaming_shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 
 class PostgreSQLStudentRepository implements StudentRepository {
-  late gen.BackendClient clientStub;
+  late proto.StudentBackendClient studentBackendClient;
   late String currentInstitutionId;
 
   late MqttClientManager mqttClientManager;
@@ -43,9 +43,9 @@ class PostgreSQLStudentRepository implements StudentRepository {
     final channel = ClientChannel(
       Keys.serverIpAddress,
       port: Keys.port,
-      options: const ChannelOptions(credentials: ChannelCredentials.insecure()),
     );
-    clientStub = gen.BackendClient(channel);
+
+    studentBackendClient = proto.StudentBackendClient(channel, interceptors: []);
 
     mqttClientManager = MqttClientManager();
     setupMqttClient();
@@ -126,7 +126,7 @@ class PostgreSQLStudentRepository implements StudentRepository {
         permissions);
 
     try {
-      await clientStub.createStudent(gen.Student()
+      await studentBackendClient.createStudent(proto.Student()
         ..studentId = student.studentId
         ..value = FirebaseUtils.studentToMap(student)['value']
         ..institutionId = currentInstitutionId
@@ -157,8 +157,8 @@ class PostgreSQLStudentRepository implements StudentRepository {
   @override
   Future<void> deleteStudent(String studentId) async {
     try {
-      await clientStub.deleteStudent(gen.Id()..requestId=studentId).then((_) {
-        clientStub.deleteProfileImage(gen.Id()..requestId=studentId);
+      await studentBackendClient.deleteStudent(proto.Id()..requestId=studentId).then((_) {
+        studentBackendClient.deleteProfileImage(proto.Id()..requestId=studentId);
       });
     } catch (e) {
       if (kDebugMode) {
@@ -184,8 +184,8 @@ class PostgreSQLStudentRepository implements StudentRepository {
     // encrypt and store in firebase storage
     var encrypted = CryptoUtils.encrypt(base64.encode(image));
     try {
-      await clientStub.createProfileImage(gen.ProfileImage()..studentId=studentId..data=encrypted);
-    } on GrpcError catch (e) {
+      await studentBackendClient.createProfileImage(proto.ProfileImage()..studentId=studentId..data=encrypted);
+    } on GrpcError {
       //TODO
     }
 
@@ -213,7 +213,7 @@ class PostgreSQLStudentRepository implements StudentRepository {
   @override
   Future<void> updateStudent(Student student) async {
     try {
-      await clientStub.updateStudent(gen.Student()
+      await studentBackendClient.updateStudent(proto.Student()
         ..studentId = student.studentId
         ..value = FirebaseUtils.studentToMap(student)['value']
         ..institutionId = currentInstitutionId
@@ -270,9 +270,9 @@ class PostgreSQLStudentRepository implements StudentRepository {
     if (currentInstitutionId != '') {
       Set<Student> students = {};
 
-      List<gen.Student> tmp = <gen.Student>[];
+      List<proto.Student> tmp = <proto.Student>[];
       try {
-        var receivedStudents = clientStub.retrieveInstitutionStudents(gen.Id()..requestId=currentInstitutionId);
+        var receivedStudents = studentBackendClient.retrieveInstitutionStudents(proto.Id()..requestId=currentInstitutionId);
         await for (var student in receivedStudents) {
           tmp.add(student);
         }
@@ -298,7 +298,7 @@ class PostgreSQLStudentRepository implements StudentRepository {
             } else {
               String? profileImageDownload;
               try {
-                var response = await clientStub.retrieveProfileImage(gen.Id()..requestId=student.studentId);
+                var response = await studentBackendClient.retrieveProfileImage(proto.Id()..requestId=student.studentId);
                 profileImageDownload = response.data;
               } on GrpcError catch (_) {
                 //TODO:
