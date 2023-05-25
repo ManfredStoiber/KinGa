@@ -118,7 +118,7 @@ class ExpandableFabState extends State<ExpandableFab>
               padding: const EdgeInsets.all(8.0),
               child: Icon(
                 Icons.close,
-                color: Theme.of(context).errorColor,
+                color: Theme.of(context).colorScheme.error,
               ),
             ),
           ),
@@ -167,7 +167,7 @@ class ExpandableFabState extends State<ExpandableFab>
           child: FloatingActionButton(
             onPressed: toggle,
             //foregroundColor: Theme.of(context).,
-            backgroundColor: Theme.of(context).errorColor,
+            backgroundColor: Theme.of(context).colorScheme.error,
             child: widget.icon,
           ),
         ),

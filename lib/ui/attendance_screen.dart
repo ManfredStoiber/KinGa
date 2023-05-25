@@ -1,21 +1,20 @@
 import 'dart:async';
-import 'dart:convert';
-import 'dart:typed_data';
 
 import 'dart:io';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 import 'package:kinga/constants/keys.dart';
-import 'package:kinga/domain/entity/caregiver.dart';
+import 'package:kinga/constants/routes.dart';
+import 'package:kinga/domain/authentication_service.dart';
 import 'package:kinga/features/commons/domain/analytics_service.dart';
 import 'package:kinga/features/connectivity_indicator/ui/connectivity_indicator.dart';
+import 'package:kinga/features/observations/domain/observation_service.dart';
 import 'package:kinga/features/observations/ui/observation_of_the_week_bar.dart';
-import 'package:kinga/features/permissions/ui/list_permissions_screen.dart';
 import 'package:kinga/ui/widgets/loading_indicator_dialog.dart';
 import 'package:kinga/ui/new_student_screen.dart';
 import 'package:kinga/domain/institution_repository.dart';
@@ -24,6 +23,7 @@ import 'package:kinga/constants/strings.dart';
 import 'package:kinga/constants/colors.dart';
 import 'package:kinga/ui/widgets/drop.dart';
 import 'package:kinga/ui/widgets/loading_indicator.dart';
+import 'package:kinga/util/debug_utils.dart';
 import 'package:kinga/util/shared_prefs_utils.dart';
 import 'package:showcaseview/showcaseview.dart';
 import 'package:simple_shadow/simple_shadow.dart';
@@ -41,6 +41,8 @@ class AttendanceScreen extends StatefulWidget {
 class _AttendanceScreenState extends State<AttendanceScreen> {
 
   final AnalyticsService _analyticsService = GetIt.I<AnalyticsService>();
+  final AuthenticationService _authenticationService = GetIt.I<AuthenticationService>();
+  final InstitutionRepository _institutionRepository = GetIt.I<InstitutionRepository>();
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final List<String> allShowcases = [Keys.attendanceKey, Keys.searchKey, Keys.filterKey, Keys.drawerKey, Keys.createStudentKey, Keys.createPermissionKey];
@@ -86,33 +88,6 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
     GetIt.instance.get<StreamingSharedPreferences>().setStringList(Keys.finishedShowcases, finishedShowcases);
   }
 
-  void debugConvertFirebaseFromKingaLegacy() {
-    FirebaseFirestore.instance.collection('Institution').doc('debug').delete().onError((error, stackTrace) => null);
-    FirebaseFirestore.instance.collection('Institution').doc('f1x2NtOa90aJSlbOIX0fD4fOrns2').get().then((value) {
-      FirebaseFirestore.instance.collection('Institution').doc('debug').set(value.data()!);
-      FirebaseFirestore.instance.collection('Institution').doc('f1x2NtOa90aJSlbOIX0fD4fOrns2').collection('Student').get().then((value2) {
-        for (var v in value2.docs) {
-          var data = v.data();
-          data['birthday'] = DateTime.fromMillisecondsSinceEpoch(data['birthday']).toIso8601String().substring(0, 10);
-          data['attendances'] = [];
-          data['incidents'] = [];
-          data['kudos'] = [];
-          var caregiversNew = [];
-          for (var caregiver in data['caregivers']) {
-            Map<String, String> phonenumbersNew = <String, String>{};
-            for (var phonenumber in caregiver['phoneNumbers']) {
-              phonenumbersNew[phonenumber['label']] = phonenumber['number'];
-            }
-            var tmp = Caregiver(caregiver['firstname'], caregiver['lastname'], caregiver['label'] ?? "", phonenumbersNew, caregiver['email']).toMap();
-            caregiversNew.add(tmp);
-          }
-          data['caregivers'] = caregiversNew;
-          FirebaseFirestore.instance.collection('Institution').doc('debug').collection('Student').add(data);
-        }
-      });
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return ConnectivityIndicator(
@@ -132,6 +107,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                   });
                   return false;
                 }
+                SystemNavigator.pop(); // close app
                 return true;
               },
               child: Scaffold(
@@ -353,7 +329,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                   ),
 
                   drawer: Drawer(
-                    backgroundColor: Theme.of(context).backgroundColor,
+                    backgroundColor: Theme.of(context).colorScheme.background,
                     child: ListView(
                       padding: EdgeInsets.zero,
                       children: [
@@ -403,7 +379,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                             });
                           },
                           onTargetClick: () {
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => const ListPermissionsScreen(),)).then((_) {
+                            context.pushNamed(Routes.listPermissions).then((_) {
                               setState(() {
                                 continueShowcase(Keys.createPermissionKey);
                               });
@@ -412,7 +388,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                           child: ListTile(
                             title: const Text(Strings.permission),
                             onTap: () {
-                              Navigator.push(context, MaterialPageRoute(builder: (context) => const ListPermissionsScreen(),));
+                              context.goNamed(Routes.listPermissions);
                             },
                             leading: const Icon(Icons.checklist),
                           ),
@@ -448,7 +424,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                             _analyticsService.logEvent(name: Keys.analyticsShowHelp);
                             GetIt.instance.get<StreamingSharedPreferences>().setStringList(Keys.finishedShowcases, []);
                             _scaffoldKey.currentState!.closeDrawer();
-                            Navigator.of(context).pop();
+                            context.pop();
                             Navigator.of(context).push(MaterialPageRoute(builder: (context) => const AttendanceScreen()));
                           },
                           leading: const Icon(Icons.help_outline),
@@ -476,19 +452,20 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                               title: const Text(Strings.confirmLogout),
                               actions: [
                                 TextButton(onPressed: () {
-                                  Navigator.of(context).pop(false);
+                                  context.pop(false);
                                 }, child: const Text(Strings.cancel)),
                                 TextButton(onPressed: () {
-                                  Navigator.of(context).pop(true);
+                                  context.pop(true);
                                 }, child: const Text(Strings.confirm))
                               ],
                             ),).then((confirmed) {
                               if (confirmed ?? false) {
                                 LoadingIndicatorDialog.show(context, Strings.loadLogout);
-                                GetIt.I<InstitutionRepository>().leaveInstitution();
-                                FirebaseAuth.instance.signOut().then((_) {
+                                _institutionRepository.leaveInstitution();
+                                _authenticationService.signOut().then((_) {
                                   Navigator.pop(context);
                                   Navigator.pop(context);
+                                  context.go(Routes.reset);
                                 });
                               }
                             });
@@ -515,8 +492,10 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
     SharedPrefsUtils.updateFinishedShowcases(key);
   }
 
-  void debug() {
-    GetIt.I<AnalyticsService>().createCsv();
+  void debug() async {
+    var observationForm = await DebugUtils().loadObservationFormFromCsv();
+    GetIt.I<ObservationService>().createObservationForm(observationForm);
+    //GetIt.I<AnalyticsService>().createCsv();
   }
 }
 
@@ -548,9 +527,8 @@ class AttendanceItemState extends State<AttendanceItem> {
                   child: ElevatedButton(
                       onPressed: () {
                         GetIt.I<AnalyticsService>().logEvent(name: Keys.analyticsShowStudent);
-                        Navigator.push(context, MaterialPageRoute(
-                            builder: (context) =>
-                                ShowStudentScreen(studentId: widget.studentId,)));
+                        //context.go('${Routes.student}/${widget.studentId}');
+                        context.goNamed(Routes.student, pathParameters: {'studentId': widget.studentId});
                       },
                       onLongPress: () {
                         GetIt.I<AnalyticsService>().logEvent(name: Keys.analyticsToggleAttendance);
@@ -559,7 +537,7 @@ class AttendanceItemState extends State<AttendanceItem> {
                       style: TextButton.styleFrom(
                           shape: ContinuousRectangleBorder(
                             borderRadius: BorderRadius.circular(64.0),
-                            side: cubit.isAbsent(widget.studentId) && false ? const BorderSide() : BorderSide.none
+                            side: BorderSide.none
                           ),
                           //shadowColor: Colors.transparent,
                           backgroundColor: (){

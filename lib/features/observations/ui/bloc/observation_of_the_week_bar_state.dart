@@ -8,3 +8,4 @@ class ObservationOfTheWeekBarLoaded extends ObservationOfTheWeekBarState {
   Question question;
   ObservationOfTheWeekBarLoaded(this.question);
 }
+class ObservationOfTheWeekBarNoQuestion extends ObservationOfTheWeekBarState {}

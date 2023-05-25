@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 import 'package:kinga/constants/colors.dart';
 import 'package:kinga/constants/keys.dart';
+import 'package:kinga/constants/routes.dart';
 import 'package:kinga/constants/strings.dart';
 import 'package:kinga/domain/entity/student.dart';
 import 'package:kinga/domain/student_service.dart';
 import 'package:kinga/features/commons/domain/analytics_service.dart';
 import 'package:kinga/features/permissions/domain/permission_service.dart';
-import 'package:kinga/features/permissions/ui/list_permissions_screen.dart';
 import 'package:kinga/features/permissions/ui/permission_item_widget.dart';
 import 'package:kinga/ui/widgets/loading_indicator_dialog.dart';
 import 'package:kinga/ui/bloc/students_cubit.dart';
@@ -99,20 +100,17 @@ class _ShowPermissionScreenState extends State<ShowPermissionScreen> {
                     title: const Text(Strings.confirmDeletePermission),
                     actions: [
                       TextButton(onPressed: () {
-                        Navigator.of(context).pop(false);
+                        context.pop(false);
                       }, child: const Text(Strings.cancel)),
                       TextButton(onPressed: () {
-                        Navigator.of(context).pop(true);
+                        context.pop(true);
                       }, child: const Text(Strings.confirm))
                     ],
                   ),).then((confirmed) {
                     if (confirmed ?? false) {
                       LoadingIndicatorDialog.show(context, Strings.loadDeletePermission);
                       _permissionService.deletePermission(widget.permission).then((value) {
-                        Navigator.of(context).pop();
-                        Navigator.of(context).pop();
-                        Navigator.of(context).pop();
-                        Navigator.of(context).push(MaterialPageRoute(builder: (context) => const ListPermissionsScreen(),));
+                        context.goNamed(Routes.listPermissions);
                       });
                     }
                   });

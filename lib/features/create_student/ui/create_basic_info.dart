@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:kinga/constants/strings.dart';
@@ -164,11 +165,11 @@ class _CreateBasicInfoState extends State<CreateBasicInfo> with AutomaticKeepAli
                                 setState(() {
                                   selectedGroup = previousGroup;
                                 });
-                                Navigator.of(context).pop();
+                                context.pop();
                               }, child: const Text(Strings.cancel)),
                               TextButton(onPressed: () {
                                 if (groupNameKey.currentState?.validate() ?? false) {
-                                  Navigator.of(context).pop(groupNameController.text);
+                                  context.pop(groupNameController.text);
                                 }
                               }, child: const Text(Strings.confirm))
                             ],
@@ -277,7 +278,7 @@ class _CreateBasicInfoState extends State<CreateBasicInfo> with AutomaticKeepAli
                   .primaryColor,
               backgroundColor: Theme
                   .of(context)
-                  .backgroundColor,
+                  .colorScheme.background,
             ),
             IOSUiSettings(
               aspectRatioLockEnabled: true,

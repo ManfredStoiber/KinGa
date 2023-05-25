@@ -7,6 +7,7 @@ import 'package:kinga/domain/entity/student.dart';
 import 'package:kinga/features/observations/domain/entity/observation.dart';
 import 'package:kinga/features/observations/domain/entity/observation_form.dart';
 import 'package:kinga/features/observations/domain/entity/observation_form_part.dart';
+import 'package:kinga/features/observations/domain/entity/observation_period.dart';
 import 'package:kinga/features/observations/domain/observation_service.dart';
 
 part 'observations_state.dart';
@@ -39,9 +40,9 @@ class ObservationsCubit extends Cubit<ObservationsState> {
     ))).onError((error, stackTrace) => emit(ObservationsError()));
   }
 
-  Future<void> createObservationForm(String studentId, String observationFormTitle, String observationFormVersion, String timespan) async {
-    return _observationService.createObservationForm(studentId, observationFormTitle, observationFormVersion, timespan).then((_) {
-      var observationForm = observationForms.firstWhere((observationForm) => observationForm.title == observationFormTitle);
+  Future<void> createObservationForm(String studentId, String observationFormId, ObservationPeriod period) async {
+    return _observationService.createObservationFormForStudent(studentId, observationFormId, period).then((_) {
+      var observationForm = observationForms.firstWhere((observationForm) => observationForm.id == observationFormId);
       updateUi(selectedObservationForm: observationForm);
     });
   }

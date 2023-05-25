@@ -1,4 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.stoibersoftware.kinga">
    <application
         android:label="KinGa"
@@ -26,6 +27,19 @@
             </intent-filter>
         </activity>
        <activity
+           android:name="net.openid.appauth.RedirectUriReceiverActivity"
+           android:exported="true"
+           tools:node="replace">
+           <intent-filter>
+               <action android:name="android.intent.action.VIEW"/>
+               <category android:name="android.intent.category.DEFAULT"/>
+               <category android:name="android.intent.category.BROWSABLE"/>
+               <data android:scheme="com.stoibersoftware.kinga"/>
+               <!--<data android:scheme="http" android:host="kinga-webapp.web.app"/> --> <!--TODO: check why app links not working-->
+               <!--<data android:scheme="https" android:host="kinga-webapp.web.app"/> --> <!--TODO: check why app links not working-->
+           </intent-filter>
+       </activity>
+       <activity
            android:name="com.yalantis.ucrop.UCropActivity"
            android:screenOrientation="portrait"
            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
@@ -34,5 +48,7 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+
+
     </application>
 </manifest>

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 import 'package:kinga/constants/keys.dart';
 import 'package:kinga/constants/strings.dart';
 import 'package:kinga/domain/entity/incidence.dart';
@@ -31,7 +32,7 @@ class _CreateIncidenceDialogState extends State<CreateIncidenceDialog> {
       title: const Text(Strings.incidence),
       actions: [
         TextButton(
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () => context.pop(),
           child: const Text(Strings.cancel),
         ),
         TextButton(
@@ -41,7 +42,7 @@ class _CreateIncidenceDialogState extends State<CreateIncidenceDialog> {
               Incidence incidence = Incidence(dateTime, _descriptionController.text.trim(), _selectedCategory);
               GetIt.I<StudentService>().createIncidence(widget.studentId, incidence).then((value) {
                 GetIt.I<AnalyticsService>().logEvent(name: Keys.analyticsCreateIncidence);
-                Navigator.of(context).pop(incidence);
+                context.pop(incidence);
               }); // TODO: What if network connection is slow and you close dialog manually? Will the next element of Navigator be popped then?
             }
           },

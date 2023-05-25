@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 import 'package:kinga/constants/keys.dart';
 import 'package:kinga/constants/strings.dart';
 import 'package:kinga/domain/entity/absence.dart';
@@ -38,7 +39,7 @@ class _EditAbsenceDialogState extends State<EditAbsenceDialog> {
       title: const Text(Strings.absence),
       actions: [
         TextButton(
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () => context.pop(),
           child: const Text(Strings.cancel),
         ),
         TextButton(
@@ -48,8 +49,8 @@ class _EditAbsenceDialogState extends State<EditAbsenceDialog> {
             String dateUntilFormatted = IsoDateUtils.getIsoDateFromGermanDate(dateUntilController.text);
             BlocProvider.of<StudentsCubit>(context).updateAbsence(widget.studentId, widget.absence, Absence(dateFromFormatted, dateUntilFormatted, _selectedReason)).then((value) {
               GetIt.I<AnalyticsService>().logEvent(name: Keys.analyticsEditAbsence);
-              Navigator.of(context).pop();
-              Navigator.of(context).pop();
+              context.pop();
+              context.pop();
             });
           },
           child: const Text(Strings.enter),

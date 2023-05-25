@@ -34,7 +34,7 @@ class _CreatePermissionsState extends State<CreatePermissions> with AutomaticKee
   Widget build(BuildContext context) {
     return allPermissions.isNotEmpty ?
     Container(
-      padding: EdgeInsets.only(bottom: 80.0),
+      padding: const EdgeInsets.only(bottom: 80.0),
       child: Column(
         children: [
           Card(

@@ -6,12 +6,8 @@ class AuthenticationService {
 
   final AuthenticationRepository _authenticationRepository = GetIt.I<AuthenticationRepository>();
 
-  Future signInWithEmailAndPassword(String email, String password) async {
-    return _authenticationRepository.signInWithEmailAndPassword(email, password);
-  }
-
-  Future createUserWithEmailAndPassword(email, password) async {
-    return _authenticationRepository.createUserWithEmailAndPassword(email, password);
+  Future signIn() async {
+    return _authenticationRepository.signIn();
   }
 
   Future signOut() async {

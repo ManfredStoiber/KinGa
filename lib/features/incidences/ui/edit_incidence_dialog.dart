@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 import 'package:kinga/constants/keys.dart';
 import 'package:kinga/constants/strings.dart';
 import 'package:kinga/domain/entity/incidence.dart';
@@ -38,7 +39,7 @@ class _EditIncidenceDialogState extends State<EditIncidenceDialog> {
       title: const Text(Strings.incidence),
       actions: [
         TextButton(
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () => context.pop(),
           child: const Text(Strings.cancel),
         ),
         TextButton(
@@ -49,8 +50,8 @@ class _EditIncidenceDialogState extends State<EditIncidenceDialog> {
               Incidence incidence = Incidence(dateTime, _descriptionController.text.trim(), _selectedCategory);
               GetIt.I<StudentService>().updateIncidence(widget.studentId, widget.incidence, incidence).then((value) {
                 GetIt.I<AnalyticsService>().logEvent(name: Keys.analyticsEditIncidence);
-                Navigator.of(context).pop();
-                Navigator.of(context).pop();
+                context.pop();
+                context.pop();
               });
             }
           },

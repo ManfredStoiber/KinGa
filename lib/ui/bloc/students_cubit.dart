@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:bloc/bloc.dart';
+import 'package:get_it/get_it.dart';
 import 'package:kinga/domain/entity/absence.dart';
 import 'package:kinga/domain/student_service.dart';
 import 'package:kinga/domain/entity/student.dart';
@@ -11,10 +12,10 @@ part 'students_state.dart';
 
 class StudentsCubit extends Cubit<StudentsState> {
 
-  final StudentService _studentService;
+  final StudentService _studentService = GetIt.I<StudentService>();
   StreamSubscription<Set<Student>>? _streamSubscription;
 
-  StudentsCubit(this._studentService) : super(StudentsInitial()) {
+  StudentsCubit() : super(StudentsInitial()) {
     emit(StudentsLoading());
     _streamSubscription = _studentService.watchStudents().listen((students) {
       if (students.isEmpty) {

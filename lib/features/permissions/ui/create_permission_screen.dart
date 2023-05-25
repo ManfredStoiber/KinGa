@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 import 'package:kinga/constants/strings.dart';
 import 'package:kinga/domain/entity/student.dart';
 import 'package:kinga/domain/student_service.dart';
 import 'package:kinga/features/permissions/domain/permission_service.dart';
-import 'package:kinga/features/permissions/ui/list_permissions_screen.dart';
 import 'package:kinga/features/permissions/ui/permission_item_widget.dart';
 import 'package:kinga/ui/widgets/loading_indicator_dialog.dart';
+
+import '../../../constants/routes.dart';
 
 class CreatePermissionScreen extends StatefulWidget {
   const CreatePermissionScreen({Key? key}) : super(key: key);
@@ -49,10 +51,10 @@ class _CreatePermissionScreenState extends State<CreatePermissionScreen> {
           title: const Text(Strings.confirmDiscardNewPermission),
           actions: [
             TextButton(onPressed: () {
-              Navigator.of(context).pop(false);
+              context.pop(false);
             }, child: const Text(Strings.cancel)),
             TextButton(onPressed: () {
-              Navigator.of(context).pop(true);
+              context.pop(true);
             }, child: const Text(Strings.confirm))
           ],
         ),);
@@ -83,20 +85,22 @@ class _CreatePermissionScreenState extends State<CreatePermissionScreen> {
                 title: Text('${Strings.createNewPermission} \'${_newPermissionController.text}\' anlegen?'),
                 actions: [
                   TextButton(onPressed: () {
-                    Navigator.of(context).pop(false);
+                    context.pop(false);
                   }, child: const Text(Strings.cancel)),
                   TextButton(onPressed: () {
-                    Navigator.of(context).pop(true);
+                    context.pop(true);
                   }, child: const Text(Strings.confirm))
                 ],
               ),).then((confirmed) {
                 if (confirmed) {
                   LoadingIndicatorDialog.show(context, Strings.loadCreatePermission);
                   _permissionService.createPermission(_newPermissionController.text.trim(), _studentPermissions).then((value) {
-                    Navigator.of(context).pop();
-                    Navigator.of(context).pop();
-                    Navigator.of(context).pop();
-                    Navigator.of(context).push(MaterialPageRoute(builder: (context) => const ListPermissionsScreen(),));
+                    // context.pop();
+                    // context.pop();
+                    // context.pop();
+                    // Navigator.of(context).push(MaterialPageRoute(builder: (context) => const ListPermissionsScreen(),));
+                    //context.pop();
+                    context.goNamed(Routes.listPermissions);
                   });
                 }
               });
@@ -203,12 +207,12 @@ class _CreatePermissionScreenState extends State<CreatePermissionScreen> {
         title: const Text(Strings.newPermissionHint),
         actions: [
           TextButton(onPressed: () {
-            Navigator.of(context).pop();
-            if (!isEdited) Navigator.of(context).pop();
+            context.pop();
+            if (!isEdited) context.pop();
           }, child: const Text(Strings.cancel)),
           TextButton(onPressed: () {
             if (permissionNameKey.currentState?.validate() ?? false) {
-              Navigator.of(context).pop(permissionNameController.text);
+              context.pop(permissionNameController.text);
               isEdited = true;
             }
           }, child: const Text(Strings.confirm))

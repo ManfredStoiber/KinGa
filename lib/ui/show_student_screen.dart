@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 import 'package:kinga/constants/colors.dart';
 import 'package:kinga/constants/keys.dart';
 import 'package:kinga/constants/strings.dart';
@@ -32,9 +33,10 @@ import 'package:streaming_shared_preferences/streaming_shared_preferences.dart';
 import 'package:extended_nested_scroll_view/extended_nested_scroll_view.dart';
 
 class ShowStudentScreen extends StatefulWidget {
-  const ShowStudentScreen({Key? key, required this.studentId,}) : super(key: key);
+  const ShowStudentScreen({Key? key, required this.studentId, this.initialTab}) : super(key: key);
 
   final String studentId;
+  final String? initialTab;
 
   @override
   State<ShowStudentScreen> createState() => _ShowStudentScreenState();
@@ -66,6 +68,21 @@ class _ShowStudentScreenState extends State<ShowStudentScreen>
   void initState() {
     super.initState();
     _confettiController.play();
+
+    switch(widget.initialTab) {
+      case 'incidences':
+        _tabIndex = 0;
+        break;
+      case 'observations':
+        _tabIndex = 1;
+        break;
+      case 'absences':
+        _tabIndex = 2;
+        break;
+      case 'studentData':
+        _tabIndex = 3;
+        break;
+    }
 
     _tabController = TabController(length: 4, vsync: this);
 
@@ -113,7 +130,7 @@ class _ShowStudentScreenState extends State<ShowStudentScreen>
     try {
       student = _studentService.students.firstWhere((student) => student.studentId == widget.studentId);
     } catch (e) {
-      Navigator.of(context).pop();
+      context.pop();
       return Container();
     }
 
@@ -559,7 +576,7 @@ class _SliverHeaderDelegate extends SliverPersistentHeaderDelegate {
             alignment: AlignmentGeometry.lerp(Alignment.center, Alignment.topLeft, 1 - progress)!,
             child: Stack(
               children: [
-                Container(
+                SizedBox(
                   height: kToolbarHeight + viewPaddingTop,
                   child: AppBar(
                     backgroundColor: _backgroundColor,

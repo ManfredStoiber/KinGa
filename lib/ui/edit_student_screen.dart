@@ -4,6 +4,7 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 import 'package:kinga/constants/keys.dart';
 
 import 'package:kinga/constants/strings.dart';
@@ -90,10 +91,10 @@ class _EditStudentScreenState extends State<EditStudentScreen>
             title: const Text(Strings.confirmDiscardStudent),
             actions: [
               TextButton(onPressed: () {
-                Navigator.of(context).pop(false);
+                context.pop(false);
               }, child: const Text(Strings.cancel)),
               TextButton(onPressed: () {
-                Navigator.of(context).pop(true);
+                context.pop(true);
               }, child: const Text(Strings.confirm))
             ],
           ),);
@@ -112,10 +113,10 @@ class _EditStudentScreenState extends State<EditStudentScreen>
                   title: const Text(Strings.deleteChild),
                   actions: [
                     TextButton(onPressed: () {
-                      Navigator.of(context).pop(false);
+                      context.pop(false);
                     }, child: const Text(Strings.cancel)),
                     TextButton(onPressed: () {
-                      Navigator.of(context).pop(true);
+                      context.pop(true);
                     }, child: const Text(Strings.confirm)),
                   ]
                 )).then((confirmed) {
@@ -193,10 +194,10 @@ class _EditStudentScreenState extends State<EditStudentScreen>
                             title: widget.student == null ? const Text(Strings.createNewStudentDialog) : const Text(Strings.editStudentDialog),
                             actions: [
                               TextButton(onPressed: () {
-                                Navigator.of(context).pop(false);
+                                context.pop(false);
                               }, child: const Text(Strings.cancel)),
                               TextButton(onPressed: () {
-                                Navigator.of(context).pop(true);
+                                context.pop(true);
                               }, child: const Text(Strings.confirm))
                             ],
                           ),).then((confirmed) {
@@ -216,11 +217,11 @@ class _EditStudentScreenState extends State<EditStudentScreen>
                               if (widget.student == null) {
                                 BlocProvider.of<StudentsCubit>(context).createStudent(student, _profileImage).then((_) {
                                   GetIt.I<AnalyticsService>().logEvent(name: Keys.analyticsCreateStudent);
-                                  Navigator.of(context).pop();
-                                  Navigator.of(context).pop();
+                                  context.pop();
+                                  context.pop();
                                 },).catchError((e) {
-                                  Navigator.of(context).pop();
-                                  Navigator.of(context).pop();
+                                  context.pop();
+                                  context.pop();
                                 });
                               } else {
                                 Student? s = widget.student;

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:kinga/constants/colors.dart';
 import 'package:kinga/constants/strings.dart';
 
@@ -57,7 +58,7 @@ class _CreateCaregiversState extends State<CreateCaregivers> with AutomaticKeepA
                                   title: const Text(Strings.requiredCaregiver),
                                   actions: [
                                     TextButton(onPressed: () {
-                                      Navigator.of(context).pop();
+                                      context.pop();
                                     }, child: const Text(Strings.okay)),
                                   ],
                                 ));
@@ -119,11 +120,11 @@ class _CreateCaregiversState extends State<CreateCaregivers> with AutomaticKeepA
                                             setState(() {
                                               phoneNumber[0] = previousLabel;
                                             });
-                                            Navigator.of(context).pop();
+                                            context.pop();
                                           }, child: const Text(Strings.cancel)),
                                           TextButton(onPressed: () {
                                             if (widget.phoneLabelKey.currentState?.validate() ?? false) {
-                                              Navigator.of(context).pop(phoneLabelController.text);
+                                              context.pop(phoneLabelController.text);
                                             }
                                           }, child: const Text(Strings.confirm))
                                         ],

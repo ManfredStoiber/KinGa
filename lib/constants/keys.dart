@@ -2,6 +2,10 @@
 class Keys {
   // Keys
   static const String locale = 'de_DE';
+  static const String initializationStreamController = 'init';
+  static const String accessToken = 'accessToken';
+  static const String idToken = 'idToken';
+  static const String refreshToken = 'refreshToken';
 
   static const String applicationDocumentsDirectory = 'applicationDocumentsDirectory';
   static const String encryptedInstitutionKey = "encryptedInstitutionKey";

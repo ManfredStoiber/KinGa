@@ -1,12 +1,14 @@
+import 'package:kinga/features/observations/domain/entity/observation_period.dart';
 import 'package:kinga/features/observations/domain/entity/question.dart';
 
 class Observation {
 
+  String id;
   Question question;
   int? answer;
   String? note;
-  String timespan; // for which timespan/year/semester/etc. the observation is made
+  ObservationPeriod period;
 
-  Observation(this.question, this.timespan, [this.answer, this.note]);
+  Observation(this.id, this.question, this.period, [this.answer, this.note]);
 
 }

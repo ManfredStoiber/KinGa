@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:kinga/constants/strings.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
@@ -16,7 +17,7 @@ class _QrScannerDialogState extends State<QrScannerDialog> {
     return AlertDialog(
       actions: [
         TextButton(
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () => context.pop(),
           child: const Text(Strings.cancel),
         ),
       ],
@@ -39,7 +40,7 @@ class _QrScannerDialogState extends State<QrScannerDialog> {
                 if (barcode.rawValue == null) {
                   // TODO: maybe add error/retry message
                 } else {
-                  Navigator.of(context).pop(barcode.rawValue);
+                  context.pop(barcode.rawValue);
                 }
               },
             ),
