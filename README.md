@@ -77,5 +77,5 @@ Both approaches then automatically log their attendance in the app.
 
 ## 🔍 Further Information
 
-Additional details can be found in the final [presentation](https://github.com/ManfredStoiber/KinGa/docs/presentation.pdf) of the project.
+Additional details can be found in the final [presentation](https://github.com/ManfredStoiber/KinGa/blob/master/docs/presentation.pdf) of the project.
 
